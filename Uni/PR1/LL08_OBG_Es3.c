@@ -24,7 +24,7 @@ int main()
 	}
 	printf("\n");
 
-	printf("Reverse:\n");
+	printf("Inverso:\n");
 	for (i=DIM1I-1; i>=0; --i)
 	{
 		for (j=DIM2J-1; j>=0; --j)

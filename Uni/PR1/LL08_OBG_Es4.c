@@ -17,14 +17,14 @@ int main()
 	{
 		for (j=0; j<DIM2J; j++)
 		{
-			matrix[i][j] = MIN + ((float)rand() / RAND_MAX) * MAX;
+			matrix[i][j] = MIN + ((float)rand() / RAND_MAX * MAX);
 			printf("%6.2f, ", matrix[i][j]);
 		}
 		printf("\n");
 	}
 	printf("\n");
 
-	printf("Reverse:\n");
+	printf("Inverso:\n");
 	for (i=DIM1I-1; i>=0; --i)
 	{
 		for (j=DIM2J-1; j>=0; --j)
