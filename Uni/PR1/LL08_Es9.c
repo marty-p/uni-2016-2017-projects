@@ -6,11 +6,11 @@ della squadra in trasferta. Definire quindi un vettore C di dimensione N che con
 totalizzato (3 punti per la vittoria, 1 per il pareggio, 0 per le sconfitte). Indicare quale delle N squadre ha vinto il campionato.*/
 #include <time.h>
 #define N 10
-#define MIN 0
-#define MAX 2
 #define VITTORIA 2
 #define PAREGGIO 1
 #define SCONFITTA 0
+#define MIN SCONFITTA
+#define MAX VITTORIA
 #define PUNTI_VITTORIA 3
 #define PUNTI_PAREGGIO 1
 #define PUNTI_SCONFITTA 0
@@ -19,6 +19,7 @@ int main()
 	int P[N][N] = {};
 	int C[N] = {};
 	int i, j;
+	int vincitore;
 	srand(time(NULL));
 
 	for (i=0; i<N; i++)
@@ -47,6 +48,17 @@ int main()
 		printf("\n");
 	}
 	printf("\n");
+
+	// trova la squadra con più punti
+	vincitore = 0;
+	for (i=1; i<N; i++)
+		if (C[vincitore] < C[i])
+			vincitore = i;
+
+	// più squadre possono avere lo stesso punteggio, quindi si printano tutte
+	for (i=0; i<N; i++)
+		if (C[vincitore] == C[i])
+			printf("La squadra %c ha vinto\n", 'A'+i);
 
 	return 0;
 }
