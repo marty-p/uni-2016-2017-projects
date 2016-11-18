@@ -199,7 +199,7 @@ int main(){
         /** INIZIO CODICE STUDENTE ESERCIZIO 6 **/
         //Codice studente...
 		totValore = 0;
-		for (i=1; i<N_TERRENI; i++)
+		for (i=0; i<N_TERRENI; i++)
 		{
 			if (terreniAcquistabili[i]==true && terreniAcquistati[i] == idGiocatore)
 			{
@@ -234,13 +234,13 @@ int main(){
 		if (valoriTerreni[indiceMax] < valoriTerreni[i])
 			indiceMax = i;
 
-	// printf("Terreno piu' costoso:\n");
-	// printf("%-30s euro %-15d Proprietario: %s\n", terreni[indiceMax], valoriTerreni[indiceMax], giocatori[terreniAcquistati[indiceMax]]);
+	printf("Terreno piu' costoso:\n");
+	printf("%-30s euro %-15d Proprietario: %s\n", terreni[indiceMax], valoriTerreni[indiceMax], giocatori[terreniAcquistati[indiceMax]]);
 
-	printf("Terreni piu' costosi:\n");
-    for (i=1; i<N_TERRENI; i++)
-		if (valoriTerreni[indiceMax] == valoriTerreni[i])
-			printf("%-30s euro %-15d Proprietario: %s\n", terreni[i], valoriTerreni[i], giocatori[terreniAcquistati[i]]);
+	// printf("Terreni piu' costosi:\n");
+    // for (i=1; i<N_TERRENI; i++)
+		// if (valoriTerreni[indiceMax] == valoriTerreni[i])
+			// printf("%-30s euro %-15d Proprietario: %s\n", terreni[i], valoriTerreni[i], giocatori[terreniAcquistati[i]]);
     /** FINE   CODICE STUDENTE ESERCIZIO 7 **/
 
     return 0;
