@@ -25,10 +25,10 @@ _Bool minmax_overlap(int min1, int max1, int min2, int max2, int * puntomedio)
 {
 	int max_of_min = max(min1, min2);
 	int min_of_max = min(max1, max2);
+	printf("max_of_min %d, min_of_max %d\n", max_of_min, min_of_max);
 	if (max_of_min <= min_of_max)
 	{
 		*puntomedio = max_of_min + ((min_of_max-max_of_min)/2);
-		// printf("%d %d\n", max_of_min, min_of_max);
 		return true;
 	}
 	return false;
