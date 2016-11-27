@@ -14,11 +14,14 @@ specificato dai tre argomenti.*/
 #define OTTOBRE 10
 #define NOVEMBRE 11
 #define DICEMBRE 12
+
 int days_of_the_month(int month, int year);
 int day_of_year(int month, int day, int year);
+
 int main()
 {
     int inputYear, inputMonth, inputDay;
+    int totalDaysOfTheLastMonth;
 
     printf("Inserisci un anno:\n");
     scanf("%d", &inputYear);
@@ -28,14 +31,16 @@ int main()
         scanf("%d", &inputMonth);
     } while (inputMonth < GENNAIO || inputMonth > DICEMBRE);
 
+    totalDaysOfTheLastMonth = days_of_the_month(inputMonth, inputYear);
     do {
-        printf("Inserisci un giorno tra 1 e n del mese %d:\n", inputMonth);
+        printf("Inserisci un giorno tra 1 e %d del mese %d:\n", totalDaysOfTheLastMonth, inputMonth);
         scanf("%d", &inputDay);
-    } while (inputDay < 1 || inputDay > days_of_the_month(inputMonth, inputYear));
+    } while (inputDay < 1 || inputDay > totalDaysOfTheLastMonth);
 
     printf("giorni totali: %d\n", day_of_year(inputMonth, inputDay, inputYear));
     return 0;
 }
+
 int days_of_the_month(int month, int year)
 {
     int day=0;
@@ -57,13 +62,14 @@ int days_of_the_month(int month, int year)
             day=30;
             break;
         case FEBBRAIO:
-            if ((year % 4)==0 && (year % 100)!=0)
+            if ((year % 4)==0 && ((year % 100)!=0 || (year % 400)==0))
                 day=29;
             else
                 day=28;
     }
     return day;
 }
+
 int day_of_year(int month, int day, int year)
 {
     int totalDays = 0;
@@ -75,3 +81,4 @@ int day_of_year(int month, int day, int year)
     totalDays+=day;
     return totalDays;
 }
+

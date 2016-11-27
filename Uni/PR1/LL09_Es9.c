@@ -34,9 +34,9 @@ int day_of_week(int n)
         "sabato",
         "domenica",
     };
-    // way1
     if (LUNEDI <= n && n <= DOMENICA)
     {
+        // way1
         switch (n)
         {
         case LUNEDI:
@@ -61,6 +61,7 @@ int day_of_week(int n)
             printf("domenica\n");
             break;
         }
+        // way2
         printf("%s\n", giorni[n-1]);
         return TRUE;
     }
