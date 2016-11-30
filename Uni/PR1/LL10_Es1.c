@@ -15,8 +15,8 @@ int main()
 
 int decompose(float f, float * d)
 {
-	if (d != NULL)
-		*d = f;
-	return f;
+	int parte_intera = f;
+	*d = f - parte_intera;
+	return parte_intera;
 }
 
