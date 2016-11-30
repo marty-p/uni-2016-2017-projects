@@ -6,7 +6,7 @@ void stampa(int * a);
 
 int main()
 {
-	int v[DIM] = {0};
+	int v[DIM] = {};
 
 	printf("Puntatore: %p\n", v);
 	stampa(v);
