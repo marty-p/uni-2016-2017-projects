@@ -70,23 +70,24 @@ int main()
 
 	for (i = 0; i < 10; i++)
 	{
-		// testaListaRegali = inserisciNodoInCoda(testaListaRegali, i);
+		testaListaRegali = inserisciNodoInCoda(testaListaRegali, i);
 		// testaListaRegali = inserisciNodoInCoda(testaListaRegali, 9-i);
 		// testaListaRegali = inserisciNodoInTesta(testaListaRegali, i);
 		// testaListaRegali = inserisciNodoListaOrdinata(testaListaRegali, 9-i);
-		testaListaRegali = inserisciNodoListaOrdinata(testaListaRegali, 100 + rand() % (999-100+1));
+		// testaListaRegali = inserisciNodoListaOrdinata(testaListaRegali, 100 + rand() % (999-100+1));
 		// testaListaRegali = inserisciNodoListaOrdinata(testaListaRegali, i);
 	}
 
 	// testaListaRegali = eliminaNodoInTesta(testaListaRegali);
+	testaListaRegali = eliminaNodo(testaListaRegali, 1);
 	// testaListaRegali = eliminaNodo(testaListaRegali, 7);
-	for (i = 0; i < 10; i++)
-	{
+	// for (i = 0; i < 10; i++)
+	// {
 		// testaListaRegali = eliminaNodoInTesta(testaListaRegali);
 		// testaListaRegali = eliminaNodo(testaListaRegali, 0);
 		// testaListaRegali = eliminaNodo(testaListaRegali, i);
-		testaListaRegali = eliminaNodo(testaListaRegali, 9-i);
-	}
+		// testaListaRegali = eliminaNodo(testaListaRegali, 9-i);
+	// }
 
 	printf("# Elementi: %d\n", dimensioneLista(testaListaRegali));
 	// printf("# Elementi: %d\n", dimensioneListaRicorsiva(testaListaRegali));
@@ -272,12 +273,7 @@ Nodo* eliminaNodo(Nodo* first, int n)
 		{
 			prevtmp->next = tmp->next;
 			free(tmp);
-
-			// check se testa sia stata modificata
-			if (count==1)
-				return prevtmp;
-			else
-				return first;
+			return first;
 		}
 		else
 		{
