@@ -7,6 +7,7 @@
 typedef struct nodo{
 	int info; // Variabile contenente l'informazione, può essere di qualsiasi tipo
 	struct nodo* next;
+	struct nodo* prev;
 } Nodo;
 
 // Caratteristiche:
@@ -70,16 +71,15 @@ int main()
 
 	for (i = 0; i < 10; i++)
 	{
-		testaListaRegali = inserisciNodoInCoda(testaListaRegali, i);
+		// testaListaRegali = inserisciNodoInCoda(testaListaRegali, i);
 		// testaListaRegali = inserisciNodoInCoda(testaListaRegali, 9-i);
 		// testaListaRegali = inserisciNodoInTesta(testaListaRegali, i);
 		// testaListaRegali = inserisciNodoListaOrdinata(testaListaRegali, 9-i);
 		// testaListaRegali = inserisciNodoListaOrdinata(testaListaRegali, 100 + rand() % (999-100+1));
-		// testaListaRegali = inserisciNodoListaOrdinata(testaListaRegali, i);
+		testaListaRegali = inserisciNodoListaOrdinata(testaListaRegali, i);
 	}
 
 	// testaListaRegali = eliminaNodoInTesta(testaListaRegali);
-	testaListaRegali = eliminaNodo(testaListaRegali, 1);
 	// testaListaRegali = eliminaNodo(testaListaRegali, 7);
 	// for (i = 0; i < 10; i++)
 	// {
@@ -126,6 +126,9 @@ Nodo* inserisciNodoInTesta(Nodo* first, int value)
 	{
 		nuovoNodo->info = value;
 		nuovoNodo->next = first;
+		nuovoNodo->prev = NULL;
+        if (nuovoNodo->next != NULL)
+            nuovoNodo->next->prev = nuovoNodo;
 	}
 
 	return nuovoNodo;
@@ -155,6 +158,8 @@ void eliminaLista(Nodo* first)
 	Nodo * tmp = NULL;
 	while (first != NULL)
 	{
+		// if (first->next != NULL)
+			// first->next->prev = tmp;
 		tmp = first->next;
 		free(first);
 		first = tmp;
@@ -179,6 +184,8 @@ Nodo* inserisciNodoInCoda(Nodo* first, int value)
 	while (tmp->next != NULL)
 		tmp = tmp->next;
 	tmp->next = inserisciNodoInTesta(NULL, value);
+	if (tmp->next != NULL)
+		tmp->next->prev = tmp;
 
 	return first;
 }
@@ -248,6 +255,8 @@ Nodo* eliminaNodoInTesta(Nodo* first)
 	if (first != NULL)
 	{
 		tmp = first->next;
+		if (tmp != NULL)
+			tmp->prev = NULL;
 		free(first);
 	}
 	return tmp;
@@ -257,7 +266,6 @@ Nodo* eliminaNodo(Nodo* first, int n)
 {
 	int count = 0;
 	Nodo * tmp = first;
-	Nodo * prevtmp = first;
 
 	// check indice negativo:
 	if (n < 0)
@@ -271,13 +279,14 @@ Nodo* eliminaNodo(Nodo* first, int n)
 	{
 		if (count==n)
 		{
-			prevtmp->next = tmp->next;
+			tmp->prev->next = tmp->next;
+			if (tmp->prev->next != NULL)
+				tmp->prev->next->prev = tmp->prev;
 			free(tmp);
 			return first;
 		}
 		else
 		{
-			prevtmp = tmp;
 			tmp = tmp->next;
 			count++;
 		}
@@ -300,20 +309,22 @@ Nodo* cercaNodo(Nodo* first, int value)
 Nodo* inserisciNodoListaOrdinata(Nodo* first, int value)
 {
 	Nodo * tmp = first;
-	Nodo * prevtmp = NULL;
 
 	if (first==NULL)
 		return inserisciNodoInTesta(first, value);
 
-	while (tmp != NULL && value > tmp->info)
+	while (tmp->next != NULL && value > tmp->next->info)
 	{
-		prevtmp = tmp;
 		tmp = tmp->next;
 	}
 
-	if (prevtmp==NULL)
+	// printf("kek %d\n", value);
+	if (tmp->prev==NULL)
 		return inserisciNodoInTesta(tmp, value);
-	prevtmp->next = inserisciNodoInTesta(tmp, value);
+	// printf("kek %d\n", value);
+	tmp->prev->next = inserisciNodoInTesta(tmp, value);
+	if (tmp->prev->next != NULL)
+		tmp->prev->next->prev = tmp->prev;
 
 	return first;
 }

@@ -63,6 +63,7 @@ void stampaInfo(int value);
 int main()
 {
 	Nodo * testaListaRegali = NULL;
+	Nodo * codaListaRegali = NULL;
 	Nodo * nodoRestituito = NULL;
 	int i;
 
@@ -76,6 +77,8 @@ int main()
 		// testaListaRegali = inserisciNodoListaOrdinata(testaListaRegali, 9-i);
 		// testaListaRegali = inserisciNodoListaOrdinata(testaListaRegali, 100 + rand() % (999-100+1));
 		// testaListaRegali = inserisciNodoListaOrdinata(testaListaRegali, i);
+        if (i==0)
+            codaListaRegali = testaListaRegali;
 	}
 
 	// testaListaRegali = eliminaNodoInTesta(testaListaRegali);
@@ -134,39 +137,23 @@ Nodo* inserisciNodoInTesta(Nodo* first, int value)
 
 void stampaLista(Nodo* first)
 {
-	while (first != NULL)
+	Nodo * start = first;
+	while (first != NULL && first != start)
 	{
 		stampaInfo(first->info);
 		first = first->next;
 	}
 }
 
-void stampaListaRicorsiva(Nodo* first)
-{
-	if (first != NULL)
-	{
-		stampaInfo(first->info);
-		stampaListaRicorsiva(first->next);
-	}
-}
-
 void eliminaLista(Nodo* first)
 {
+	Nodo * start = first;
 	Nodo * tmp = NULL;
-	while (first != NULL)
+	while (first != NULL && first != start)
 	{
 		tmp = first->next;
 		free(first);
 		first = tmp;
-	}
-}
-
-void eliminaListaRicorsiva(Nodo* first)
-{
-	if (first != NULL)
-	{
-		eliminaListaRicorsiva(first->next);
-		free(first);
 	}
 }
 
@@ -176,9 +163,9 @@ Nodo* inserisciNodoInCoda(Nodo* first, int value)
 	if (first==NULL)
 		return inserisciNodoInTesta(first, value);
 
-	while (tmp->next != NULL)
+	while (tmp->next != NULL && tmp->next != first)
 		tmp = tmp->next;
-	tmp->next = inserisciNodoInTesta(NULL, value);
+	tmp->next = inserisciNodoInTesta(first, value);
 
 	return first;
 }
@@ -186,7 +173,8 @@ Nodo* inserisciNodoInCoda(Nodo* first, int value)
 int dimensioneLista(Nodo* first)
 {
 	int count = 0;
-	while (first != NULL)
+	Nodo * start = first;
+	while (first != NULL && start != first)
 	{
 		count++;
 		first = first->next;
@@ -194,24 +182,16 @@ int dimensioneLista(Nodo* first)
 	return count;
 }
 
-int dimensioneListaRicorsiva(Nodo* first)
-{
-	if (first != NULL)
-	{
-		return 1 + dimensioneListaRicorsiva(first->next);
-	}
-	return 0;
-}
-
 Nodo* restituisciNodo(Nodo* first, int n)
 {
 	int count = 0;
+	Nodo * start = first;
 
 	// check indice negativo:
 	if (n < 0)
 		return NULL;
 
-	while (first != NULL && count < n)
+	while (first != NULL && start != first && count < n)
 	{
 		count++;
 		first = first->next;
@@ -267,7 +247,7 @@ Nodo* eliminaNodo(Nodo* first, int n)
 	if (n==0)
 		return eliminaNodoInTesta(first);
 
-	while (tmp != NULL && count <= n)
+	while (tmp != NULL && tmp != first && count <= n)
 	{
 		if (count==n)
 		{
@@ -288,7 +268,8 @@ Nodo* eliminaNodo(Nodo* first, int n)
 
 Nodo* cercaNodo(Nodo* first, int value)
 {
-	while (first != NULL)
+	Nodo * start = first;
+	while (first != NULL && start != first)
 	{
 		if (first->info == value)
 			return first;
@@ -299,11 +280,16 @@ Nodo* cercaNodo(Nodo* first, int value)
 
 Nodo* inserisciNodoListaOrdinata(Nodo* first, int value)
 {
-	Nodo * tmp = first;
+	Nodo * tmp = NULL;
 	Nodo * prevtmp = NULL;
 
 	if (first==NULL)
 		return inserisciNodoInTesta(first, value);
+	else
+	{
+		tmp = first;
+		prevtmp = NULL;
+	}
 
 	while (tmp != NULL && value > tmp->info)
 	{
