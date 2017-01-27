@@ -4,6 +4,7 @@
 /* include list */
 #include "common.h"
 #include "log.h"
+#include "core_structs.h"
 
 /* prototype list */
 extern void core_run();
