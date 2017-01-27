@@ -8,6 +8,9 @@ FILE ** log_instance() // creating a "getter" func instead of global variable
 
 void log_init(const char * log_file_name)
 {
+	// get the log file instance
+	FILE ** plog_file = log_instance();
+
 	// check invalid file name
 	if (log_file_name == NULL)
 	{
@@ -15,11 +18,10 @@ void log_init(const char * log_file_name)
 		return;
 	}
 
-	// get log file instance
-	FILE ** plog_file = log_instance();
-	if (*plog_file == NULL) // if null, we'll initialize it
+	// if null, we'll initialize it
+	if (*plog_file == NULL)
 	{
-		*plog_file = fopen(log_file_name, "a"); // open the log file on append mode
+		*plog_file = fopen(log_file_name, "a"); // open the log file in append mode
 		if (*plog_file == NULL) // if it fails, it will print the error
 		{
 			printf("You couldn't open the relative log file: %s\n", log_file_name);
@@ -30,12 +32,14 @@ void log_init(const char * log_file_name)
 
 void log_write(const char * msg)
 {
-	// get log file instance
-	FILE ** plog_file = log_instance();
-	if (*plog_file == NULL) // if null, we'll skip it
+	char datebuf[CURRENT_DATE_LEN+1] = ""; // buffer to store the current date
+	FILE ** plog_file = log_instance(); // get the log file instance
+
+	// if null, we'll skip it
+	if (*plog_file == NULL)
 		return;
 
-	char datebuf[CURRENT_DATE_LEN+1] = {0};
+	// get the current date
 	get_current_date_format(datebuf, sizeof(datebuf));
 
 	// write the msg to file appending also the current date
@@ -47,13 +51,17 @@ void log_write(const char * msg)
 
 void log_deinit()
 {
-	// get log file instance
+	// get the log file instance
 	FILE ** plog_file = log_instance();
+
+	// if null, we'll warn
 	if (*plog_file == NULL)
 	{
 		printf("You are trying to close a null ptr file in the log_deinit func\n");
 		return;
 	}
+
+	// close the file and reset the ptr to file
 	fclose(*plog_file);
 	*plog_file = NULL;
 }
