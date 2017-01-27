@@ -6,9 +6,16 @@
 /* enum list */
 typedef enum
 {
-	EASY,
-	MEDIUM,
-	HARD,
+	DIFFICULTY_MODE_NUM = 3,
+	CARD_TYPE_NUM = 9,
+	PLAYER_TYPE_NUM = 2,
+} Counters;
+
+typedef enum
+{
+	EASY, //0
+	MEDIUM, //1
+	HARD, //2
 } DifficultyMode;
 
 typedef enum
@@ -26,8 +33,8 @@ typedef enum
 
 typedef enum
 {
-	AI,
-	REAL,
+	AI, //0
+	REAL, //1
 } PlayerType;
 
 /* struct list */

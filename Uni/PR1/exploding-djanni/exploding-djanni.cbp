@@ -33,11 +33,16 @@
 			<Add option="-Wall" />
 			<Add option="-pedantic" />
 		</Compiler>
+		<Unit filename="common.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="common.h" />
 		<Unit filename="core.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="core.h" />
+		<Unit filename="core_lists.h" />
+		<Unit filename="core_structs.h" />
 		<Unit filename="date.c">
 			<Option compilerVar="CC" />
 		</Unit>
