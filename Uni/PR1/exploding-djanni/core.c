@@ -82,6 +82,38 @@ _Bool core_init_new_game(Player pPlayers[], CardDeck * pDeck, GameStatus * pStat
 
 _Bool core_load_default_deck(Player pPlayers[], CardDeck * pDeck, GameStatus * pStatus, DifficultyMode mode_choice)
 {
+	// list of the relative decks
+	static const char deckFileList[DIFFICULTY_MODE_NUM][DECKS_PATH_LEN] = {"decks/explodingDjanniEasy.txt", "decks/explodingDjanniHard.txt", "decks/explodingDjanniMedium.txt"};
+	FILE * fpDeck = NULL;
+	CardCount cardcount = {0, 0, 0};
+	int i;
+	Card tmp_card;
+	CardNode * exploding_djanni_cards = NULL;
+	CardNode * meooow_cards = NULL;
+	CardNode * other_cards = NULL;
+
+	// check to prevent out-of-range issues (note: mode_choice is unsigned)
+	if (mode_choice >= DIFFICULTY_MODE_NUM)
+		return false;
+
+    // open the deck file in read mode
+	fpDeck = fopen(deckFileList[mode_choice], "r");
+	if (fpDeck == NULL) // exit in case of failure
+	{
+		// log_write("the deck file %s couldn't be open", deckFileList[mode_choice]);
+		log_write("the deck file couldn't be open");
+		return false;
+	}
+
+    // process the first line of the file (counter header)
+	if (fscanf(fpDeck, "%d %d %d", &cardcount.n_exploding_djanni, &cardcount.n_meooow, &cardcount.n_other_cards)==0)
+	{
+		// log_write("the deck file %s couldn't be open", deckFileList[mode_choice]);
+		log_write("the deck file header couldn't be processed");
+		return false;
+	}
+
+	printf("total available cards: exploding djanni %d, meooow %d, others %d\n", cardcount.n_exploding_djanni, cardcount.n_meooow, cardcount.n_other_cards);
 
 	return true;
 }
