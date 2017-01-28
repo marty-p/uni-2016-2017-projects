@@ -1,6 +1,6 @@
 #include "core.h"
 
-void core_run()
+void core_run(void)
 {
 	Player players[PLAYER_COUNT] = {{{0}}};
 	CardDeck deck = {0};

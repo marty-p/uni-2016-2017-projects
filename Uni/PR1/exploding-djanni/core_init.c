@@ -52,7 +52,7 @@ _Bool core_init_new_game(Player pPlayers[], int players_count, CardDeck * pDeck,
 	return core_load_default_deck(pPlayers, players_count, pDeck, core_init_choose_mode()); // it will return false in case of failure
 }
 
-DifficultyMode core_init_choose_mode()
+DifficultyMode core_init_choose_mode(void)
 {
 	DifficultyMode mode_choice;
 	do
