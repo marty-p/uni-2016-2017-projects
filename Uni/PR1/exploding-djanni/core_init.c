@@ -69,19 +69,7 @@ DifficultyMode core_init_choose_mode()
 	}
 	while (mode_choice >= DIFFICULTY_MODE_NUM); // note: it's unsigned (repeat if invalid)
 
-	// process the choice
-	switch (mode_choice)
-	{
-		case EASY:
-			log_write("easy mode chosen...");
-			break;
-		case MEDIUM:
-			log_write("medium mode chosen...");
-			break;
-		case HARD:
-			log_write("hard mode chosen...");
-			break;
-	}
+	log_write("%s difficulty mode chosen...", get_difficulty_mode_name(mode_choice));
 	return mode_choice;
 }
 
@@ -167,7 +155,7 @@ void core_init_default_players(Player pPlayers[], int players_count)
 _Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pGivenDeck, DifficultyMode mode_choice)
 {
 	// list of the relative decks' filenames
-	static const char deckFileList[DIFFICULTY_MODE_NUM][DECKS_PATH_LEN] = {"decks/explodingDjanniEasy.txt", "decks/explodingDjanniMedium.txt", "decks/explodingDjanniHard.txt"};
+	static const char * deckFileList[DIFFICULTY_MODE_NUM] = {"decks/explodingDjanniEasy.txt", "decks/explodingDjanniMedium.txt", "decks/explodingDjanniHard.txt"};
 	FILE * fpDeck = NULL; // file pointer to deck
 	CardCount cc = { { {0, NULL}, {0, NULL}, {0, NULL}, } }; // resulting structure of the textual deck files
 	int i, j; // temp variable used when itering

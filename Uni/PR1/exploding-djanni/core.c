@@ -71,3 +71,29 @@ const char * get_player_type_name(PlayerType player_type)
 	return name_list[player_type];
 }
 
+const char * get_card_count_type_name(CardCountType card_count_type)
+{
+	static const char * name_list[CARD_COUNT_NUM] = {
+		"N_EXPLODING_DJANNI",
+		"N_MEOOOW",
+		"N_OTHER_CARDS",
+	};
+	// prevent out-of-range issues
+	if (card_count_type >= CARD_COUNT_NUM) // note: it's unsigned
+		return "";
+	return name_list[card_count_type];
+}
+
+const char * get_difficulty_mode_name(DifficultyMode difficulty_mode)
+{
+	static const char * name_list[DIFFICULTY_MODE_NUM] = {
+		"EASY",
+		"MEDIUM",
+		"HARD",
+	};
+	// prevent out-of-range issues
+	if (difficulty_mode >= DIFFICULTY_MODE_NUM) // note: it's unsigned
+		return "";
+	return name_list[difficulty_mode];
+}
+
