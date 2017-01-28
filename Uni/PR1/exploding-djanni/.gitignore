@@ -2,3 +2,10 @@ bin
 obj
 log.txt
 a.out
+
+Debug
+Release
+ipch
+*.sdf
+*.opensdf
+*.suo

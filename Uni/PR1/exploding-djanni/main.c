@@ -8,6 +8,9 @@ int main(void)
 	core_run();
 
 	log_deinit();
+
+	printf("Press any key to continue . . .\n");
+	getchar();
 	return 0;
 }
 
