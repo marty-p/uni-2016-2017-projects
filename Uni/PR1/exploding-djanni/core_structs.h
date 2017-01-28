@@ -9,6 +9,7 @@ typedef enum
 	DIFFICULTY_MODE_NUM = 3,
 	CARD_TYPE_NUM = 9,
 	PLAYER_TYPE_NUM = 2,
+	CARD_COUNT_NUM = 3,
 } Counters;
 
 typedef enum
@@ -37,14 +38,14 @@ typedef enum
 	REAL, //1
 } PlayerType;
 
-/* struct list */
-typedef struct
+typedef enum
 {
-	int n_exploding_djanni;
-	int n_meooow;
-	int n_other_cards;
-} CardCount;
+	N_EXPLODING_DJANNI, //0
+	N_MEOOOW, //1
+	N_OTHER_CARDS, //2
+} CardCountType;
 
+/* struct list */
 typedef struct
 {
 	char title[CARD_TITLE_LEN+1];
@@ -77,6 +78,12 @@ typedef struct
 	int turn;
 	_Bool is_attacked;
 } GameStatus;
+
+typedef struct
+{
+	int count;
+	CardNode * card_list;
+} CardCount;
 
 #endif
 
