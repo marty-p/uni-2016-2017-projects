@@ -1,0 +1,49 @@
+# depslib dependency file v1.0
+1485589160 source:c:\users\marty\git\_cpp__mysamples\uni\pr1\exploding-djanni\core.c
+	"core.h"
+
+1485560574 c:\users\marty\git\_cpp__mysamples\uni\pr1\exploding-djanni\core.h
+	"common.h"
+	"log.h"
+	"core_structs.h"
+	"core_lists.h"
+
+1485550393 c:\users\marty\git\_cpp__mysamples\uni\pr1\exploding-djanni\common.h
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	<stdbool.h>
+
+1485547023 c:\users\marty\git\_cpp__mysamples\uni\pr1\exploding-djanni\log.h
+	"common.h"
+	"date.h"
+
+1485547027 c:\users\marty\git\_cpp__mysamples\uni\pr1\exploding-djanni\date.h
+	"common.h"
+
+1485561735 c:\users\marty\git\_cpp__mysamples\uni\pr1\exploding-djanni\core_structs.h
+	"core.h"
+
+1485588170 c:\users\marty\git\_cpp__mysamples\uni\pr1\exploding-djanni\core_lists.h
+	"core.h"
+
+1485588746 source:c:\users\marty\git\_cpp__mysamples\uni\pr1\exploding-djanni\core_lists.c
+	"core_lists.h"
+
+1485547640 source:c:\users\marty\git\_cpp__mysamples\uni\pr1\exploding-djanni\date.c
+	"date.h"
+
+1485548804 source:c:\users\marty\git\_cpp__mysamples\uni\pr1\exploding-djanni\log.c
+	"log.h"
+
+1485526207 source:c:\users\marty\git\_cpp__mysamples\uni\pr1\exploding-djanni\main.c
+	"main.h"
+
+1485526219 c:\users\marty\git\_cpp__mysamples\uni\pr1\exploding-djanni\main.h
+	"common.h"
+	"log.h"
+	"core.h"
+
+1485557365 source:c:\users\marty\git\_cpp__mysamples\uni\pr1\exploding-djanni\common.c
+	"common.h"
+

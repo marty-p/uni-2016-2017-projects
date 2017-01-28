@@ -10,9 +10,9 @@ void clear_input()
 
 void clear_console() // clear the console
 {
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(_MSC_VER) || defined(__MINGW32__) || defined(__MINGW64__)
 	system("cls");
-#elif defined(linux)
+#elif defined(linux) || defined(__linux__) || defined(__unix__) || defined(__APPLE__)
 	system("clear");
 #endif
 }

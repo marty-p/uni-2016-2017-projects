@@ -5,6 +5,7 @@
 #define CARD_TITLE_LEN 31
 #define PLAYER_NAME 23
 #define PLAYER_COUNT 4
+#define DECKS_PATH_LEN 260
 
 /* include list */
 #include "common.h"

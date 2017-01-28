@@ -40,6 +40,13 @@ typedef enum
 /* struct list */
 typedef struct
 {
+	int n_exploding_djanni;
+	int n_meooow;
+	int n_other_cards;
+} CardCount;
+
+typedef struct
+{
 	char title[CARD_TITLE_LEN+1];
 	CardType type;
 } Card;
