@@ -126,7 +126,7 @@ void core_init_default_players(Player pPlayers[], int players_count)
 			while (strlen(pPlayers[i].name)==0); // repeat if empty
 
 #ifdef _DEBUG
-			// choose whether being alive or not in debug mode
+			// choose whether being alive or not (debug mode only)
 			printf("Choose whether the player must be alive or not: (any:yes, n:no)\n");
 			scanf("%c", &dummychar);
 			clear_input_line();
@@ -142,7 +142,7 @@ void core_init_default_players(Player pPlayers[], int players_count)
 			}
 			while (pPlayers[i].type >= PLAYER_TYPE_NUM); // note: it's unsigned (repeat if invalid)
 
-			// null inizialize the rest
+			// null initialize the rest
 			card_node_free(pPlayers[i].card_list);
 			pPlayers[i].card_list = NULL;
 			pPlayers[i].card_count = 0;
@@ -204,7 +204,7 @@ _Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pG
 		// redundant check in case we encountered EOF or other runtime errors
 		if (j != cc.cards[i].count || cc.cards[i].count != card_node_count(cc.cards[i].card_list))
 		{
-			log_write("an error occurred when finished to read the deck file [j: %d, count: %d, note count: %d]", j, cc.cards[i].count, card_node_count(cc.cards[i].card_list));
+			log_write("an error occurred when finished to read the deck file [j: %d, count: %d, node count: %d]", j, cc.cards[i].count, card_node_count(cc.cards[i].card_list));
 			return false;
 		}
 	}

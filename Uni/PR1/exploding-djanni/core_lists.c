@@ -93,3 +93,14 @@ CardNode * card_node_remove(CardNode * first, int n)
 	return first;
 }
 
+void card_node_print(CardNode * first)
+{
+	printf("deck list:\n");
+	while (first!=NULL)
+	{
+		printf("\t[%d]%s: %s\n", first->card.type, get_card_type_name(first->card.type), first->card.title);
+		first = first->next;
+	}
+	printf("\n");
+}
+

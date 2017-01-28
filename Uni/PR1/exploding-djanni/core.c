@@ -38,6 +38,51 @@ void core_shutdown(Player pPlayers[], int players_count, CardDeck * pDeck)
 
 void core_shuffle_deck(CardDeck * pGivenDeck)
 {
+	Card ** cards = NULL; // used to store all the cards' ptr for easy shuffling
+	CardNode * tmp = NULL; // points to given_deck->card_list->head
+	int i; // counter for iteration
+	Card tmp_card; // dummy card for shifting values
+	int random_number;
+	if (pGivenDeck!=NULL)
+	{
+		// create a dynamic array to temporary store all the cards
+		cards = calloc(pGivenDeck->count, sizeof(Card*)); // deck.count==O(1) instead of card_node_count(deck.card_list)==O(n)
+		if (cards==NULL)
+			exit(EXIT_FAILURE);
+
+		// save all the items in deck.card_list inside cards
+		tmp = pGivenDeck->card_list;
+		for (i=0; i<pGivenDeck->count && tmp!=NULL; i++, tmp=tmp->next)
+			cards[i] = &tmp->card;
+
+		// redundant check in case we encountered runtime errors
+		if (i!=pGivenDeck->count)
+		{
+			log_write("an error occurred when started shuffling the deck [i: %d, count: %d, node count: %d]", i, pGivenDeck->count, card_node_count(pGivenDeck->card_list));
+			free(cards); // free cards to prevent memory leaks
+			return;
+		}
+
+		// shuffle algorithm
+		for (i=0; i<pGivenDeck->count; i++)
+		{
+			// picking up a random value and skip if it's the same of the index
+			random_number = get_random_number(0, pGivenDeck->count-1);
+			if (random_number==i)
+				continue;
+			// shifting values
+			tmp_card = *cards[i];
+			*cards[i] = *cards[random_number];
+			*cards[random_number] = tmp_card;
+		}
+
+		// freeing the memory to prevent memory leaks
+		free(cards);
+		log_write("the deck has been shuffled");
+#ifdef _DEBUG
+		card_node_print(pGivenDeck->card_list);
+#endif
+	}
 }
 
 const char * get_card_type_name(CardType card_type)
