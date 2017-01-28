@@ -6,19 +6,9 @@
 /* enum list */
 typedef enum
 {
-	DIFFICULTY_MODE_NUM = 3,
-	CARD_TYPE_NUM = 9,
-	PLAYER_TYPE_NUM = 2,
-	CARD_COUNT_NUM = 3,
-	STARTING_OTHER_CARDS_NUM = 4,
-	STARTING_MEOOOW_NUM = 1,
-} Counters;
-
-typedef enum
-{
 	EASY, //0
 	MEDIUM, //1
-	HARD, //2
+	HARD //2
 } DifficultyMode;
 
 typedef enum
@@ -31,20 +21,20 @@ typedef enum
 	ATTACK, //5
 	SKIP, //6
 	FAVOR, //7
-	DJANNI_CARDS, //8
+	DJANNI_CARDS //8
 } CardType;
 
 typedef enum
 {
 	AI, //0
-	REAL, //1
+	REAL //1
 } PlayerType;
 
 typedef enum
 {
 	N_EXPLODING_DJANNI, //0
 	N_MEOOOW, //1
-	N_OTHER_CARDS, //2
+	N_OTHER_CARDS //2
 } CardCountType;
 
 /* struct list */

@@ -2,10 +2,15 @@
 #define __EDJ_CORE_H__
 
 /* macro list */
-#define CARD_TITLE_LEN 127 //31
+#define CARD_TITLE_LEN 127 //old:31
 #define PLAYER_NAME 23
 #define PLAYER_COUNT 4
-#define DECKS_PATH_LEN 260
+#define DIFFICULTY_MODE_NUM 3
+#define CARD_TYPE_NUM 9
+#define PLAYER_TYPE_NUM 2
+#define CARD_COUNT_NUM 3
+#define STARTING_OTHER_CARDS_NUM 4
+#define STARTING_MEOOOW_NUM 1
 
 /* include list */
 #include "common.h"
