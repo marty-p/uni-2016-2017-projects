@@ -7,33 +7,33 @@ void core_run()
 	GameStatus status = {0};
 
 	log_write("initializing the game...");
-    if (core_init(players, PLAYER_COUNT, &deck, &status)==true)
-    {
-        // start the game
-    }
-    // last operation (free memory)
+	if (core_init(players, PLAYER_COUNT, &deck, &status)==true)
+	{
+		// start the game
+	}
+	// last operation (free memory)
 	log_write("shutdowning the game...");
-    core_shutdown(players, PLAYER_COUNT, &deck);
+	core_shutdown(players, PLAYER_COUNT, &deck);
 }
 
 void core_shutdown(Player pPlayers[], int players_count, CardDeck * pDeck)
 {
 	int i; // counter
-    // free every player's card list
-    if (pPlayers!=NULL) // skip null ptr
-    {
-        for (i=0; i<players_count; i++)
-        {
-            card_node_free(pPlayers[i].card_list);
-            pPlayers[i].card_list = NULL;
-        }
-    }
-    // free the deck list
-    if (pDeck!=NULL) // skip null ptr
-    {
-        card_node_free(pDeck->card_list);
-        pDeck->card_list = NULL;
-    }
+	// free every player's card list
+	if (pPlayers!=NULL) // skip null ptr
+	{
+		for (i=0; i<players_count; i++)
+		{
+			card_node_free(pPlayers[i].card_list);
+			pPlayers[i].card_list = NULL;
+		}
+	}
+	// free the deck list
+	if (pDeck!=NULL) // skip null ptr
+	{
+		card_node_free(pDeck->card_list);
+		pDeck->card_list = NULL;
+	}
 }
 
 _Bool core_init(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus)
@@ -61,29 +61,30 @@ _Bool core_init(Player pPlayers[], int players_count, CardDeck * pDeck, GameStat
 				log_write("starting a new game...");
 				// it will return false if quitted or failed reading the txt files:
 				if (core_init_new_game(pPlayers, players_count, pDeck, pStatus) == false)
-                    return false;
+					return false;
 				break;
 			case '2':
 				log_write("loading a saved game...");
 				break;
 			case 'q':
 				log_write("exit confirmed...");
-                return false;
+				return false;
 				break;
 			default: // if it's not in the list, we'll repeat it
 				wrong_choice = true;
 				break;
 		}
-	} while (wrong_choice==true);
+	}
+	while (wrong_choice==true);
 
-    return true;
+	return true;
 }
 
 _Bool core_init_new_game(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus)
 {
 
-    core_init_default_status(pStatus);
-    core_init_default_players(pPlayers, players_count);
+	core_init_default_status(pStatus);
+	core_init_default_players(pPlayers, players_count);
 
 	return core_load_default_deck(pPlayers, players_count, pDeck, core_init_choose_mode()); // it will return false in case of failure
 }
@@ -91,18 +92,19 @@ _Bool core_init_new_game(Player pPlayers[], int players_count, CardDeck * pDeck,
 DifficultyMode core_init_choose_mode()
 {
 	DifficultyMode mode_choice;
-    do
-    {
-        printf("In which mode do you want to start the game? (%d/%d/%d)\n", EASY, MEDIUM, HARD);
-        printf("\t%d. Easy\n", EASY);
-        printf("\t%d. Medium\n", MEDIUM);
-        printf("\t%d. Hard\n", HARD);
+	do
+	{
+		printf("In which mode do you want to start the game? (%d/%d/%d)\n", EASY, MEDIUM, HARD);
+		printf("\t%d. Easy\n", EASY);
+		printf("\t%d. Medium\n", MEDIUM);
+		printf("\t%d. Hard\n", HARD);
 
-        // ask which choice to make
-        scanf("%u", &mode_choice);
-        clear_input_line();
+		// ask which choice to make
+		scanf("%u", &mode_choice);
+		clear_input_line();
 
-    } while (mode_choice >= DIFFICULTY_MODE_NUM);
+	}
+	while (mode_choice >= DIFFICULTY_MODE_NUM);
 
 	// process the choice
 	switch (mode_choice)
@@ -117,17 +119,17 @@ DifficultyMode core_init_choose_mode()
 			log_write("hard mode chosen...");
 			break;
 	}
-    return mode_choice;
+	return mode_choice;
 }
 
 
 void core_init_default_status(GameStatus * pStatus)
 {
-    if (pStatus!=NULL)
-    {
-        pStatus->is_attacked = false;
-        pStatus->turn = 0;
-    }
+	if (pStatus!=NULL)
+	{
+		pStatus->is_attacked = false;
+		pStatus->turn = 0;
+	}
 }
 
 void core_shuffle_deck(CardDeck * pGivenDeck)
@@ -136,42 +138,46 @@ void core_shuffle_deck(CardDeck * pGivenDeck)
 
 void core_init_default_players(Player pPlayers[], int players_count)
 {
-    int i;
-    char dummychar;
+	int i;
+	char dummychar;
 
-    log_write("initializing the players...");
-    if (pPlayers!=NULL) // skip null ptr
-    {
-        for (i=0; i<players_count; i++)
-        {
-            printf("Setting up the #%d player:\n", i+1);
+	log_write("initializing the players...");
+	if (pPlayers!=NULL) // skip null ptr
+	{
+		for (i=0; i<players_count; i++)
+		{
+			printf("Setting up the #%d player:\n", i+1);
 
-            // grab the name
-            do {
-                printf("Choose the player's name:\n");
-                scanf("%23s", pPlayers[i].name);
-                clear_input_line();
-            } while (strlen(pPlayers[i].name)==0); // repeat if empty
+			// grab the name
+			do
+			{
+				printf("Choose the player's name:\n");
+				scanf("%23s", pPlayers[i].name);
+				clear_input_line();
+			}
+			while (strlen(pPlayers[i].name)==0);   // repeat if empty
 
-            // choose if alive
-            printf("Choose whether the player must be alive or not: (any:yes, n:no)\n");
-            scanf("%c", &dummychar);
-            clear_input_line();
-            pPlayers[i].is_alive = (dummychar!='n');
+			// choose if alive
+			printf("Choose whether the player must be alive or not: (any:yes, n:no)\n");
+			scanf("%c", &dummychar);
+			clear_input_line();
+			pPlayers[i].is_alive = (dummychar!='n');
 
-            // choose the type
-            do {
-                printf("Choose the player's type: (AI:%d/REAL:%d)\n", AI, REAL);
-                scanf("%u", &pPlayers[i].type);
-                clear_input_line();
-            } while (pPlayers[i].type >= PLAYER_TYPE_NUM); // repeat if invalid
+			// choose the type
+			do
+			{
+				printf("Choose the player's type: (AI:%d/REAL:%d)\n", AI, REAL);
+				scanf("%u", &pPlayers[i].type);
+				clear_input_line();
+			}
+			while (pPlayers[i].type >= PLAYER_TYPE_NUM);   // repeat if invalid
 
-            // null inizialize the rest
-            card_node_free(pPlayers[i].card_list);
-            pPlayers[i].card_list = NULL;
-            pPlayers[i].card_count = 0;
-        }
-    }
+			// null inizialize the rest
+			card_node_free(pPlayers[i].card_list);
+			pPlayers[i].card_list = NULL;
+			pPlayers[i].card_count = 0;
+		}
+	}
 }
 
 void core_assign_default_deck(Player pPlayers[], int players_count, CardDeck * pGivenDeck, int given_cards)
@@ -191,7 +197,7 @@ _Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pG
 	if (mode_choice >= DIFFICULTY_MODE_NUM)
 		return false;
 
-    // open the deck file in read mode
+	// open the deck file in read mode
 	fpDeck = fopen(deckFileList[mode_choice], "r");
 	if (fpDeck == NULL) // exit in case of failure
 	{
@@ -200,7 +206,7 @@ _Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pG
 		return false;
 	}
 
-    // process the first line of the file (counter header)
+	// process the first line of the file (counter header)
 	if (fscanf(fpDeck, "%d %d %d", &cc.cards[N_EXPLODING_DJANNI].count, &cc.cards[N_MEOOOW].count, &cc.cards[N_OTHER_CARDS].count)!=3)
 	{
 		// log_write("the deck file %s couldn't be open", deckFileList[mode_choice]); //todo:variadic
@@ -239,9 +245,9 @@ _Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pG
 		}
 	}
 
-    core_shuffle_deck(&cc.cards[N_OTHER_CARDS]);
-    core_assign_default_deck(pPlayers, players_count, &cc.cards[N_OTHER_CARDS], STARTING_OTHER_CARDS_NUM);
-    core_assign_default_deck(pPlayers, players_count, &cc.cards[N_MEOOOW], STARTING_MEOOOW_NUM);
+	core_shuffle_deck(&cc.cards[N_OTHER_CARDS]);
+	core_assign_default_deck(pPlayers, players_count, &cc.cards[N_OTHER_CARDS], STARTING_OTHER_CARDS_NUM);
+	core_assign_default_deck(pPlayers, players_count, &cc.cards[N_MEOOOW], STARTING_MEOOOW_NUM);
 	return true;
 }
 
