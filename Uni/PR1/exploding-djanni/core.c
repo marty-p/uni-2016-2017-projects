@@ -145,17 +145,22 @@ _Bool core_load_default_deck(Player pPlayers[], CardDeck * pGivenDeck, Difficult
 			}
 			clear_file_input_line(fpDeck); // clear the remaining bytes of the line
 			cc.cards[i].card_list = card_node_insert_tail(cc.cards[i].card_list, tmp_card); // adding the card in the relative deck
+#ifdef _DEBUG
 			printf("%d: %s\n", tmp_card.type, tmp_card.title); //todo:variadic
+#endif
 		}
-		// redundant check in case we encountered EOF
-		if (j != cc.cards[i].count)
+		// redundant check in case we encountered EOF or other runtime errors
+		if (j != cc.cards[i].count || cc.cards[i].count != card_node_count(cc.cards[i].card_list))
 		{
 			log_write("an error happened when finished to read the deck file"); //todo:variadic
-			printf("%d != %d\n", j, cc.cards[i].count); //todo:variadic
+#ifdef _DEBUG
+			printf("%d != %d != %d\n", j, cc.cards[i].count, card_node_count(cc.cards[i].card_list)); //todo:variadic
+#endif
 			return false;
 		}
 	}
 
+    core_shuffle_deck(&cc.cards[N_OTHER_CARDS]);
     core_assign_default_deck(pPlayers, &cc.cards[N_OTHER_CARDS], STARTING_OTHER_CARDS_NUM);
     core_assign_default_deck(pPlayers, &cc.cards[N_MEOOOW], STARTING_MEOOOW_NUM);
 	return true;
