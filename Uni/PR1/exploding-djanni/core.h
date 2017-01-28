@@ -17,7 +17,7 @@
 /* prototype list */
 extern void core_run();
 extern void core_shutdown(Player pPlayers[], int players_count, CardDeck * pDeck);
-extern void core_shuffle_deck(CardDeck * pGivenDeck)
+extern void core_shuffle_deck(CardDeck * pGivenDeck);
 
 #endif
 
