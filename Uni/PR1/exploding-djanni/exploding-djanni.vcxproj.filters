@@ -24,9 +24,6 @@
     <ClCompile Include="core_lists.c">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="date.c">
-      <Filter>File di origine</Filter>
-    </ClCompile>
     <ClCompile Include="log.c">
       <Filter>File di origine</Filter>
     </ClCompile>
@@ -48,9 +45,6 @@
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="core_structs.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="date.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="log.h">

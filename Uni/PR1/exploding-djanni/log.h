@@ -3,7 +3,6 @@
 
 /* include list */
 #include "common.h"
-#include "date.h"
 
 /* prototype list */
 extern FILE ** log_instance(void);

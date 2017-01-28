@@ -50,10 +50,6 @@
 		</Unit>
 		<Unit filename="core_lists.h" />
 		<Unit filename="core_structs.h" />
-		<Unit filename="date.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="date.h" />
 		<Unit filename="log.c">
 			<Option compilerVar="CC" />
 		</Unit>

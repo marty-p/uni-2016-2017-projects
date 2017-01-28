@@ -78,7 +78,6 @@
     <ClCompile Include="core.c" />
     <ClCompile Include="core_init.c" />
     <ClCompile Include="core_lists.c" />
-    <ClCompile Include="date.c" />
     <ClCompile Include="log.c" />
     <ClCompile Include="main.c" />
   </ItemGroup>
@@ -88,7 +87,6 @@
     <ClInclude Include="core_init.h" />
     <ClInclude Include="core_lists.h" />
     <ClInclude Include="core_structs.h" />
-    <ClInclude Include="date.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
