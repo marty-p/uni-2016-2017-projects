@@ -2,12 +2,44 @@
 
 void core_run()
 {
+	Player players[PLAYER_COUNT] = {{{0}}};
+	CardDeck deck = {0};
+	GameStatus status = {0};
+
+	log_write("initializing the game...");
+    if (core_init(players, PLAYER_COUNT, &deck, &status)==true)
+    {
+        // start the game
+    }
+    // last operation (free memory)
+	log_write("shutdowning the game...");
+    core_shutdown(players, PLAYER_COUNT, &deck);
+}
+
+void core_shutdown(Player pPlayers[], int players_count, CardDeck * pDeck)
+{
+	int i; // counter
+    // free every player's card list
+    if (pPlayers!=NULL) // skip null ptr
+    {
+        for (i=0; i<players_count; i++)
+        {
+            card_node_free(pPlayers[i].card_list);
+            pPlayers[i].card_list = NULL;
+        }
+    }
+    // free the deck list
+    if (pDeck!=NULL) // skip null ptr
+    {
+        card_node_free(pDeck->card_list);
+        pDeck->card_list = NULL;
+    }
+}
+
+_Bool core_init(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus)
+{
 	char menu_choice;
 	_Bool wrong_choice;
-
-	Player players[PLAYER_COUNT];
-	CardDeck deck;
-	GameStatus status;
 
 	do
 	{
@@ -28,24 +60,26 @@ void core_run()
 			case '1':
 				log_write("starting a new game...");
 				// it will return false if quitted or failed reading the txt files:
-				if (core_init_new_game(players, &deck, &status) == false)
-					return;
+				if (core_init_new_game(pPlayers, players_count, pDeck, pStatus) == false)
+                    return false;
 				break;
 			case '2':
 				log_write("loading a saved game...");
 				break;
 			case 'q':
 				log_write("exit confirmed...");
-				return;
+                return false;
 				break;
 			default: // if it's not in the list, we'll repeat it
 				wrong_choice = true;
 				break;
 		}
 	} while (wrong_choice==true);
+
+    return true;
 }
 
-_Bool core_init_new_game(Player pPlayers[], CardDeck * pDeck, GameStatus * pStatus)
+_Bool core_init_new_game(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus)
 {
 	DifficultyMode mode_choice;
 
@@ -89,6 +123,10 @@ void core_assign_default_status(GameStatus * pStatus)
         pStatus->is_attacked = false;
         pStatus->turn = 0;
     }
+}
+
+void core_shuffle_deck(CardDeck * pGivenDeck)
+{
 }
 
 void core_assign_default_players(Player pPlayers[])

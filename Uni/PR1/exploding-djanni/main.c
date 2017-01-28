@@ -4,13 +4,14 @@ int main(void)
 {
 	log_init("log.txt");
 
-	log_write("starting the game...");
 	core_run();
 
 	log_deinit();
 
-	printf("Press any key to continue . . .\n");
-	getchar();
+#ifdef _DEBUG
+	printf("Press any key to continue...\n");
+	getchar(); // simulate key press
+#endif
 	return 0;
 }
 
