@@ -138,7 +138,7 @@ _Bool core_load_default_deck(Player pPlayers[], CardDeck * pGivenDeck, Difficult
 		for (j=0; !feof(fpDeck) && j < cc.cards[i].count; j++)
 		{
 			// scan type and title and exit in case of failure
-			if (fscanf(fpDeck, "%u %31[^\n]s", &tmp_card.type, tmp_card.title)!=2)
+			if (fscanf(fpDeck, "%u %127[^\n]s", &tmp_card.type, tmp_card.title)!=2)
 			{
 				log_write("an error happened when reading the deck file"); //todo:variadic
 				return false;

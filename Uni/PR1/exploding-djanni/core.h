@@ -2,7 +2,7 @@
 #define __EDJ_CORE_H__
 
 /* macro list */
-#define CARD_TITLE_LEN 31
+#define CARD_TITLE_LEN 127 //31
 #define PLAYER_NAME 23
 #define PLAYER_COUNT 4
 #define DECKS_PATH_LEN 260
