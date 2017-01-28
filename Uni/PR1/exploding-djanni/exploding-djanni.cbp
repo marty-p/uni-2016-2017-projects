@@ -41,6 +41,13 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="core.h" />
+		<Unit filename="core_init.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="core_init.h" />
+		<Unit filename="core_lists.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="core_lists.h" />
 		<Unit filename="core_structs.h" />
 		<Unit filename="date.c">

@@ -12,17 +12,12 @@
 #include "log.h"
 #include "core_structs.h"
 #include "core_lists.h"
+#include "core_init.h"
 
 /* prototype list */
 extern void core_run();
 extern void core_shutdown(Player pPlayers[], int players_count, CardDeck * pDeck);
-extern _Bool core_init(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus);
-extern _Bool core_init_new_game(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus);
-extern DifficultyMode core_init_choose_mode();
-extern void core_init_default_status(GameStatus * pStatus);
-extern void core_init_default_players(Player pPlayers[], int players_count);
-extern void core_assign_default_deck(Player pPlayers[], int players_count, CardDeck * pGivenDeck, int given_cards);
-extern _Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pDeck, DifficultyMode mode_choice);
+extern void core_shuffle_deck(CardDeck * pGivenDeck)
 
 #endif
 
