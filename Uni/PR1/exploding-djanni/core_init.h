@@ -13,6 +13,7 @@ extern void core_init_default_players(Player pPlayers[], int players_count);
 
 extern _Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pDeck, DifficultyMode mode_choice);
 extern void core_assign_default_deck(Player pPlayers[], int players_count, CardDeck * pGivenDeck, int given_cards);
+extern void core_merge_default_deck(CardDeck * pMainDeck, CardDeck * pGivenDeck);
 
 #endif
 

@@ -209,13 +209,73 @@ _Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pG
 		}
 	}
 
+#ifdef _DEBUG
+	printf("main deck before merging and player's assignment: (%d==%d)", pGivenDeck->count, card_node_count(pGivenDeck->card_list));
+	card_node_print(pGivenDeck->card_list);
+#endif
+
 	core_shuffle_deck(&cc.cards[N_OTHER_CARDS]); // shuffle the other cards
 	core_assign_default_deck(pPlayers, players_count, &cc.cards[N_OTHER_CARDS], STARTING_OTHER_CARDS_NUM); // assign the 4 cards for each players
 	core_assign_default_deck(pPlayers, players_count, &cc.cards[N_MEOOOW], STARTING_MEOOOW_NUM); // assign a meooow for each player
+
+#ifdef _DEBUG
+	printf("main deck before second merging: (%d==%d)", pGivenDeck->count, card_node_count(pGivenDeck->card_list));
+	card_node_print(pGivenDeck->card_list);
+#endif
+
+	core_merge_default_deck(pGivenDeck, &cc.cards[N_EXPLODING_DJANNI]); // merge the exploding djanni deck to the main one
+	core_merge_default_deck(pGivenDeck, &cc.cards[N_MEOOOW]); // merge the meooow deck to the main one
+	core_merge_default_deck(pGivenDeck, &cc.cards[N_OTHER_CARDS]); // merge the meooow deck to the main one
+
+#ifdef _DEBUG
+	printf("main deck before shuffling: (%d==%d)", pGivenDeck->count, card_node_count(pGivenDeck->card_list));
+	card_node_print(pGivenDeck->card_list);
+#endif
+
+	core_shuffle_deck(pGivenDeck);
+#ifdef _DEBUG
+	printf("main deck after shuffling: (%d==%d)", pGivenDeck->count, card_node_count(pGivenDeck->card_list));
+	card_node_print(pGivenDeck->card_list);
+	printf("exploding djanni deck after merging: (%d==%d)", cc.cards[N_EXPLODING_DJANNI].count, card_node_count(cc.cards[N_EXPLODING_DJANNI].card_list));
+	card_node_print(cc.cards[N_EXPLODING_DJANNI].card_list);
+	printf("meooow deck after merging: (%d==%d)", cc.cards[N_MEOOOW].count, card_node_count(cc.cards[N_MEOOOW].card_list));
+	card_node_print(cc.cards[N_MEOOOW].card_list);
+	printf("other cards deck after merging: (%d==%d)", cc.cards[N_OTHER_CARDS].count, card_node_count(cc.cards[N_OTHER_CARDS].card_list));
+	card_node_print(cc.cards[N_OTHER_CARDS].card_list);
+#endif
+
 	return true;
 }
 
 void core_assign_default_deck(Player pPlayers[], int players_count, CardDeck * pGivenDeck, int given_cards)
 {
+	int i, j; // counters for iteration
+	if (pPlayers!=NULL && pGivenDeck!=NULL) // skip null ptr
+	{
+		for (i=0; i<players_count; i++) // iter all the players
+		{
+			for (j=0; j<given_cards && pGivenDeck->card_list!=NULL; j++) // give j cards for i players
+			{
+				pPlayers[i].card_list = card_node_insert_head(pPlayers[i].card_list, pGivenDeck->card_list->card); // add the first given_deck's card into player's card_list
+				pGivenDeck->card_list = card_node_remove_head(pGivenDeck->card_list); // remove the first given_deck's card
+				pPlayers[i].card_count++; // keep O(1) card_count updated
+				pGivenDeck->count--; // keep O(1) count updated
+			}
+		}
+	}
+}
+
+void core_merge_default_deck(CardDeck * pMainDeck, CardDeck * pGivenDeck)
+{
+	if (pGivenDeck!=NULL) // skip null ptr
+	{
+		while (pGivenDeck->card_list!=NULL) // give all the cards of the given_deck to the main_deck
+		{
+			pMainDeck->card_list = card_node_insert_head(pMainDeck->card_list, pGivenDeck->card_list->card); // add the first given_deck's card into main_deck's card_list
+			pGivenDeck->card_list = card_node_remove_head(pGivenDeck->card_list); // remove the first given_deck's card
+			pMainDeck->count++; // keep O(1) count updated
+			pGivenDeck->count--; // keep O(1) count updated
+		}
+	}
 }
 

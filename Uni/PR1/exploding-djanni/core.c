@@ -79,9 +79,6 @@ void core_shuffle_deck(CardDeck * pGivenDeck)
 		// freeing the memory to prevent memory leaks
 		free(cards);
 		log_write("the deck has been shuffled");
-#ifdef _DEBUG
-		card_node_print(pGivenDeck->card_list);
-#endif
 	}
 }
 
