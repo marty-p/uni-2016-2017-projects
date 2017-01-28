@@ -81,17 +81,28 @@ _Bool core_init(Player pPlayers[], int players_count, CardDeck * pDeck, GameStat
 
 _Bool core_init_new_game(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus)
 {
+
+    core_init_default_status(pStatus);
+    core_init_default_players(pPlayers, players_count);
+
+	return core_load_default_deck(pPlayers, players_count, pDeck, core_init_choose_mode()); // it will return false in case of failure
+}
+
+DifficultyMode core_init_choose_mode()
+{
 	DifficultyMode mode_choice;
+    do
+    {
+        printf("In which mode do you want to start the game? (%d/%d/%d)\n", EASY, MEDIUM, HARD);
+        printf("\t%d. Easy\n", EASY);
+        printf("\t%d. Medium\n", MEDIUM);
+        printf("\t%d. Hard\n", HARD);
 
-	printf("In which mode do you want to start the game? (%d/%d/%d)\n", EASY, MEDIUM, HARD);
-	printf("\t%d. Easy\n", EASY);
-	printf("\t%d. Medium\n", MEDIUM);
-	printf("\t%d. Hard\n", HARD);
-	printf("Any other answer will make the game quit!\n");
+        // ask which choice to make
+        scanf("%u", &mode_choice);
+        clear_input_line();
 
-	// ask which choice to make
-	scanf("%u", &mode_choice);
-	clear_input_line();
+    } while (mode_choice >= DIFFICULTY_MODE_NUM);
 
 	// process the choice
 	switch (mode_choice)
@@ -105,18 +116,12 @@ _Bool core_init_new_game(Player pPlayers[], int players_count, CardDeck * pDeck,
 		case HARD:
 			log_write("hard mode chosen...");
 			break;
-		default:
-			log_write("exit confirmed...");
-			return false;
-			break;
 	}
-
-    core_assign_default_status(pStatus);
-    core_assign_default_players(pPlayers);
-	return core_load_default_deck(pPlayers, pDeck, mode_choice); // it will return false in case of failure
+    return mode_choice;
 }
 
-void core_assign_default_status(GameStatus * pStatus)
+
+void core_init_default_status(GameStatus * pStatus)
 {
     if (pStatus!=NULL)
     {
@@ -129,15 +134,51 @@ void core_shuffle_deck(CardDeck * pGivenDeck)
 {
 }
 
-void core_assign_default_players(Player pPlayers[])
+void core_init_default_players(Player pPlayers[], int players_count)
+{
+    int i;
+    char dummychar;
+
+    log_write("initializing the players...");
+    if (pPlayers!=NULL) // skip null ptr
+    {
+        for (i=0; i<players_count; i++)
+        {
+            printf("Setting up the #%d player:\n", i+1);
+
+            // grab the name
+            do {
+                printf("Choose the player's name:\n");
+                scanf("%23s", pPlayers[i].name);
+                clear_input_line();
+            } while (strlen(pPlayers[i].name)==0); // repeat if empty
+
+            // choose if alive
+            printf("Choose whether the player must be alive or not: (any:yes, n:no)\n");
+            scanf("%c", &dummychar);
+            clear_input_line();
+            pPlayers[i].is_alive = (dummychar!='n');
+
+            // choose the type
+            do {
+                printf("Choose the player's type: (AI:%d/REAL:%d)\n", AI, REAL);
+                scanf("%u", &pPlayers[i].type);
+                clear_input_line();
+            } while (pPlayers[i].type >= PLAYER_TYPE_NUM); // repeat if invalid
+
+            // null inizialize the rest
+            card_node_free(pPlayers[i].card_list);
+            pPlayers[i].card_list = NULL;
+            pPlayers[i].card_count = 0;
+        }
+    }
+}
+
+void core_assign_default_deck(Player pPlayers[], int players_count, CardDeck * pGivenDeck, int given_cards)
 {
 }
 
-void core_assign_default_deck(Player pPlayers[], CardDeck * pGivenDeck, int given_cards)
-{
-}
-
-_Bool core_load_default_deck(Player pPlayers[], CardDeck * pGivenDeck, DifficultyMode mode_choice)
+_Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pGivenDeck, DifficultyMode mode_choice)
 {
 	// list of the relative decks' filenames
 	static const char deckFileList[DIFFICULTY_MODE_NUM][DECKS_PATH_LEN] = {"decks/explodingDjanniEasy.txt", "decks/explodingDjanniMedium.txt", "decks/explodingDjanniHard.txt"};
@@ -199,8 +240,8 @@ _Bool core_load_default_deck(Player pPlayers[], CardDeck * pGivenDeck, Difficult
 	}
 
     core_shuffle_deck(&cc.cards[N_OTHER_CARDS]);
-    core_assign_default_deck(pPlayers, &cc.cards[N_OTHER_CARDS], STARTING_OTHER_CARDS_NUM);
-    core_assign_default_deck(pPlayers, &cc.cards[N_MEOOOW], STARTING_MEOOOW_NUM);
+    core_assign_default_deck(pPlayers, players_count, &cc.cards[N_OTHER_CARDS], STARTING_OTHER_CARDS_NUM);
+    core_assign_default_deck(pPlayers, players_count, &cc.cards[N_MEOOOW], STARTING_MEOOOW_NUM);
 	return true;
 }
 
