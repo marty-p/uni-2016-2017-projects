@@ -20,7 +20,7 @@ void core_run()
 
 		// ask which choice to make
 		scanf("%c", &menu_choice);
-		clear_input();
+		clear_input_line();
 
 		// process the choice
 		switch (menu_choice)
@@ -57,7 +57,7 @@ _Bool core_init_new_game(Player pPlayers[], CardDeck * pDeck, GameStatus * pStat
 
 	// ask which choice to make
 	scanf("%u", &mode_choice);
-	clear_input();
+	clear_input_line();
 
 	// process the choice
 	switch (mode_choice)
@@ -82,8 +82,8 @@ _Bool core_init_new_game(Player pPlayers[], CardDeck * pDeck, GameStatus * pStat
 
 _Bool core_load_default_deck(Player pPlayers[], CardDeck * pDeck, GameStatus * pStatus, DifficultyMode mode_choice)
 {
-	// list of the relative decks
-	static const char deckFileList[DIFFICULTY_MODE_NUM][DECKS_PATH_LEN] = {"decks/explodingDjanniEasy.txt", "decks/explodingDjanniHard.txt", "decks/explodingDjanniMedium.txt"};
+	// list of the relative decks' filenames
+	static const char deckFileList[DIFFICULTY_MODE_NUM][DECKS_PATH_LEN] = {"decks/explodingDjanniEasy.txt", "decks/explodingDjanniMedium.txt", "decks/explodingDjanniHard.txt"};
 	FILE * fpDeck = NULL;
 	CardCount cardcount = {0, 0, 0};
 	int i;
@@ -100,20 +100,83 @@ _Bool core_load_default_deck(Player pPlayers[], CardDeck * pDeck, GameStatus * p
 	fpDeck = fopen(deckFileList[mode_choice], "r");
 	if (fpDeck == NULL) // exit in case of failure
 	{
-		// log_write("the deck file %s couldn't be open", deckFileList[mode_choice]);
+		// log_write("the deck file %s couldn't be open", deckFileList[mode_choice]); //todo:variadic
 		log_write("the deck file couldn't be open");
 		return false;
 	}
 
     // process the first line of the file (counter header)
-	if (fscanf(fpDeck, "%d %d %d", &cardcount.n_exploding_djanni, &cardcount.n_meooow, &cardcount.n_other_cards)==0)
+	if (fscanf(fpDeck, "%d %d %d", &cardcount.n_exploding_djanni, &cardcount.n_meooow, &cardcount.n_other_cards)!=3)
 	{
-		// log_write("the deck file %s couldn't be open", deckFileList[mode_choice]);
+		// log_write("the deck file %s couldn't be open", deckFileList[mode_choice]); //todo:variadic
 		log_write("the deck file header couldn't be processed");
 		return false;
 	}
 
-	printf("total available cards: exploding djanni %d, meooow %d, others %d\n", cardcount.n_exploding_djanni, cardcount.n_meooow, cardcount.n_other_cards);
+	printf("total available cards: exploding djanni %d, meooow %d, others %d\n", cardcount.n_exploding_djanni, cardcount.n_meooow, cardcount.n_other_cards); //todo:variadic
+
+    // iter all the exploding djanni cards
+	for (i=0; !feof(fpDeck) && i < cardcount.n_exploding_djanni; i++)
+	{
+	    // scan type and title and exit in case of failure
+        if (fscanf(fpDeck, "%u %31[^\n]s", &tmp_card.type, tmp_card.title)!=2)
+        {
+            log_write("an error happened when reading the deck file (exploding djanni lines)");
+            return false;
+        }
+		clear_file_input_line(fpDeck); // clear the remaining bytes of the line
+        exploding_djanni_cards = card_node_insert_tail(exploding_djanni_cards, tmp_card); // adding the card in the relative deck
+        printf("%d: %s\n", tmp_card.type, tmp_card.title); //todo:variadic
+	}
+	// redundant check in case we encountered EOF
+	if (i != cardcount.n_exploding_djanni)
+	{
+		log_write("an error happened when finished to read the deck file (exploding djanni lines)");
+        printf("%d != %d\n", i, cardcount.n_exploding_djanni); //todo:variadic
+		return false;
+	}
+
+    // iter all the meooow cards
+	for (i=0; !feof(fpDeck) && i < cardcount.n_meooow; i++)
+	{
+	    // scan type and title and exit in case of failure
+        if (fscanf(fpDeck, "%u %31[^\n]s", &tmp_card.type, tmp_card.title)!=2)
+        {
+            log_write("an error happened when reading the deck file (meooow lines)");
+            return false;
+        }
+		clear_file_input_line(fpDeck); // clear the remaining bytes of the line
+        meooow_cards = card_node_insert_tail(meooow_cards, tmp_card);
+        printf("%d: %s\n", tmp_card.type, tmp_card.title); //todo:variadic
+	}
+	// redundant check in case we encountered EOF
+	if (i != cardcount.n_meooow)
+	{
+		log_write("an error happened when finished to read the deck file (meooow lines)");
+        printf("%d != %d\n", i, cardcount.n_meooow); //todo:variadic
+		return false;
+	}
+
+    // iter all the other cards
+	for (i=0; !feof(fpDeck) && i < cardcount.n_other_cards; i++)
+	{
+	    // scan type and title and exit in case of failure
+        if (fscanf(fpDeck, "%u %31[^\n]s", &tmp_card.type, tmp_card.title)==0)
+        {
+            log_write("an error happened when reading the deck file (other cards lines)");
+            return false;
+        }
+		clear_file_input_line(fpDeck); // clear the remaining bytes of the line
+        other_cards = card_node_insert_tail(other_cards, tmp_card); // adding the card in the relative deck
+        printf("%d: %s\n", tmp_card.type, tmp_card.title); //todo:variadic
+	}
+	// redundant check in case we encountered EOF
+	if (i != cardcount.n_other_cards)
+	{
+		log_write("an error happened when finished to read the deck file (other cards lines)");
+        printf("%d != %d\n", i, cardcount.n_other_cards); //todo:variadic
+		return false;
+	}
 
 	return true;
 }
