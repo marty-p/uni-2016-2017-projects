@@ -22,3 +22,8 @@ void clear_console() // clear the console
 #endif
 }
 
+int get_random_number(int min, int max)
+{
+	return min + rand() % (max-min+1); // generates a random number between min and max
+}
+

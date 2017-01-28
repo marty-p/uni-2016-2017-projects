@@ -24,6 +24,7 @@
 extern void clear_input_line();
 extern void clear_file_input_line(FILE * fp);
 extern void clear_console();
+extern int get_random_number(int min, int max);
 
 #endif
 

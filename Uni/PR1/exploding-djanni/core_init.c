@@ -46,8 +46,8 @@ _Bool core_init(Player pPlayers[], int players_count, CardDeck * pDeck, GameStat
 
 _Bool core_init_new_game(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus)
 {
-	core_init_default_status(pStatus);
 	core_init_default_players(pPlayers, players_count);
+	core_init_default_status(pStatus, pPlayers, players_count);
 
 	return core_load_default_deck(pPlayers, players_count, pDeck, core_init_choose_mode()); // it will return false in case of failure
 }
@@ -85,14 +85,27 @@ DifficultyMode core_init_choose_mode()
 	return mode_choice;
 }
 
-
-void core_init_default_status(GameStatus * pStatus)
+_Bool core_init_default_status(GameStatus * pStatus, Player pPlayers[], int players_count)
 {
-	if (pStatus!=NULL)
+	int i; // player's iter counter
+	int is_alive = false; // if there's someone still alive, it will return true
+	int random_turn;
+	if (pStatus!=NULL && pPlayers!=NULL)
 	{
 		pStatus->is_attacked = false;
 		pStatus->turn = 0;
+		// check if there's someone still alive
+		for (i=0; i<players_count && is_alive==false; i++)
+			if (pPlayers[i].is_alive==true)
+				is_alive = true;
+		// decide a turn
+		do
+		{
+			random_turn = get_random_number(0, players_count);
+		}
+		while (pPlayers[random_turn].is_alive==false);
 	}
+	return is_alive;
 }
 
 void core_init_default_players(Player pPlayers[], int players_count)
@@ -116,11 +129,13 @@ void core_init_default_players(Player pPlayers[], int players_count)
 			}
 			while (strlen(pPlayers[i].name)==0);   // repeat if empty
 
-			// choose if alive
+#ifdef _DEBUG
+			// choose whether being alive or not in debug mode
 			printf("Choose whether the player must be alive or not: (any:yes, n:no)\n");
 			scanf("%c", &dummychar);
 			clear_input_line();
 			pPlayers[i].is_alive = (dummychar!='n');
+#endif
 
 			// choose the type
 			do

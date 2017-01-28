@@ -2,6 +2,7 @@
 
 int main(void)
 {
+
 	log_init("log.txt");
 
 	core_run();
