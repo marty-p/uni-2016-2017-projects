@@ -1,9 +1,9 @@
 #include "log.h"
 
-FILE ** log_instance(void) // creating a getter/singleton func-like instead of global variable
+FILE ** log_instance(void) // creating a getter/singleton-like func instead of global variable
 {
 	static FILE * log_file = NULL; // static to get an always available ptr to file
-	return &log_file;
+	return &log_file; // returning its ptr so we can change it elsewhere
 }
 
 void log_init(const char * log_file_name)

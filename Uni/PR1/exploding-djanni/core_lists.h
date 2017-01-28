@@ -11,6 +11,7 @@ extern int card_node_count(CardNode * first);
 extern CardNode * card_node_remove_head(CardNode * first);
 extern CardNode * card_node_remove(CardNode * first, int n);
 extern void card_node_print(CardNode * first);
+extern void card_node_log_print(CardNode * first);
 
 #endif
 

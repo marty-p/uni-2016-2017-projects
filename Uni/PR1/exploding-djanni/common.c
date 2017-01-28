@@ -15,9 +15,9 @@ void clear_file_input_line(FILE * fp)
 
 void clear_console(void) // clear the console
 {
-#if defined(_WIN32) || defined(_MSC_VER) || defined(__MINGW32__) || defined(__MINGW64__)
+#if defined(_WIN32) || defined(_MSC_VER) || defined(__MINGW32__) || defined(__MINGW64__) // windows (visualstudio/mingw)
 	system("cls");
-#elif defined(linux) || defined(__linux__) || defined(__unix__) || defined(__APPLE__)
+#elif defined(linux) || defined(__linux__) || defined(__unix__) || defined(__APPLE__) //linux/unix/osx
 	system("clear");
 #endif
 }

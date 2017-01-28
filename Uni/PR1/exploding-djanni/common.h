@@ -2,17 +2,17 @@
 #define __EDJ_COMMON_H__
 
 /* macro list */
-#ifndef _DEBUG
+#ifndef _DEBUG // already defined in visual studio
 #define _DEBUG
 #endif
 
 /* include list */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
+#include <stdio.h> // almost all i/o and file
+#include <stdlib.h> // random number generation and exit failure
+#include <string.h> // player's name strlen
+#include <time.h> // date format
 
-#ifdef _MSC_VER
+#ifdef _MSC_VER // visual studio 2010 test compilation
 #define false   0
 #define true    1
 #define _Bool int
@@ -20,7 +20,7 @@
 #include <stdbool.h>
 #endif
 
-#include <stdarg.h>
+#include <stdarg.h> // for variadic functions
 
 /* prototype list */
 extern void clear_input_line(void);
