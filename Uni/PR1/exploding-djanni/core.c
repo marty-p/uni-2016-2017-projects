@@ -87,7 +87,8 @@ void core_shuffle_deck(CardDeck * pGivenDeck)
 
 const char * get_card_type_name(CardType card_type)
 {
-	static const char * name_list[CARD_TYPE_NUM] = {
+	static const char * name_list[CARD_TYPE_NUM] =
+	{
 		"EXPLODING DJANNI",
 		"MEOOOW",
 		"SHUFFLE",
@@ -106,7 +107,8 @@ const char * get_card_type_name(CardType card_type)
 
 const char * get_player_type_name(PlayerType player_type)
 {
-	static const char * name_list[PLAYER_TYPE_NUM] = {
+	static const char * name_list[PLAYER_TYPE_NUM] =
+	{
 		"AI",
 		"REAL",
 	};
@@ -118,7 +120,8 @@ const char * get_player_type_name(PlayerType player_type)
 
 const char * get_card_count_type_name(CardCountType card_count_type)
 {
-	static const char * name_list[CARD_COUNT_NUM] = {
+	static const char * name_list[CARD_COUNT_NUM] =
+	{
 		"N_EXPLODING_DJANNI",
 		"N_MEOOOW",
 		"N_OTHER_CARDS",
@@ -131,7 +134,8 @@ const char * get_card_count_type_name(CardCountType card_count_type)
 
 const char * get_difficulty_mode_name(DifficultyMode difficulty_mode)
 {
-	static const char * name_list[DIFFICULTY_MODE_NUM] = {
+	static const char * name_list[DIFFICULTY_MODE_NUM] =
+	{
 		"EASY",
 		"MEDIUM",
 		"HARD",
