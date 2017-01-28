@@ -16,7 +16,10 @@
 /* prototype list */
 extern void core_run();
 extern _Bool core_init_new_game(Player pPlayers[], CardDeck * pDeck, GameStatus * pStatus);
-extern _Bool core_load_default_deck(Player pPlayers[], CardDeck * pDeck, GameStatus * pStatus, DifficultyMode mode_choice);
+extern void core_assign_default_status(GameStatus * pStatus);
+extern void core_assign_default_players(Player pPlayers[]);
+extern void core_assign_default_deck(Player pPlayers[], CardDeck * pDeck, int given_cards);
+extern _Bool core_load_default_deck(Player pPlayers[], CardDeck * pDeck, DifficultyMode mode_choice);
 
 #endif
 

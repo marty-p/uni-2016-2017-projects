@@ -10,6 +10,8 @@ typedef enum
 	CARD_TYPE_NUM = 9,
 	PLAYER_TYPE_NUM = 2,
 	CARD_COUNT_NUM = 3,
+	STARTING_OTHER_CARDS_NUM = 4,
+	STARTING_MEOOOW_NUM = 1,
 } Counters;
 
 typedef enum
@@ -69,7 +71,7 @@ typedef struct
 
 typedef struct
 {
-	int total_count;
+	int count;
 	CardNode * card_list;
 } CardDeck;
 
@@ -81,8 +83,7 @@ typedef struct
 
 typedef struct
 {
-	int count;
-	CardNode * card_list;
+	CardDeck cards[CARD_COUNT_NUM];
 } CardCount;
 
 #endif

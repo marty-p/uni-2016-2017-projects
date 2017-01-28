@@ -77,15 +77,34 @@ _Bool core_init_new_game(Player pPlayers[], CardDeck * pDeck, GameStatus * pStat
 			break;
 	}
 
-	return core_load_default_deck(pPlayers, pDeck, pStatus, mode_choice); // it will return false in case of failure
+    core_assign_default_status(pStatus);
+    core_assign_default_players(pPlayers);
+	return core_load_default_deck(pPlayers, pDeck, mode_choice); // it will return false in case of failure
 }
 
-_Bool core_load_default_deck(Player pPlayers[], CardDeck * pDeck, GameStatus * pStatus, DifficultyMode mode_choice)
+void core_assign_default_status(GameStatus * pStatus)
+{
+    if (pStatus!=NULL)
+    {
+        pStatus->is_attacked = false;
+        pStatus->turn = 0;
+    }
+}
+
+void core_assign_default_players(Player pPlayers[])
+{
+}
+
+void core_assign_default_deck(Player pPlayers[], CardDeck * pGivenDeck, int given_cards)
+{
+}
+
+_Bool core_load_default_deck(Player pPlayers[], CardDeck * pGivenDeck, DifficultyMode mode_choice)
 {
 	// list of the relative decks' filenames
 	static const char deckFileList[DIFFICULTY_MODE_NUM][DECKS_PATH_LEN] = {"decks/explodingDjanniEasy.txt", "decks/explodingDjanniMedium.txt", "decks/explodingDjanniHard.txt"};
 	FILE * fpDeck = NULL; // file pointer to deck
-	CardCount cards[CARD_COUNT_NUM] = { {0, NULL}, {0, NULL}, {0, NULL}, }; // resulting structure of the textual deck files
+	CardCount cc = { { {0, NULL}, {0, NULL}, {0, NULL}, } }; // resulting structure of the textual deck files
 	int i, j; // temp variable used when itering
 	Card tmp_card; // temp variable used when itering
 
@@ -103,20 +122,20 @@ _Bool core_load_default_deck(Player pPlayers[], CardDeck * pDeck, GameStatus * p
 	}
 
     // process the first line of the file (counter header)
-	if (fscanf(fpDeck, "%d %d %d", &cards[N_EXPLODING_DJANNI].count, &cards[N_MEOOOW].count, &cards[N_OTHER_CARDS].count)!=3)
+	if (fscanf(fpDeck, "%d %d %d", &cc.cards[N_EXPLODING_DJANNI].count, &cc.cards[N_MEOOOW].count, &cc.cards[N_OTHER_CARDS].count)!=3)
 	{
 		// log_write("the deck file %s couldn't be open", deckFileList[mode_choice]); //todo:variadic
 		log_write("the deck file header couldn't be processed");
 		return false;
 	}
 
-	printf("total available cards: exploding djanni %d, meooow %d, others %d\n", cards[N_EXPLODING_DJANNI].count, cards[N_MEOOOW].count, cards[N_OTHER_CARDS].count); //todo:variadic
+	printf("total available cards: exploding djanni %d, meooow %d, others %d\n", cc.cards[N_EXPLODING_DJANNI].count, cc.cards[N_MEOOOW].count, cc.cards[N_OTHER_CARDS].count); //todo:variadic
 
 	// iter every deck (exploding djanni, meooow, others)
 	for (i=0; i<CARD_COUNT_NUM; i++)
 	{
 		// iter each deck's cards
-		for (j=0; !feof(fpDeck) && j < cards[i].count; j++)
+		for (j=0; !feof(fpDeck) && j < cc.cards[i].count; j++)
 		{
 			// scan type and title and exit in case of failure
 			if (fscanf(fpDeck, "%u %31[^\n]s", &tmp_card.type, tmp_card.title)!=2)
@@ -125,18 +144,20 @@ _Bool core_load_default_deck(Player pPlayers[], CardDeck * pDeck, GameStatus * p
 				return false;
 			}
 			clear_file_input_line(fpDeck); // clear the remaining bytes of the line
-			cards[i].card_list = card_node_insert_tail(cards[i].card_list, tmp_card); // adding the card in the relative deck
+			cc.cards[i].card_list = card_node_insert_tail(cc.cards[i].card_list, tmp_card); // adding the card in the relative deck
 			printf("%d: %s\n", tmp_card.type, tmp_card.title); //todo:variadic
 		}
 		// redundant check in case we encountered EOF
-		if (j != cards[i].count)
+		if (j != cc.cards[i].count)
 		{
 			log_write("an error happened when finished to read the deck file"); //todo:variadic
-			printf("%d != %d\n", j, cards[i].count); //todo:variadic
+			printf("%d != %d\n", j, cc.cards[i].count); //todo:variadic
 			return false;
 		}
 	}
 
+    core_assign_default_deck(pPlayers, &cc.cards[N_OTHER_CARDS], STARTING_OTHER_CARDS_NUM);
+    core_assign_default_deck(pPlayers, &cc.cards[N_MEOOOW], STARTING_MEOOOW_NUM);
 	return true;
 }
 
