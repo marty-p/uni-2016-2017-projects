@@ -123,7 +123,7 @@ void core_init_default_players(Player pPlayers[], int players_count)
 				scanf("%23s", pPlayers[i].name);
 				clear_input_line();
 			}
-			while (strlen(pPlayers[i].name)==0);   // repeat if empty
+			while (strlen(pPlayers[i].name)==0); // repeat if empty
 
 #ifdef _DEBUG
 			// choose whether being alive or not in debug mode
@@ -140,7 +140,7 @@ void core_init_default_players(Player pPlayers[], int players_count)
 				scanf("%u", &pPlayers[i].type);
 				clear_input_line();
 			}
-			while (pPlayers[i].type >= PLAYER_TYPE_NUM);   // note: it's unsigned (repeat if invalid)
+			while (pPlayers[i].type >= PLAYER_TYPE_NUM); // note: it's unsigned (repeat if invalid)
 
 			// null inizialize the rest
 			card_node_free(pPlayers[i].card_list);
@@ -198,7 +198,7 @@ _Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pG
 			clear_file_input_line(fpDeck); // clear the remaining bytes of the line
 			cc.cards[i].card_list = card_node_insert_tail(cc.cards[i].card_list, tmp_card); // adding the card in the relative deck
 #ifdef _DEBUG
-			log_write("added in deck list %d: %s", tmp_card.type, tmp_card.title);
+			log_write("added in deck list [%d]%s: %s", tmp_card.type, get_card_type_name(tmp_card.type), tmp_card.title);
 #endif
 		}
 		// redundant check in case we encountered EOF or other runtime errors
