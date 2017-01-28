@@ -77,8 +77,9 @@ typedef struct
 
 typedef struct
 {
-	int turn;
+	int player_turn;
 	_Bool is_attacked;
+	int total_turns; // extra
 } GameStatus;
 
 typedef struct

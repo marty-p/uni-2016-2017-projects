@@ -20,6 +20,8 @@
 #include <stdbool.h>
 #endif
 
+#include <stdarg.h>
+
 /* prototype list */
 extern void clear_input_line();
 extern void clear_file_input_line(FILE * fp);

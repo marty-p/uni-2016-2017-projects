@@ -1,6 +1,6 @@
 #include "log.h"
 
-FILE ** log_instance() // creating a "getter" func instead of global variable
+FILE ** log_instance() // creating a getter/singleton func-like instead of global variable
 {
 	static FILE * log_file = NULL; // static to get an always available ptr to file
 	return &log_file;
@@ -30,10 +30,11 @@ void log_init(const char * log_file_name)
 	}
 }
 
-void log_write(const char * msg)
+void log_write(const char * format, ...)
 {
 	char datebuf[CURRENT_DATE_LEN+1] = ""; // buffer to store the current date
 	FILE ** plog_file = log_instance(); // get the log file instance
+	va_list args; // variadic argument list
 
 	// if null, we'll skip it
 	if (*plog_file == NULL)
@@ -42,10 +43,22 @@ void log_write(const char * msg)
 	// get the current date
 	get_current_date_format(datebuf, sizeof(datebuf));
 
-	// write the msg to file appending also the current date
-	fprintf(*plog_file, "%s :: %s\n", datebuf, msg);
+	// write the current date in file
+	fprintf(*plog_file, "%s :: ", datebuf);
+	// write the formatted message in file
+	va_start(args, format); // start va processing
+	vfprintf(*plog_file, format, args); // format and write to file
+	va_end(args); // end va processing
+	fprintf(*plog_file, "\n"); // append newline
+
 #ifdef _DEBUG
-	printf("%s :: %s\n", datebuf, msg);
+	// print the current date
+	printf("%s :: ", datebuf);
+	// print the formatted message
+	va_start(args, format); // start va processing
+	vprintf(format, args); // format and write to file
+	va_end(args); // end va processing
+	printf("\n"); // append newline
 #endif
 }
 

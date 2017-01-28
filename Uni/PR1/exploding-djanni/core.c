@@ -40,3 +40,34 @@ void core_shuffle_deck(CardDeck * pGivenDeck)
 {
 }
 
+const char * get_card_type_name(CardType card_type)
+{
+	static const char * name_list[CARD_TYPE_NUM] = {
+		"EXPLODING DJANNI",
+		"MEOOOW",
+		"SHUFFLE",
+		"NOPE",
+		"SEE THE FUTURE",
+		"ATTACK",
+		"SKIP",
+		"FAVOR",
+		"DJANNI CARDS",
+	};
+	// prevent out-of-range issues
+	if (card_type >= CARD_TYPE_NUM) // note: it's unsigned
+		return "";
+	return name_list[card_type];
+}
+
+const char * get_player_type_name(PlayerType player_type)
+{
+	static const char * name_list[PLAYER_TYPE_NUM] = {
+		"AI",
+		"REAL",
+	};
+	// prevent out-of-range issues
+	if (player_type >= PLAYER_TYPE_NUM) // note: it's unsigned
+		return "";
+	return name_list[player_type];
+}
+

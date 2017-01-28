@@ -88,24 +88,32 @@ DifficultyMode core_init_choose_mode()
 _Bool core_init_default_status(GameStatus * pStatus, Player pPlayers[], int players_count)
 {
 	int i; // player's iter counter
-	int is_alive = false; // if there's someone still alive, it will return true
-	int random_turn;
+	int is_somebody_alive = false; // if there's someone still alive, it will return true
+	int random_turn; // dummy variable to pickup a valid turn
 	if (pStatus!=NULL && pPlayers!=NULL)
 	{
+		// reset the status information
 		pStatus->is_attacked = false;
-		pStatus->turn = 0;
+		pStatus->player_turn = 0;
+		pStatus->total_turns = 0;
 		// check if there's someone still alive
-		for (i=0; i<players_count && is_alive==false; i++)
+		for (i=0; i<players_count && is_somebody_alive==false; i++)
 			if (pPlayers[i].is_alive==true)
-				is_alive = true;
-		// decide a turn
-		do
+				is_somebody_alive = true;
+		// skip if they are all dead
+		if (is_somebody_alive)
 		{
-			random_turn = get_random_number(0, players_count);
+			// decide a random turn from the still alive players
+			do
+			{
+				random_turn = get_random_number(0, players_count);
+			}
+			while (pPlayers[random_turn].is_alive==false); // repeat if the chosen player is dead
+
+			pStatus->player_turn = random_turn; // assign the turn
 		}
-		while (pPlayers[random_turn].is_alive==false);
 	}
-	return is_alive;
+	return is_somebody_alive;
 }
 
 void core_init_default_players(Player pPlayers[], int players_count)
@@ -150,6 +158,8 @@ void core_init_default_players(Player pPlayers[], int players_count)
 			card_node_free(pPlayers[i].card_list);
 			pPlayers[i].card_list = NULL;
 			pPlayers[i].card_count = 0;
+
+			log_write("Player #%d: name: %s, is_alive: %d, type: %s [%d]", i+1, pPlayers[i].name, pPlayers[i].is_alive, get_player_type_name(pPlayers[i].type), pPlayers[i].type);
 		}
 	}
 }
@@ -171,21 +181,20 @@ _Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pG
 	fpDeck = fopen(deckFileList[mode_choice], "r");
 	if (fpDeck == NULL) // exit in case of failure
 	{
-		// log_write("the deck file %s couldn't be open", deckFileList[mode_choice]); //todo:variadic
-		log_write("the deck file couldn't be open");
+		log_write("the deck file %s couldn't be open", deckFileList[mode_choice]);
 		return false;
 	}
 
 	// process the first line of the file (counter header)
 	if (fscanf(fpDeck, "%d %d %d", &cc.cards[N_EXPLODING_DJANNI].count, &cc.cards[N_MEOOOW].count, &cc.cards[N_OTHER_CARDS].count)!=3)
 	{
-		// log_write("the deck file %s couldn't be open", deckFileList[mode_choice]); //todo:variadic
 		log_write("the deck file header couldn't be processed");
 		return false;
 	}
 
-	printf("total available cards: exploding djanni %d, meooow %d, others %d\n", cc.cards[N_EXPLODING_DJANNI].count, cc.cards[N_MEOOOW].count, cc.cards[N_OTHER_CARDS].count); //todo:variadic
+	log_write("total available cards: exploding djanni %d, meooow %d, others %d", cc.cards[N_EXPLODING_DJANNI].count, cc.cards[N_MEOOOW].count, cc.cards[N_OTHER_CARDS].count);
 
+	log_write("start processing the deck file...");
 	// iter every deck (exploding djanni, meooow, others)
 	for (i=0; i<CARD_COUNT_NUM; i++)
 	{
@@ -195,29 +204,26 @@ _Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pG
 			// scan type and title and exit in case of failure
 			if (fscanf(fpDeck, "%u %127[^\n]s", &tmp_card.type, tmp_card.title)!=2)
 			{
-				log_write("an error happened when reading the deck file"); //todo:variadic
+				log_write("an error occurred when reading the deck file [i: %d, j: %d]", i, j);
 				return false;
 			}
 			clear_file_input_line(fpDeck); // clear the remaining bytes of the line
 			cc.cards[i].card_list = card_node_insert_tail(cc.cards[i].card_list, tmp_card); // adding the card in the relative deck
 #ifdef _DEBUG
-			printf("%d: %s\n", tmp_card.type, tmp_card.title); //todo:variadic
+			log_write("added in deck list %d: %s", tmp_card.type, tmp_card.title);
 #endif
 		}
 		// redundant check in case we encountered EOF or other runtime errors
 		if (j != cc.cards[i].count || cc.cards[i].count != card_node_count(cc.cards[i].card_list))
 		{
-			log_write("an error happened when finished to read the deck file"); //todo:variadic
-#ifdef _DEBUG
-			printf("%d != %d != %d\n", j, cc.cards[i].count, card_node_count(cc.cards[i].card_list)); //todo:variadic
-#endif
+			log_write("an error occurred when finished to read the deck file [j: %d, count: %d, note count: %d]", j, cc.cards[i].count, card_node_count(cc.cards[i].card_list));
 			return false;
 		}
 	}
 
-	core_shuffle_deck(&cc.cards[N_OTHER_CARDS]);
-	core_assign_default_deck(pPlayers, players_count, &cc.cards[N_OTHER_CARDS], STARTING_OTHER_CARDS_NUM);
-	core_assign_default_deck(pPlayers, players_count, &cc.cards[N_MEOOOW], STARTING_MEOOOW_NUM);
+	core_shuffle_deck(&cc.cards[N_OTHER_CARDS]); // shuffle the other cards
+	core_assign_default_deck(pPlayers, players_count, &cc.cards[N_OTHER_CARDS], STARTING_OTHER_CARDS_NUM); // assign the 4 cards for each players
+	core_assign_default_deck(pPlayers, players_count, &cc.cards[N_MEOOOW], STARTING_MEOOOW_NUM); // assign a meooow for each player
 	return true;
 }
 
