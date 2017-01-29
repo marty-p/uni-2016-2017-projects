@@ -106,7 +106,7 @@ void card_node_log_print(CardNode * first)
 {
 	while (first!=NULL)
 	{
-		log_write("\t[%d]%s: %s\n", first->card.type, get_card_type_name(first->card.type), first->card.title);
+		log_write("\t[%d]%s: %s", first->card.type, get_card_type_name(first->card.type), first->card.title);
 		first = first->next;
 	}
 }

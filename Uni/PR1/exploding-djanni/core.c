@@ -12,7 +12,7 @@ void core_run(void)
 		// start the game
 	}
 	// last operation (free memory)
-	log_write("shutdowning the game...");
+	log_write("shutting down the game...");
 	core_shutdown(players, PLAYER_COUNT, &deck);
 }
 

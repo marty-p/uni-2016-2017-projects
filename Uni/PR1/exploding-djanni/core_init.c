@@ -275,8 +275,11 @@ _Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pG
 		}
 	}
 
+	log_write("total processed cards: exploding djanni %d, meooow %d, others %d",
+		card_node_count(cc.cards[N_EXPLODING_DJANNI].card_list), card_node_count(cc.cards[N_MEOOOW].card_list), card_node_count(cc.cards[N_OTHER_CARDS].card_list));
+
 #ifdef _DEBUG
-	printf("main deck before merging and player's assignment: (%d==%d)\n", pGivenDeck->count, card_node_count(pGivenDeck->card_list));
+	printf("main deck before deck merging and player's assignment: (%d==%d)\n", pGivenDeck->count, card_node_count(pGivenDeck->card_list));
 	card_node_print(pGivenDeck->card_list);
 #endif
 
@@ -285,7 +288,7 @@ _Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pG
 	core_assign_default_deck(pPlayers, players_count, &cc.cards[N_MEOOOW], STARTING_MEOOOW_NUM); // assign a meooow for each player
 
 #ifdef _DEBUG
-	printf("main deck before second merging: (%d==%d)\n", pGivenDeck->count, card_node_count(pGivenDeck->card_list));
+	printf("main deck before the second deck merging: (%d==%d)\n", pGivenDeck->count, card_node_count(pGivenDeck->card_list));
 	card_node_print(pGivenDeck->card_list);
 #endif
 
@@ -294,13 +297,14 @@ _Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pG
 	core_merge_default_deck(pGivenDeck, &cc.cards[N_OTHER_CARDS]); // merge the meooow deck to the main one
 
 #ifdef _DEBUG
-	printf("main deck before shuffling: (%d==%d)\n", pGivenDeck->count, card_node_count(pGivenDeck->card_list));
+	printf("main deck before shuffling it: (%d==%d)\n", pGivenDeck->count, card_node_count(pGivenDeck->card_list));
 	card_node_print(pGivenDeck->card_list);
 #endif
 
-	core_shuffle_deck(pGivenDeck);
+	core_shuffle_deck(pGivenDeck); // merge the main deck for the last time
+
 #ifdef _DEBUG
-	printf("main deck after shuffling: (%d==%d)\n", pGivenDeck->count, card_node_count(pGivenDeck->card_list));
+	printf("main deck after being shuffled: (%d==%d)\n", pGivenDeck->count, card_node_count(pGivenDeck->card_list));
 	card_node_print(pGivenDeck->card_list);
 	printf("exploding djanni deck after merging: (%d==%d)\n", cc.cards[N_EXPLODING_DJANNI].count, card_node_count(cc.cards[N_EXPLODING_DJANNI].card_list));
 	card_node_print(cc.cards[N_EXPLODING_DJANNI].card_list);
@@ -309,6 +313,9 @@ _Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pG
 	printf("other cards deck after merging: (%d==%d)\n", cc.cards[N_OTHER_CARDS].count, card_node_count(cc.cards[N_OTHER_CARDS].card_list));
 	card_node_print(cc.cards[N_OTHER_CARDS].card_list);
 #endif
+
+	log_write("the cards have been assigned to each player...");
+	players_log_data(pPlayers, players_count);
 
 	return true;
 }
