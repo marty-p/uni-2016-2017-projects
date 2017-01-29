@@ -2,8 +2,8 @@
 #define __EDJ_CORE_H__
 
 /* macro list */
-#define CARD_TITLE_LEN 127 //old:31
-#define PLAYER_NAME 23
+#define CARD_TITLE_LEN 127 // +1; old: 31+1
+#define PLAYER_NAME 23 // +1;
 #define PLAYER_COUNT 4
 #define DIFFICULTY_MODE_NUM 3
 #define CARD_TYPE_NUM 9
@@ -11,6 +11,8 @@
 #define CARD_COUNT_NUM 3
 #define STARTING_OTHER_CARDS_NUM 4
 #define STARTING_MEOOOW_NUM 1
+#define SAVEFILE_FILENAME "partita.sav"
+#define FILEPATH_LEN 259 // +1; the same of MAX_PATH on windows
 
 /* include list */
 #include "common.h"

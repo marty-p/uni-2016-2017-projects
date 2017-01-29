@@ -29,6 +29,9 @@ _Bool core_init(Player pPlayers[], int players_count, CardDeck * pDeck, GameStat
 				break;
 			case '2':
 				log_write("loading a saved game...");
+				// it will return false if quitted or failed reading the sav files:
+				if (core_init_load_game(pPlayers, players_count, pDeck, pStatus) == false)
+					return false;
 				break;
 			case 'q':
 				log_write("exit confirmed...");
@@ -52,6 +55,33 @@ _Bool core_init_new_game(Player pPlayers[], int players_count, CardDeck * pDeck,
 	return core_load_default_deck(pPlayers, players_count, pDeck, core_init_choose_mode()); // it will return false in case of failure
 }
 
+_Bool core_init_load_game(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus)
+{
+	char savefile_path[FILEPATH_LEN+1] = "";
+	FILE * save_fp = NULL;
+	printf("Write the path of the savefile you want to load: (empty: %s)", SAVEFILE_FILENAME);
+	scanf("%259[\n]s", savefile_path);
+	clear_input_line();
+
+	// if empty, set up the default filename
+	if (strlen(savefile_path)==0)
+		strncpy(savefile_path, SAVEFILE_FILENAME, FILEPATH_LEN);
+
+	// open the save file in read and binary mode
+	save_fp = fopen(savefile_path, "rb");
+	if (save_fp==NULL) // exit in case of failure
+	{
+		log_write("the save file %s couldn't be open", savefile_path);
+		return false;
+	}
+
+	// core_init_default_players(pPlayers, players_count);
+	// core_init_default_status(pStatus, pPlayers, players_count);
+
+	// return core_load_default_deck(pPlayers, players_count, pDeck, core_init_choose_mode()); // it will return false in case of failure
+	return true;
+}
+
 DifficultyMode core_init_choose_mode(void)
 {
 	DifficultyMode mode_choice;
@@ -69,7 +99,7 @@ DifficultyMode core_init_choose_mode(void)
 	}
 	while (mode_choice >= DIFFICULTY_MODE_NUM); // note: it's unsigned (repeat if invalid)
 
-	log_write("%s difficulty mode chosen...", get_difficulty_mode_name(mode_choice));
+	log_write("[%u]%s difficulty mode chosen...", mode_choice, get_difficulty_mode_name(mode_choice));
 	return mode_choice;
 }
 
@@ -147,7 +177,7 @@ void core_init_default_players(Player pPlayers[], int players_count)
 			pPlayers[i].card_list = NULL;
 			pPlayers[i].card_count = 0;
 
-			log_write("Player #%d: name: %s, is_alive: %d, type: %s [%d]", i+1, pPlayers[i].name, pPlayers[i].is_alive, get_player_type_name(pPlayers[i].type), pPlayers[i].type);
+			log_write("Player #%d: name: %s, is_alive: %d, type: [%u]%s", i+1, pPlayers[i].name, pPlayers[i].is_alive, get_player_type_name(pPlayers[i].type), pPlayers[i].type);
 		}
 	}
 }
@@ -198,7 +228,7 @@ _Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pG
 			clear_file_input_line(fpDeck); // clear the remaining bytes of the line
 			cc.cards[i].card_list = card_node_insert_tail(cc.cards[i].card_list, tmp_card); // adding the card in the relative deck
 #ifdef _DEBUG
-			log_write("added in deck list [%d]%s: %s", tmp_card.type, get_card_type_name(tmp_card.type), tmp_card.title);
+			log_write("added in deck list [%u]%s: %s", tmp_card.type, get_card_type_name(tmp_card.type), tmp_card.title);
 #endif
 		}
 		// redundant check in case we encountered EOF or other runtime errors
