@@ -17,7 +17,7 @@ CardNode * card_node_insert_head(CardNode * first, Card card)
 	if (new_first==NULL)
 	{
 		exit(EXIT_FAILURE);
-		return NULL;
+		return NULL; // redundant line (not executed due to the exit call)
 	}
 
 	new_first->card = card;

@@ -2,7 +2,7 @@
 
 void clear_input_line(void)
 {
-	char dummy_char;
+	int dummy_char;
 	// clear the buffer from improper values (EOF in case we redirect the stdin from file)
 	while ((dummy_char = getchar()) != '\n' && dummy_char != EOF)
 		continue;
