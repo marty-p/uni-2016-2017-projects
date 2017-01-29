@@ -117,7 +117,7 @@ _Bool core_init_load_game(Player pPlayers[], int players_count, CardDeck * pDeck
 	if (fread(&pStatus->total_turns, sizeof(pStatus->total_turns), 1, save_fp)==0) // extra
 		pStatus->total_turns = 1;
 
-	log_write("the main deck has been loaded...");
+	log_write("the main deck has loaded %d cards...", pDeck->count);
 	card_node_log_print(pDeck->card_list); // log all the main deck's cards
 
 	log_write("the players have been loaded...");
@@ -130,7 +130,7 @@ _Bool core_init_load_game(Player pPlayers[], int players_count, CardDeck * pDeck
 	return true;
 }
 
-_Bool core_init_save_game(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus)
+_Bool core_init_save_game(const Player pPlayers[], int players_count, const CardDeck * pDeck, const GameStatus * pStatus)
 {
 	char savefile_path[FILEPATH_LEN+1] = ""; // save file's path
 	FILE * save_fp = NULL; // ptr of the save file

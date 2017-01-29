@@ -2,12 +2,38 @@
 
 _Bool core_game_start(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus)
 {
-	if (core_game_pause_menu(pPlayers, players_count, pDeck, pStatus)==false)
+	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL) // skip null ptr
+	{
+		log_write("the game has been started with a null environment...");
 		return false;
+	}
+
+	do
+	{
+		if (core_game_pause_menu(pPlayers, players_count, pDeck, pStatus)==false)
+			return false;
+	}
+	while (core_game_check_winners(pPlayers, players_count)==false);
+
 	return true;
 }
 
-_Bool core_game_pause_menu(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus)
+_Bool core_game_check_winners(const Player pPlayers[], int players_count)
+{
+	int alive_players = 0; // counts the alive players
+	int i; // counter for iteration
+	if (pPlayers!=NULL)
+	{
+		for (i=0; i<players_count; i++)
+		{
+			if (pPlayers[i].is_alive==true)
+				alive_players++;
+		}
+	}
+	return (alive_players <= 1); // there's a winner only if there's 1 alive
+}
+
+_Bool core_game_pause_menu(const Player pPlayers[], int players_count, const CardDeck * pDeck, const GameStatus * pStatus)
 {
 	int menu_choice;
 
@@ -30,10 +56,10 @@ _Bool core_game_pause_menu(Player pPlayers[], int players_count, CardDeck * pDec
 		case 2:
 			core_init_save_game(pPlayers, players_count, pDeck, pStatus);
 			return false;
-			break;
+			break; // redundant line (not executed due to the return statement)
 		case 3:
 			return false;
-			break;
+			break; // redundant line (not executed due to the return statement)
 		case 0:
 		default:
 			break;
