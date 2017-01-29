@@ -8,16 +8,29 @@ _Bool core_game_start(Player pPlayers[], int players_count, CardDeck * pDeck, Ga
 		return false;
 	}
 
+	// check out-of-range issue
+	if (pStatus->player_turn >= players_count)
+	{
+		log_write("the game has been started with an out-of-range player's turn [player_turn %d, players_count %d]", pStatus->player_turn, players_count);
+		return false;
+	}
+
 	// looping until we have a winner
 	do
 	{
 		player_log_turn_data(&pPlayers[pStatus->player_turn], pStatus);
 		// process the menu and returns false in case of problems (when saving)
 		if (core_game_pause_menu(pPlayers, players_count, pDeck, pStatus)==false)
+		{
+			log_write("an error occurred in the core_game_pause_menu function...");
 			return false;
+		}
 		// process the turn and returns false in case of problems
 		if (core_game_processing(pPlayers, players_count, pDeck, pStatus)==false)
+		{
+			log_write("an error occurred in the core_game_processing function...");
 			return false;
+		}
 	}
 	while (core_game_check_winners(pPlayers, players_count)==false);
 
@@ -81,6 +94,11 @@ _Bool core_game_processing(Player pPlayers[], int players_count, CardDeck * pDec
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL) // skip null ptr
 		return false;
 
+	// check out-of-range issue
+	if (pStatus->player_turn >= players_count)
+		return false;
+
+	// get the next turn
 	if (core_game_get_next_turn(pPlayers, players_count, pStatus, has_attacked)==false)
 		return false;
 
