@@ -145,7 +145,7 @@ const char * get_difficulty_mode_name(DifficultyMode difficulty_mode)
 	return name_list[difficulty_mode]; // return the difficulty mode type name as string
 }
 
-void players_log_data(Player * pPlayers, int players_count)
+void players_log_data(const Player * pPlayers, int players_count)
 {
 	int i; // counter for iteration
 	if (pPlayers!=NULL) // skip null ptr
@@ -160,23 +160,23 @@ void players_log_data(Player * pPlayers, int players_count)
 	}
 }
 
-void player_log_data(Player * pPlayer, GameStatus * pStatus)
+void player_log_turn_data(const Player * pPlayer, const GameStatus * pStatus)
 {
 	if (pPlayer!=NULL && pStatus!=NULL) // skip null ptr
 	{
 		// log the player's status and the relative cards
-		log_write("Turn #%d: Player #%d's name: %s, is_alive: %d, type: [%u]%s, is_attacked: %d", pStatus->total_turns, pStatus->player_turn, pPlayer->name, pPlayer->is_alive, pPlayer->type, get_player_type_name(pPlayer->type), pStatus->is_attacked);
-		log_write("List of the player #%d's cards: (count: %d)", pStatus->player_turn, pPlayer->card_count);
+		log_write("Turn #%d: Player #%d's name: %s, is_alive: %d, type: [%u]%s, is_attacked: %d", pStatus->total_turns, pStatus->player_turn+1, pPlayer->name, pPlayer->is_alive, pPlayer->type, get_player_type_name(pPlayer->type), pStatus->is_attacked);
+		log_write("List of the player #%d's cards: (count: %d)", pStatus->player_turn+1, pPlayer->card_count);
 		card_node_log_print(pPlayer->card_list);
 	}
 }
 
-void status_log_data(GameStatus * pStatus)
+void status_log_data(const GameStatus * pStatus)
 {
 	if (pStatus!=NULL) // skip null ptr
 	{
 		// log the player's status and the relative cards
-		log_write("Turn #%d, Player #%d's turn, is_attacked: %d", pStatus->total_turns, pStatus->player_turn, pStatus->is_attacked);
+		log_write("Turn #%d, Player #%d's turn, is_attacked: %d", pStatus->total_turns, pStatus->player_turn+1, pStatus->is_attacked);
 	}
 }
 

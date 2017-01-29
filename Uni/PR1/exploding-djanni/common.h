@@ -14,8 +14,8 @@
 #include <time.h> // date format
 
 #ifdef _MSC_VER // visual studio 2010 test compilation
-#define false   0
-#define true    1
+#define false	0
+#define true	1
 #define _Bool int
 #else
 #include <stdbool.h> // _Bool

@@ -33,9 +33,9 @@ extern const char * get_player_type_name(PlayerType player_type);
 extern const char * get_card_count_type_name(CardCountType card_count_type);
 extern const char * get_difficulty_mode_name(DifficultyMode difficulty_mode);
 
-extern void players_log_data(Player * pPlayers, int players_count);
-extern void player_log_data(Player * pPlayer, GameStatus * pStatus);
-extern void status_log_data(GameStatus * pStatus);
+extern void players_log_data(const Player * pPlayers, int players_count);
+extern void player_log_turn_data(const Player * pPlayer, const GameStatus * pStatus);
+extern void status_log_data(const GameStatus * pStatus);
 
 #endif
 
