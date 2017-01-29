@@ -11,6 +11,8 @@ void core_run(void)
 	if (core_init(players, PLAYER_COUNT, &deck, &status)==true)
 	{
 		// start the game
+		log_write("starting the game...");
+		core_game_start(players, PLAYER_COUNT, &deck, &status);
 	}
 	log_write("shutting down the game...");
 	core_shutdown(players, PLAYER_COUNT, &deck); // last operation (free memory)

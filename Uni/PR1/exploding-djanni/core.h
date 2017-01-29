@@ -20,6 +20,7 @@
 #include "core_structs.h"
 #include "core_lists.h"
 #include "core_init.h"
+#include "core_game.h"
 
 /* prototype list */
 extern void core_run(void);
