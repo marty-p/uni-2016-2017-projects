@@ -66,7 +66,7 @@ _Bool core_init_load_game(Player pPlayers[], int players_count, CardDeck * pDeck
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL)
 		return false;
 
-	printf("Write the path of the savefile you want to load: (empty: %s)", SAVEFILE_FILENAME);
+	printf("Write the path of the savefile you want to load: (empty: %s)\n", SAVEFILE_FILENAME);
 	scanf("%259[\n]s", savefile_path);
 	clear_input_line();
 
@@ -82,10 +82,10 @@ _Bool core_init_load_game(Player pPlayers[], int players_count, CardDeck * pDeck
 		return false;
 	}
 
+	// fetching all the data from the binary file
 	// first block of data
 	for (i=0; i<players_count; i++)
 	{
-		// fetch all the data from the binary file
 		fread(pPlayers[i].name, sizeof(pPlayers[i].name), 1, save_fp);
 		fread(&pPlayers[i].is_alive, sizeof(pPlayers[i].is_alive), 1, save_fp);
 		if (pPlayers[i].is_alive==true)
@@ -214,7 +214,7 @@ void core_init_default_players(Player pPlayers[], int players_count)
 			pPlayers[i].card_count = 0;
 
 		}
-		player_log_data(pPlayers, players_count);
+		players_log_data(pPlayers, players_count);
 	}
 }
 
@@ -276,7 +276,7 @@ _Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pG
 	}
 
 #ifdef _DEBUG
-	printf("main deck before merging and player's assignment: (%d==%d)", pGivenDeck->count, card_node_count(pGivenDeck->card_list));
+	printf("main deck before merging and player's assignment: (%d==%d)\n", pGivenDeck->count, card_node_count(pGivenDeck->card_list));
 	card_node_print(pGivenDeck->card_list);
 #endif
 
@@ -285,7 +285,7 @@ _Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pG
 	core_assign_default_deck(pPlayers, players_count, &cc.cards[N_MEOOOW], STARTING_MEOOOW_NUM); // assign a meooow for each player
 
 #ifdef _DEBUG
-	printf("main deck before second merging: (%d==%d)", pGivenDeck->count, card_node_count(pGivenDeck->card_list));
+	printf("main deck before second merging: (%d==%d)\n", pGivenDeck->count, card_node_count(pGivenDeck->card_list));
 	card_node_print(pGivenDeck->card_list);
 #endif
 
@@ -294,19 +294,19 @@ _Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pG
 	core_merge_default_deck(pGivenDeck, &cc.cards[N_OTHER_CARDS]); // merge the meooow deck to the main one
 
 #ifdef _DEBUG
-	printf("main deck before shuffling: (%d==%d)", pGivenDeck->count, card_node_count(pGivenDeck->card_list));
+	printf("main deck before shuffling: (%d==%d)\n", pGivenDeck->count, card_node_count(pGivenDeck->card_list));
 	card_node_print(pGivenDeck->card_list);
 #endif
 
 	core_shuffle_deck(pGivenDeck);
 #ifdef _DEBUG
-	printf("main deck after shuffling: (%d==%d)", pGivenDeck->count, card_node_count(pGivenDeck->card_list));
+	printf("main deck after shuffling: (%d==%d)\n", pGivenDeck->count, card_node_count(pGivenDeck->card_list));
 	card_node_print(pGivenDeck->card_list);
-	printf("exploding djanni deck after merging: (%d==%d)", cc.cards[N_EXPLODING_DJANNI].count, card_node_count(cc.cards[N_EXPLODING_DJANNI].card_list));
+	printf("exploding djanni deck after merging: (%d==%d)\n", cc.cards[N_EXPLODING_DJANNI].count, card_node_count(cc.cards[N_EXPLODING_DJANNI].card_list));
 	card_node_print(cc.cards[N_EXPLODING_DJANNI].card_list);
-	printf("meooow deck after merging: (%d==%d)", cc.cards[N_MEOOOW].count, card_node_count(cc.cards[N_MEOOOW].card_list));
+	printf("meooow deck after merging: (%d==%d)\n", cc.cards[N_MEOOOW].count, card_node_count(cc.cards[N_MEOOOW].card_list));
 	card_node_print(cc.cards[N_MEOOOW].card_list);
-	printf("other cards deck after merging: (%d==%d)", cc.cards[N_OTHER_CARDS].count, card_node_count(cc.cards[N_OTHER_CARDS].card_list));
+	printf("other cards deck after merging: (%d==%d)\n", cc.cards[N_OTHER_CARDS].count, card_node_count(cc.cards[N_OTHER_CARDS].card_list));
 	card_node_print(cc.cards[N_OTHER_CARDS].card_list);
 #endif
 

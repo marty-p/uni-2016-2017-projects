@@ -143,17 +143,29 @@ const char * get_difficulty_mode_name(DifficultyMode difficulty_mode)
 	return name_list[difficulty_mode];
 }
 
-void player_log_data(Player * pPlayer, int players_count)
+void players_log_data(Player * pPlayers, int players_count)
 {
 	int i;
-	if (pPlayer!=NULL)
+	if (pPlayers!=NULL)
 	{
 		for (i=0; i<players_count; i++)
 		{
-			log_write("Player #%d: name: %s, is_alive: %d, type: [%u]%s", i+1, pPlayer->name, pPlayer->is_alive, get_player_type_name(pPlayer->type), pPlayer->type);
-			log_write("List of the cards: (%d)", pPlayer->card_count);
-			card_node_log_print(pPlayer->card_list);
+			log_write("Player #%d's name: %s, is_alive: %d, type: [%u]%s", i+1, pPlayers[i].name, pPlayers[i].is_alive, pPlayers[i].type, get_player_type_name(pPlayers[i].type));
+			log_write("List of the player #%d's cards: (count: %d)", i+1, pPlayers[i].card_count);
+			card_node_log_print(pPlayers[i].card_list);
 		}
+	}
+}
+
+void player_log_data(Player * pPlayer, GameStatus * pStatus)
+{
+	if (pPlayer!=NULL && pStatus!=NULL)
+	{
+		log_write("Turn #%d: Player #%d's name: %s, is_alive: %d, type: [%u]%s, is_attacked: %d",
+			pStatus->total_turns, pStatus->player_turn, pPlayer->name, pPlayer->is_alive, pPlayer->type, get_player_type_name(pPlayer->type), pStatus->is_attacked
+		);
+		log_write("List of the player #%d's cards: (count: %d)", pStatus->player_turn, pPlayer->card_count);
+		card_node_log_print(pPlayer->card_list);
 	}
 }
 
