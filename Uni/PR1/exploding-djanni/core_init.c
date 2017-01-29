@@ -36,7 +36,7 @@ _Bool core_init(Player pPlayers[], int players_count, CardDeck * pDeck, GameStat
 			case 'q':
 				log_write("exit confirmed...");
 				return false;
-				break;
+				break; // redundant line (not executed due to the return statement)
 			default: // if it's not in the list, we'll repeat it
 				wrong_choice = true;
 				break;
