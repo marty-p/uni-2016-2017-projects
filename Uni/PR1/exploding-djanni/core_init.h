@@ -8,6 +8,7 @@
 extern _Bool core_init(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus);
 extern _Bool core_init_new_game(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus);
 extern _Bool core_init_load_game(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus);
+extern _Bool core_init_save_game(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus);
 
 extern DifficultyMode core_init_choose_mode(void);
 extern _Bool core_init_default_status(GameStatus * pStatus, Player pPlayers[], int players_count);

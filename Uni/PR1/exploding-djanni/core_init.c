@@ -322,6 +322,83 @@ _Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pG
 	return true;
 }
 
+_Bool core_init_save_game(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus)
+{
+	char savefile_path[FILEPATH_LEN+1] = ""; // save file's path
+	FILE * save_fp = NULL; // ptr of the save file
+	int i, j; // counter for iteration
+	CardNode * pTmpCardNode = NULL; // dummy variable for iteration
+
+	// skip null ptr
+	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL)
+		return false;
+
+	printf("Write the path of the savefile you want to save: (empty: %s)\n", SAVEFILE_FILENAME);
+	scanf("%259[\n]s", savefile_path);
+	clear_input_line(); // clear the input line from junk
+
+	// if empty, set up the default filename
+	if (strlen(savefile_path)==0)
+		strncpy(savefile_path, SAVEFILE_FILENAME, FILEPATH_LEN);
+
+	// open the save file in write and binary mode
+	save_fp = fopen(savefile_path, "wb");
+	if (save_fp==NULL) // exit in case of failure
+	{
+		log_write("the save file %s couldn't be open", savefile_path);
+		return false;
+	}
+
+	// flushing all the data into the binary file
+	// first block of data
+	for (i=0; i<players_count; i++)
+	{
+		fwrite(pPlayers[i].name, sizeof(pPlayers[i].name), 1, save_fp);
+		fwrite(&pPlayers[i].is_alive, sizeof(pPlayers[i].is_alive), 1, save_fp);
+		if (pPlayers[i].is_alive==true)
+		{
+			fwrite(&pPlayers[i].card_count, sizeof(pPlayers[i].card_count), 1, save_fp);
+			fwrite(&pPlayers[i].type, sizeof(pPlayers[i].type), 1, save_fp);
+			pTmpCardNode = pPlayers[i].card_list;
+			for (j=0; j<pPlayers[i].card_count && pTmpCardNode!=NULL; j++)
+			{
+				fwrite(pTmpCardNode->card.title, sizeof(pTmpCardNode->card.title), 1, save_fp);
+				fwrite(&pTmpCardNode->card.type, sizeof(pTmpCardNode->card.type), 1, save_fp);
+				pTmpCardNode = pTmpCardNode->next;
+			}
+			// redundant check in case we encountered runtime errors
+			if (j!=pPlayers[i].card_count)
+			{
+				log_write("an error occurred when saving the player #%d's deck [j: %d, count: %d, node count: %d]", i, j, pPlayers[i].card_count, card_node_count(pPlayers[i].card_list));
+				return false;
+			}
+		}
+	}
+
+	// second block of data
+	fwrite(&pDeck->count, sizeof(pDeck->count), 1, save_fp);
+	pTmpCardNode = pDeck->card_list;
+	for (i=0; i<pDeck->count && pTmpCardNode!=NULL; i++)
+	{
+		fwrite(pTmpCardNode->card.title, sizeof(pTmpCardNode->card.title), 1, save_fp);
+		fwrite(&pTmpCardNode->card.type, sizeof(pTmpCardNode->card.type), 1, save_fp);
+		pTmpCardNode = pTmpCardNode->next;
+	}
+	// redundant check in case we encountered runtime errors
+	if (i!=pDeck->count)
+	{
+		log_write("an error occurred when saving the deck [i: %d, count: %d, node count: %d]", i, pDeck->count, card_node_count(pDeck->card_list));
+		return false;
+	}
+
+	// third block of data
+	fwrite(&pStatus->player_turn, sizeof(pStatus->player_turn), 1, save_fp);
+	fwrite(&pStatus->is_attacked, sizeof(pStatus->is_attacked), 1, save_fp);
+	fwrite(&pStatus->total_turns, sizeof(pStatus->total_turns), 1, save_fp); // extra
+
+	return true;
+}
+
 void core_assign_default_deck(Player pPlayers[], int players_count, CardDeck * pGivenDeck, int given_cards)
 {
 	int i, j; // counters for iteration
