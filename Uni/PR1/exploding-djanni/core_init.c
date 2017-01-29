@@ -115,7 +115,7 @@ _Bool core_init_load_game(Player pPlayers[], int players_count, CardDeck * pDeck
 	fread(&pStatus->player_turn, sizeof(pStatus->player_turn), 1, save_fp);
 	fread(&pStatus->is_attacked, sizeof(pStatus->is_attacked), 1, save_fp);
 	if (fread(&pStatus->total_turns, sizeof(pStatus->total_turns), 1, save_fp)==0) // extra
-		pStatus->total_turns = 0;
+		pStatus->total_turns = 1;
 
 	log_write("the main deck has been loaded...");
 	card_node_log_print(pDeck->card_list); // log all the main deck's cards
