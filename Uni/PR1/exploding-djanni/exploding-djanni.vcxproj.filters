@@ -30,6 +30,9 @@
     <ClCompile Include="main.c">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="core_game.c">
+      <Filter>File di origine</Filter>
+    </ClCompile>
     <ClCompile Include="core_init.c">
       <Filter>File di origine</Filter>
     </ClCompile>
@@ -51,6 +54,9 @@
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="main.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="core_game.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="core_init.h">
