@@ -165,11 +165,18 @@ void player_log_data(Player * pPlayer, GameStatus * pStatus)
 	if (pPlayer!=NULL && pStatus!=NULL) // skip null ptr
 	{
 		// log the player's status and the relative cards
-		log_write("Turn #%d: Player #%d's name: %s, is_alive: %d, type: [%u]%s, is_attacked: %d",
-			pStatus->total_turns, pStatus->player_turn, pPlayer->name, pPlayer->is_alive, pPlayer->type, get_player_type_name(pPlayer->type), pStatus->is_attacked
-		);
+		log_write("Turn #%d: Player #%d's name: %s, is_alive: %d, type: [%u]%s, is_attacked: %d", pStatus->total_turns, pStatus->player_turn, pPlayer->name, pPlayer->is_alive, pPlayer->type, get_player_type_name(pPlayer->type), pStatus->is_attacked);
 		log_write("List of the player #%d's cards: (count: %d)", pStatus->player_turn, pPlayer->card_count);
 		card_node_log_print(pPlayer->card_list);
+	}
+}
+
+void status_log_data(GameStatus * pStatus)
+{
+	if (pStatus!=NULL) // skip null ptr
+	{
+		// log the player's status and the relative cards
+		log_write("Turn #%d, Player #%d's turn, is_attacked: %d", pStatus->total_turns, pStatus->player_turn, pStatus->is_attacked);
 	}
 }
 

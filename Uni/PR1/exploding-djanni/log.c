@@ -51,6 +51,8 @@ void log_write(const char * format, ...)
 	va_end(args); // end va processing
 	fprintf(*plog_file, "\n"); // append newline
 
+	fflush(*plog_file); // flush everything in case of runtime issues
+
 #ifdef _DEBUG
 	// print the current date
 	printf("%s :: ", datebuf);

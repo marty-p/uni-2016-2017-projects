@@ -97,7 +97,7 @@ _Bool core_init_load_game(Player pPlayers[], int players_count, CardDeck * pDeck
 			{
 				fread(tmp_card.title, sizeof(tmp_card.title), 1, save_fp);
 				fread(&tmp_card.type, sizeof(tmp_card.type), 1, save_fp);
-				pPlayers[i].card_list = card_node_insert_head(pPlayers[i].card_list, tmp_card);
+				pPlayers[i].card_list = card_node_insert_tail(pPlayers[i].card_list, tmp_card);
 			}
 		}
 	}
@@ -108,7 +108,7 @@ _Bool core_init_load_game(Player pPlayers[], int players_count, CardDeck * pDeck
 	{
 		fread(tmp_card.title, sizeof(tmp_card.title), 1, save_fp);
 		fread(&tmp_card.type, sizeof(tmp_card.type), 1, save_fp);
-		pDeck->card_list = card_node_insert_head(pDeck->card_list, tmp_card);
+		pDeck->card_list = card_node_insert_tail(pDeck->card_list, tmp_card);
 	}
 
 	// third block of data
@@ -117,6 +117,16 @@ _Bool core_init_load_game(Player pPlayers[], int players_count, CardDeck * pDeck
 	if (fread(&pStatus->total_turns, sizeof(pStatus->total_turns), 1, save_fp)==0) // extra
 		pStatus->total_turns = 0;
 
+	log_write("the main deck has been loaded...");
+	card_node_log_print(pDeck->card_list); // log all the main deck's cards
+
+	log_write("the players have been loaded...");
+	players_log_data(pPlayers, players_count); // log all the loaded players
+
+	log_write("the status has been loaded...");
+	status_log_data(pStatus); // log the loaded status
+
+	log_write("the save file %s has been successfully loaded", savefile_path);
 	return true;
 }
 
@@ -194,6 +204,7 @@ _Bool core_init_save_game(Player pPlayers[], int players_count, CardDeck * pDeck
 	fwrite(&pStatus->is_attacked, sizeof(pStatus->is_attacked), 1, save_fp);
 	fwrite(&pStatus->total_turns, sizeof(pStatus->total_turns), 1, save_fp); // extra
 
+	log_write("the save file %s has been successfully saved", savefile_path);
 	return true;
 }
 

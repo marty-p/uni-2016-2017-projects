@@ -35,6 +35,7 @@ extern const char * get_difficulty_mode_name(DifficultyMode difficulty_mode);
 
 extern void players_log_data(Player * pPlayers, int players_count);
 extern void player_log_data(Player * pPlayer, GameStatus * pStatus);
+extern void status_log_data(GameStatus * pStatus);
 
 #endif
 
