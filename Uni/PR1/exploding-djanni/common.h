@@ -5,7 +5,7 @@
 #ifndef _DEBUG // already defined in visual studio
 #define _DEBUG
 #endif
-#define CURRENT_DATE_LEN 19
+#define CURRENT_DATE_LEN 19 // +1;
 
 /* include list */
 #include <stdio.h> // almost all i/o and file

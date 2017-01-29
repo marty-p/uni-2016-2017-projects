@@ -26,7 +26,7 @@ _Bool core_game_start(Player pPlayers[], int players_count, CardDeck * pDeck, Ga
 			return false;
 		}
 		// process the turn and returns false in case of problems
-		if (core_game_processing(pPlayers, players_count, pDeck, pStatus)==false)
+		if (core_game_process(pPlayers, players_count, pDeck, pStatus)==false)
 		{
 			log_write("an error occurred in the core_game_processing function...");
 			return false;
@@ -87,15 +87,20 @@ _Bool core_game_pause_menu(const Player pPlayers[], int players_count, const Car
 	return true;
 }
 
-_Bool core_game_processing(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus)
+_Bool core_game_process(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus)
 {
-	_Bool has_attacked = false;
+	_Bool has_attacked = false; // variable to specify whether the player has attacked or not
 
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL) // skip null ptr
 		return false;
 
 	// check out-of-range issue
 	if (pStatus->player_turn >= players_count)
+		return false;
+
+	if (pPlayers[pStatus->player_turn].type==AI && core_game_process_ai_player(pPlayers, players_count, pDeck, pStatus, &has_attacked)==false)
+		return false;
+	else if (pPlayers[pStatus->player_turn].type==REAL && core_game_process_real_player(pPlayers, players_count, pDeck, pStatus, &has_attacked)==false)
 		return false;
 
 	// get the next turn
@@ -126,6 +131,24 @@ _Bool core_game_get_next_turn(const Player pPlayers[], int players_count, GameSt
 		pStatus->is_attacked = false;
 
 	pStatus->total_turns++; // increase the total turns' counter
+	return true;
+}
+
+_Bool core_game_process_ai_player(const Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, _Bool * has_attacked)
+{
+	if (pPlayers==NULL || pStatus==NULL || has_attacked==NULL) // skip null ptr
+		return false;
+
+	// _Bool should_draw = true; // variable to specify whether the player should draw a card or not
+	return true;
+}
+
+_Bool core_game_process_real_player(const Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, _Bool * has_attacked)
+{
+	if (pPlayers==NULL || pStatus==NULL || has_attacked==NULL) // skip null ptr
+		return false;
+
+	// _Bool should_draw = true; // variable to specify whether the player should draw a card or not
 	return true;
 }
 
