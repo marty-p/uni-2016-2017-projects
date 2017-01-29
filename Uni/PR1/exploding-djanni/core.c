@@ -143,3 +143,17 @@ const char * get_difficulty_mode_name(DifficultyMode difficulty_mode)
 	return name_list[difficulty_mode];
 }
 
+void player_log_data(Player * pPlayer, int players_count)
+{
+	int i;
+	if (pPlayer!=NULL)
+	{
+		for (i=0; i<players_count; i++)
+		{
+			log_write("Player #%d: name: %s, is_alive: %d, type: [%u]%s", i+1, pPlayer->name, pPlayer->is_alive, get_player_type_name(pPlayer->type), pPlayer->type);
+			log_write("List of the cards: (%d)", pPlayer->card_count);
+			card_node_log_print(pPlayer->card_list);
+		}
+	}
+}
+

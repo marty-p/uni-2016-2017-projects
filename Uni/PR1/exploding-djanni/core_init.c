@@ -57,8 +57,15 @@ _Bool core_init_new_game(Player pPlayers[], int players_count, CardDeck * pDeck,
 
 _Bool core_init_load_game(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus)
 {
-	char savefile_path[FILEPATH_LEN+1] = "";
-	FILE * save_fp = NULL;
+	char savefile_path[FILEPATH_LEN+1] = ""; // save file's path
+	FILE * save_fp = NULL; // ptr of the save file
+	int i, j; // counter for iteration
+	Card tmp_card; // dummy variable used when freading
+
+	// skip null ptr
+	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL)
+		return false;
+
 	printf("Write the path of the savefile you want to load: (empty: %s)", SAVEFILE_FILENAME);
 	scanf("%259[\n]s", savefile_path);
 	clear_input_line();
@@ -75,10 +82,40 @@ _Bool core_init_load_game(Player pPlayers[], int players_count, CardDeck * pDeck
 		return false;
 	}
 
-	// core_init_default_players(pPlayers, players_count);
-	// core_init_default_status(pStatus, pPlayers, players_count);
+	// first block of data
+	for (i=0; i<players_count; i++)
+	{
+		// fetch all the data from the binary file
+		fread(pPlayers[i].name, sizeof(pPlayers[i].name), 1, save_fp);
+		fread(&pPlayers[i].is_alive, sizeof(pPlayers[i].is_alive), 1, save_fp);
+		if (pPlayers[i].is_alive==true)
+		{
+			fread(&pPlayers[i].card_count, sizeof(pPlayers[i].card_count), 1, save_fp);
+			fread(&pPlayers[i].type, sizeof(pPlayers[i].type), 1, save_fp);
+			for (j=0; j<pPlayers[i].card_count; j++)
+			{
+				fread(tmp_card.title, sizeof(tmp_card.title), 1, save_fp);
+				fread(&tmp_card.type, sizeof(tmp_card.type), 1, save_fp);
+				pPlayers[i].card_list = card_node_insert_head(pPlayers[i].card_list, tmp_card);
+			}
+		}
+	}
 
-	// return core_load_default_deck(pPlayers, players_count, pDeck, core_init_choose_mode()); // it will return false in case of failure
+	// second block of data
+	fread(&pDeck->count, sizeof(pDeck->count), 1, save_fp);
+	for (i=0; i<pDeck->count; i++)
+	{
+		fread(tmp_card.title, sizeof(tmp_card.title), 1, save_fp);
+		fread(&tmp_card.type, sizeof(tmp_card.type), 1, save_fp);
+		pDeck->card_list = card_node_insert_head(pDeck->card_list, tmp_card);
+	}
+
+	// third block of data
+	fread(&pStatus->player_turn, sizeof(pStatus->player_turn), 1, save_fp);
+	fread(&pStatus->is_attacked, sizeof(pStatus->is_attacked), 1, save_fp);
+	if (fread(&pStatus->total_turns, sizeof(pStatus->total_turns), 1, save_fp)==0) // extra
+		pStatus->total_turns = 0;
+
 	return true;
 }
 
@@ -95,7 +132,6 @@ DifficultyMode core_init_choose_mode(void)
 		// ask which choice to make
 		scanf("%u", &mode_choice);
 		clear_input_line();
-
 	}
 	while (mode_choice >= DIFFICULTY_MODE_NUM); // note: it's unsigned (repeat if invalid)
 
@@ -177,8 +213,8 @@ void core_init_default_players(Player pPlayers[], int players_count)
 			pPlayers[i].card_list = NULL;
 			pPlayers[i].card_count = 0;
 
-			log_write("Player #%d: name: %s, is_alive: %d, type: [%u]%s", i+1, pPlayers[i].name, pPlayers[i].is_alive, get_player_type_name(pPlayers[i].type), pPlayers[i].type);
 		}
+		player_log_data(pPlayers, players_count);
 	}
 }
 
