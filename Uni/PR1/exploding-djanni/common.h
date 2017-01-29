@@ -18,7 +18,7 @@
 #define true    1
 #define _Bool int
 #else
-#include <stdbool.h>
+#include <stdbool.h> // _Bool
 #endif
 
 #include <stdarg.h> // for variadic functions

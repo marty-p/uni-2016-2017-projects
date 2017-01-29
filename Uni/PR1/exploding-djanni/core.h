@@ -2,16 +2,16 @@
 #define __EDJ_CORE_H__
 
 /* macro list */
-#define CARD_TITLE_LEN 127 // +1; old: 31+1
-#define PLAYER_NAME 23 // +1;
-#define PLAYER_COUNT 4
-#define DIFFICULTY_MODE_NUM 3
-#define CARD_TYPE_NUM 9
-#define PLAYER_TYPE_NUM 2
-#define CARD_COUNT_NUM 3
-#define STARTING_OTHER_CARDS_NUM 4
-#define STARTING_MEOOOW_NUM 1
-#define SAVEFILE_FILENAME "partita.sav"
+#define CARD_TITLE_LEN 127 // +1; old: 31+1; length of the card titles
+#define PLAYER_NAME 23 // +1; length of the players' name
+#define PLAYER_COUNT 4 // total available players (it can be safely changed)
+#define DIFFICULTY_MODE_NUM 3 // count of DifficultyMode
+#define CARD_TYPE_NUM 9 // count of CardType
+#define PLAYER_TYPE_NUM 2 // count of PlayerType
+#define CARD_COUNT_NUM 3 // count of CardCountType
+#define STARTING_OTHER_CARDS_NUM 4 // number of other cards to give to each player on first turn
+#define STARTING_MEOOOW_NUM 1 // number of meooow cards to give to each player on first turn
+#define SAVEFILE_FILENAME "partita.sav" // default savefile filename (used if you input a blank string)
 #define FILEPATH_LEN 259 // +1; the same of MAX_PATH on windows
 
 /* include list */

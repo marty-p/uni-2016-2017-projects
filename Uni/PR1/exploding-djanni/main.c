@@ -2,11 +2,11 @@
 
 int main(void)
 {
-	log_init("log.txt");
+	log_init("log.txt"); // initialize the logging file
 
-	core_run();
+	core_run(); // run the game
 
-	log_deinit();
+	log_deinit(); // deinitialize the logging file
 
 #ifdef _DEBUG
 	printf("Press any key to continue...\n");

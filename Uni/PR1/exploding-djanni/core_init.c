@@ -5,6 +5,7 @@ _Bool core_init(Player pPlayers[], int players_count, CardDeck * pDeck, GameStat
 	char menu_choice;
 	_Bool wrong_choice;
 
+	// display the initial menu
 	do
 	{
 		wrong_choice = false;
@@ -16,7 +17,7 @@ _Bool core_init(Player pPlayers[], int players_count, CardDeck * pDeck, GameStat
 
 		// ask which choice to make
 		scanf("%c", &menu_choice);
-		clear_input_line();
+		clear_input_line(); // clear the input line from junk
 
 		// process the choice
 		switch (menu_choice)
@@ -49,8 +50,8 @@ _Bool core_init(Player pPlayers[], int players_count, CardDeck * pDeck, GameStat
 
 _Bool core_init_new_game(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus)
 {
-	core_init_default_players(pPlayers, players_count);
-	core_init_default_status(pStatus, pPlayers, players_count);
+	core_init_default_players(pPlayers, players_count); // initialize the players
+	core_init_default_status(pStatus, pPlayers, players_count); // initialize the game status
 
 	return core_load_default_deck(pPlayers, players_count, pDeck, core_init_choose_mode()); // it will return false in case of failure
 }
@@ -68,7 +69,7 @@ _Bool core_init_load_game(Player pPlayers[], int players_count, CardDeck * pDeck
 
 	printf("Write the path of the savefile you want to load: (empty: %s)\n", SAVEFILE_FILENAME);
 	scanf("%259[\n]s", savefile_path);
-	clear_input_line();
+	clear_input_line(); // clear the input line from junk
 
 	// if empty, set up the default filename
 	if (strlen(savefile_path)==0)
@@ -122,6 +123,7 @@ _Bool core_init_load_game(Player pPlayers[], int players_count, CardDeck * pDeck
 DifficultyMode core_init_choose_mode(void)
 {
 	DifficultyMode mode_choice;
+	// display the menu
 	do
 	{
 		printf("In which mode do you want to start the game? (%d/%d/%d)\n", EASY, MEDIUM, HARD);
@@ -131,7 +133,7 @@ DifficultyMode core_init_choose_mode(void)
 
 		// ask which choice to make
 		scanf("%u", &mode_choice);
-		clear_input_line();
+		clear_input_line(); // clear the input line from junk
 	}
 	while (mode_choice >= DIFFICULTY_MODE_NUM); // note: it's unsigned (repeat if invalid)
 
@@ -172,8 +174,8 @@ _Bool core_init_default_status(GameStatus * pStatus, Player pPlayers[], int play
 
 void core_init_default_players(Player pPlayers[], int players_count)
 {
-	int i;
-	char dummychar;
+	int i; // player's iter counter
+	char dummychar; // dummy variable for scanf
 
 	log_write("initializing the players...");
 	if (pPlayers!=NULL) // skip null ptr
@@ -187,7 +189,7 @@ void core_init_default_players(Player pPlayers[], int players_count)
 			{
 				printf("Choose the player's name:\n");
 				scanf("%23s", pPlayers[i].name);
-				clear_input_line();
+				clear_input_line(); // clear the input line from junk
 			}
 			while (strlen(pPlayers[i].name)==0); // repeat if empty
 
@@ -195,7 +197,7 @@ void core_init_default_players(Player pPlayers[], int players_count)
 			// choose whether being alive or not (debug mode only)
 			printf("Choose whether the player must be alive or not: (any:yes, n:no)\n");
 			scanf("%c", &dummychar);
-			clear_input_line();
+			clear_input_line(); // clear the input line from junk
 			pPlayers[i].is_alive = (dummychar!='n');
 #endif
 
@@ -204,7 +206,7 @@ void core_init_default_players(Player pPlayers[], int players_count)
 			{
 				printf("Choose the player's type: (AI:%d/REAL:%d)\n", AI, REAL);
 				scanf("%u", &pPlayers[i].type);
-				clear_input_line();
+				clear_input_line(); // clear the input line from junk
 			}
 			while (pPlayers[i].type >= PLAYER_TYPE_NUM); // note: it's unsigned (repeat if invalid)
 
@@ -214,7 +216,7 @@ void core_init_default_players(Player pPlayers[], int players_count)
 			pPlayers[i].card_count = 0;
 
 		}
-		players_log_data(pPlayers, players_count);
+		players_log_data(pPlayers, players_count); // log the players' info
 	}
 }
 
@@ -315,7 +317,7 @@ _Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pG
 #endif
 
 	log_write("the cards have been assigned to each player...");
-	players_log_data(pPlayers, players_count);
+	players_log_data(pPlayers, players_count); // log all the players
 
 	return true;
 }

@@ -1,49 +1,50 @@
 #include "core_lists.h"
 
-void card_node_free(CardNode * first)
+void card_node_free(CardNode * first) // free all the nodes
 {
-	CardNode * tmp = NULL;
-	while (first != NULL)
+	CardNode * tmp = NULL; // tmp var to store next
+	while (first != NULL) // iter till null
 	{
+		// switch and free
 		tmp = first->next;
 		free(first);
 		first = tmp;
 	}
 }
 
-CardNode * card_node_insert_head(CardNode * first, Card card)
+CardNode * card_node_insert_head(CardNode * first, Card card) // add the node in the head
 {
-	CardNode * new_first = malloc(sizeof(CardNode));
-	if (new_first==NULL)
+	CardNode * new_first = malloc(sizeof(CardNode)); // allocate dynamic memory
+	if (new_first==NULL) // exit if runtime errors happened
 	{
 		exit(EXIT_FAILURE);
 		return NULL; // redundant line (not executed due to the exit call)
 	}
-
+	// assign the node values:
 	new_first->card = card;
 	new_first->next = first;
-	return new_first;
+	return new_first; // it returns the updated head
 }
 
-CardNode * card_node_insert_tail(CardNode * first, Card card)
+CardNode * card_node_insert_tail(CardNode * first, Card card) // add the node in the end
 {
 	CardNode * tmp = first;
-	if (first==NULL)
+	if (first==NULL) // if first is null, then we add it in the head
 		return card_node_insert_head(first, card);
 
-	while (tmp->next != NULL)
+	while (tmp->next != NULL) // itering till null
 		tmp = tmp->next;
-	tmp->next = card_node_insert_head(NULL, card);
+	tmp->next = card_node_insert_head(NULL, card); // adding the node in the end
 
-	return first;
+	return first; // it returns the updated head
 }
 
-int card_node_count(CardNode * first)
+int card_node_count(CardNode * first) // node counter O(n)
 {
-	int count = 0;
-	while (first != NULL)
+	int count = 0; // counter
+	while (first != NULL) // iter till null
 	{
-		count++;
+		count++; // incremented for each node
 		first = first->next;
 	}
 	return count;
@@ -52,12 +53,12 @@ int card_node_count(CardNode * first)
 CardNode * card_node_remove_head(CardNode * first)
 {
 	CardNode * tmp = first;
-	if (first != NULL)
+	if (first != NULL) // skip null ptr
 	{
-		tmp = first->next;
+		tmp = first->next; // switch to the next head
 		free(first);
 	}
-	return tmp;
+	return tmp; // it returns the updated head
 }
 
 CardNode * card_node_remove(CardNode * first, int n)
@@ -74,15 +75,15 @@ CardNode * card_node_remove(CardNode * first, int n)
 	if (n==0)
 		return card_node_remove_head(first);
 
-	while (tmp != NULL && count <= n)
+	while (tmp != NULL && count <= n) // iter till null or n
 	{
-		if (count==n)
+		if (count==n) // if n, it will be deleted
 		{
 			prevtmp->next = tmp->next;
 			free(tmp);
-			return first;
+			return first; // it returns the updated head
 		}
-		else
+		else // if not n, it counts and goes further
 		{
 			prevtmp = tmp;
 			tmp = tmp->next;
@@ -90,13 +91,14 @@ CardNode * card_node_remove(CardNode * first, int n)
 		}
 	}
 
-	return first;
+	return first; // it returns the updated head
 }
 
 void card_node_print(CardNode * first)
 {
-	while (first!=NULL)
+	while (first!=NULL) // skip null ptr
 	{
+		// print all its values
 		printf("\t[%d]%s: %s\n", first->card.type, get_card_type_name(first->card.type), first->card.title);
 		first = first->next;
 	}
@@ -104,8 +106,9 @@ void card_node_print(CardNode * first)
 
 void card_node_log_print(CardNode * first)
 {
-	while (first!=NULL)
+	while (first!=NULL) // skip null ptr
 	{
+		// log all its values
 		log_write("\t[%d]%s: %s", first->card.type, get_card_type_name(first->card.type), first->card.title);
 		first = first->next;
 	}
