@@ -134,7 +134,7 @@ _Bool core_game_get_next_turn(const Player pPlayers[], int players_count, GameSt
 	return true;
 }
 
-_Bool core_game_process_ai_player(const Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, _Bool * has_attacked)
+_Bool core_game_process_ai_player(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, _Bool * has_attacked)
 {
 	if (pPlayers==NULL || pStatus==NULL || has_attacked==NULL) // skip null ptr
 		return false;
@@ -143,12 +143,17 @@ _Bool core_game_process_ai_player(const Player pPlayers[], int players_count, Ca
 	return true;
 }
 
-_Bool core_game_process_real_player(const Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, _Bool * has_attacked)
+_Bool core_game_process_real_player(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, _Bool * has_attacked)
 {
 	if (pPlayers==NULL || pStatus==NULL || has_attacked==NULL) // skip null ptr
 		return false;
 
 	// _Bool should_draw = true; // variable to specify whether the player should draw a card or not
 	return true;
+}
+
+void core_game_choose_player_cards(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, _Bool * has_attacked)
+{
+
 }
 

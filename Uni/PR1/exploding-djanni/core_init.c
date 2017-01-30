@@ -239,7 +239,7 @@ _Bool core_init_default_status(GameStatus * pStatus, Player pPlayers[], int play
 		// reset the status information
 		pStatus->is_attacked = false;
 		pStatus->player_turn = 0;
-		pStatus->total_turns = 0;
+		pStatus->total_turns = 1;
 		// check if there's someone still alive
 		for (i=0; i<players_count && is_somebody_alive==false; i++)
 			if (pPlayers[i].is_alive==true)
