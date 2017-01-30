@@ -81,6 +81,7 @@ typedef struct
 {
 	_Bool has_attacked;
 	_Bool is_noped;
+	_Bool has_drawn;
 } GameEnv; // game environment (not stored in .sav)
 
 #endif

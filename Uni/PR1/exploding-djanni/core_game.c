@@ -23,6 +23,7 @@ _Bool core_game_start(Player pPlayers[], int players_count, CardDeck * pDeck, Ga
 		// process the menu and returns false in case of quitting
 		if (core_game_pause_menu(pPlayers, players_count, pDeck, pStatus)==false)
 			return false;
+		// todo: reset game_env
 		// process the turn and returns false in case of problems
 		if (core_game_process(pPlayers, players_count, pDeck, pStatus, &game_env)==false)
 		{
@@ -217,7 +218,9 @@ _Bool core_game_card_use(Player pPlayers[], int players_count, CardDeck * pDeck,
 
 	if (pPlayers[pStatus->player_turn].type==REAL)
 	{
-		core_game_real_choose_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, &selected_card);
+		if (core_game_real_choose_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, &selected_card)==false)
+			return false;
+		//todo
 	}
 	else
 	{

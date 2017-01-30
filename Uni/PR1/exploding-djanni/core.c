@@ -198,17 +198,12 @@ void player_print_hand(const Player * pPlayer)
 
 void player_print_n_card(const Player * pPlayer, int selected_card)
 {
-	CardNode * tmp = pPlayer->card_list;
-	int count=0;
+	CardNode * tmp = NULL;
 	if (pPlayer==NULL) // skip null ptr
 		return;
 
-	while (tmp!=NULL && count<=selected_card) // skip null ptr
-	{
-		if (count==selected_card)
-			printf("\t(%d) [%d]%s: %s\n", count, tmp->card.type, get_card_type_name(tmp->card.type), tmp->card.title);
-		tmp = tmp->next;
-		count++;
-	}
+	tmp = card_node_select_n(pPlayer->card_list, selected_card, NULL);
+	if (tmp!=NULL)
+		printf("\t(%d) [%d]%s: %s\n", selected_card, tmp->card.type, get_card_type_name(tmp->card.type), tmp->card.title);
 }
 

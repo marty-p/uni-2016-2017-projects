@@ -114,3 +114,23 @@ void card_node_log_print(CardNode * first)
 	}
 }
 
+CardNode * card_node_select_n(CardNode * first, int n, CardNode * prev)
+{
+	int count=0;
+	CardNode * tmp_prev = NULL;
+
+	while (first!=NULL && count<=n) // skip null ptr
+	{
+		if (count==n)
+		{
+			if (prev!=NULL)
+				prev=tmp_prev;
+			return first;
+		}
+		tmp_prev = first;
+		first = first->next;
+		count++;
+	}
+	return NULL;
+}
+
