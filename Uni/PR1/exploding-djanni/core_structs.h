@@ -77,5 +77,11 @@ typedef struct
 	CardDeck cards[CARD_COUNT_NUM];
 } CardCount;
 
+typedef struct
+{
+	_Bool has_attacked;
+	_Bool is_noped;
+} GameEnv; // game environment (not stored in .sav)
+
 #endif
 

@@ -2,6 +2,7 @@
 
 _Bool core_game_start(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus)
 {
+	GameEnv game_env = {0};
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL) // skip null ptr
 	{
 		log_write("the game has been started with a null environment...");
@@ -19,14 +20,11 @@ _Bool core_game_start(Player pPlayers[], int players_count, CardDeck * pDeck, Ga
 	do
 	{
 		player_log_turn_data(&pPlayers[pStatus->player_turn], pStatus);
-		// process the menu and returns false in case of problems (when saving)
+		// process the menu and returns false in case of quitting
 		if (core_game_pause_menu(pPlayers, players_count, pDeck, pStatus)==false)
-		{
-			log_write("an error occurred in the core_game_pause_menu function...");
 			return false;
-		}
 		// process the turn and returns false in case of problems
-		if (core_game_process(pPlayers, players_count, pDeck, pStatus)==false)
+		if (core_game_process(pPlayers, players_count, pDeck, pStatus, &game_env)==false)
 		{
 			log_write("an error occurred in the core_game_processing function...");
 			return false;
@@ -70,7 +68,10 @@ _Bool core_game_pause_menu(const Player pPlayers[], int players_count, const Car
 	{
 		case '1':
 			if (core_init_save_game(pPlayers, players_count, pDeck, pStatus)==false)
+			{
+				log_write("an error occurred in the core_init_save_game function...");
 				return false;
+			}
 			break;
 		case '2':
 			core_init_save_game(pPlayers, players_count, pDeck, pStatus);
@@ -87,38 +88,36 @@ _Bool core_game_pause_menu(const Player pPlayers[], int players_count, const Car
 	return true;
 }
 
-_Bool core_game_process(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus)
+_Bool core_game_process(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv)
 {
-	_Bool has_attacked = false; // variable to specify whether the player has attacked or not
-
-	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL) // skip null ptr
+	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
 
 	// check out-of-range issue
 	if (pStatus->player_turn >= players_count)
 		return false;
 
-	if (pPlayers[pStatus->player_turn].type==AI && core_game_process_ai_player(pPlayers, players_count, pDeck, pStatus, &has_attacked)==false)
+	if (pPlayers[pStatus->player_turn].type==AI && core_game_process_ai_player(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
 		return false;
-	else if (pPlayers[pStatus->player_turn].type==REAL && core_game_process_real_player(pPlayers, players_count, pDeck, pStatus, &has_attacked)==false)
+	else if (pPlayers[pStatus->player_turn].type==REAL && core_game_process_real_player(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
 		return false;
 
 	// get the next turn
-	if (core_game_get_next_turn(pPlayers, players_count, pStatus, has_attacked)==false)
+	if (core_game_get_next_turn(pPlayers, players_count, pStatus, pEnv)==false)
 		return false;
 
 	return true;
 }
 
-_Bool core_game_get_next_turn(const Player pPlayers[], int players_count, GameStatus * pStatus, _Bool has_attacked)
+_Bool core_game_get_next_turn(const Player pPlayers[], int players_count, GameStatus * pStatus, GameEnv * pEnv)
 {
-	if (pPlayers==NULL || pStatus==NULL) // skip null ptr
+	if (pPlayers==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
 
 	if (core_game_check_winners(pPlayers, players_count)==true) // we at least know that two are still alive
 		return true;
 
-	if (pStatus->is_attacked==false || has_attacked==true) // switch player's turn if not being attacked or has attacked others
+	if (pStatus->is_attacked==false || pEnv->has_attacked==true) // switch player's turn if not being attacked or has attacked others
 	{
 		// pick up a valid next turn
 		do
@@ -134,27 +133,115 @@ _Bool core_game_get_next_turn(const Player pPlayers[], int players_count, GameSt
 	return true;
 }
 
-_Bool core_game_process_ai_player(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, _Bool * has_attacked)
+_Bool core_game_process_ai_player(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv)
 {
-	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || has_attacked==NULL) // skip null ptr
+	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
 
 	// _Bool should_draw = true; // variable to specify whether the player should draw a card or not
 	return true;
 }
 
-_Bool core_game_process_real_player(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, _Bool * has_attacked)
+_Bool core_game_process_real_player(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv)
 {
-	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || has_attacked==NULL) // skip null ptr
+	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
+		return false;
+
+	if (core_game_continue_menu(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
 		return false;
 
 	// _Bool should_draw = true; // variable to specify whether the player should draw a card or not
 	return true;
 }
 
-void core_game_choose_player_cards(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, _Bool * has_attacked)
+_Bool core_game_continue_menu(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv)
 {
-	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || has_attacked==NULL) // skip null ptr
-		return;
+	char menu_choice;
+	_Bool wrong_choice;
+
+	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
+		return false;
+
+	do
+	{
+		printf("What do you want to do? (0:draw a card, 1:use a card, q:quit)\n");
+		printf("\t1. Draw a card\n");
+		printf("\t2. Use a card\n");
+		printf("\tq. Quit the game\n");
+
+		// ask which choice to make
+		scanf("%c", &menu_choice);
+		clear_input_line(); // clear the input line from junk
+
+		switch (menu_choice)
+		{
+			case '1':
+				if (core_game_card_draw(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
+				{
+					log_write("an error occurred in the core_game_card_draw function...");
+					return false;
+				}
+				break;
+			case '2':
+				if (core_game_card_use(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
+				{
+					log_write("an error occurred in the core_game_card_use function...");
+					return false;
+				}
+				break;
+			case 'q':
+				break;
+			default:
+				wrong_choice = true;
+				break;
+		}
+	}
+	while (wrong_choice==true); // repeat in case of wrong answer
+
+	return true;
+}
+
+_Bool core_game_card_draw(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv)
+{
+	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
+		return false;
+
+	return true;
+}
+
+_Bool core_game_card_use(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv)
+{
+	int selected_card;
+	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
+		return false;
+
+	if (pPlayers[pStatus->player_turn].type==REAL)
+	{
+		core_game_choose_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, &selected_card);
+	}
+	return true;
+}
+
+_Bool core_game_choose_player_card(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int * selected_card)
+{
+	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL || selected_card==NULL) // skip null ptr
+		return false;
+
+	if (player_index>=players_count) // skip out-of-range
+		return false;
+
+	do
+	{
+		printf("List of the current cards: (0-%d)\n", pPlayers[pStatus->player_turn].card_count-1);
+		player_print_hand(&pPlayers[player_index]);
+		printf("Choose one of them:\n");
+		scanf("%d", selected_card);
+		clear_input_line(); // clear the input line from junk
+	} while (*selected_card >= pPlayers[player_index].card_count); // repeat if out-of-range
+
+	printf("You chose the following card:\n");
+	player_print_n_card(&pPlayers[player_index], *selected_card);
+
+	return true;
 }
 

@@ -180,3 +180,35 @@ void status_log_data(const GameStatus * pStatus)
 	}
 }
 
+void player_print_hand(const Player * pPlayer)
+{
+	CardNode * tmp = pPlayer->card_list;
+	int count=0;
+	if (pPlayer==NULL) // skip null ptr
+		return;
+
+	while (tmp!=NULL) // skip null ptr
+	{
+		// print all its values
+		printf("\t(%d) [%d]%s: %s\n", count, tmp->card.type, get_card_type_name(tmp->card.type), tmp->card.title);
+		tmp = tmp->next;
+		count++;
+	}
+}
+
+void player_print_n_card(const Player * pPlayer, int selected_card)
+{
+	CardNode * tmp = pPlayer->card_list;
+	int count=0;
+	if (pPlayer==NULL) // skip null ptr
+		return;
+
+	while (tmp!=NULL && count<=selected_card) // skip null ptr
+	{
+		if (count==selected_card)
+			printf("\t(%d) [%d]%s: %s\n", count, tmp->card.type, get_card_type_name(tmp->card.type), tmp->card.title);
+		tmp = tmp->next;
+		count++;
+	}
+}
+
