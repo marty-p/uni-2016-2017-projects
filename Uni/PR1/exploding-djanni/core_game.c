@@ -164,6 +164,10 @@ _Bool core_game_process_ai_player(Player pPlayers[], int players_count, CardDeck
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
 
+	// check out-of-range issue
+	if (pStatus->player_turn >= players_count)
+		return false;
+
 	// _Bool should_draw = true; // variable to specify whether the player should draw a card or not
 	return true;
 }
@@ -253,6 +257,10 @@ _Bool core_game_card_draw(Player pPlayers[], int players_count, CardDeck * pDeck
 		return false;
 
 	if (pDeck->card_list==NULL) // skip null ptr
+		return false;
+
+	// check out-of-range issue
+	if (pStatus->player_turn >= players_count)
 		return false;
 
 	log_write("Player #%d (%s) drew the card... [%d]%s: %s",
