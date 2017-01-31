@@ -3,7 +3,6 @@
 _Bool core_game_start(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus)
 {
 	GameEnv game_env = {0}; // game environment (not stored in the .sav file)
-	int ed_count; // exploding djanni counter
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL) // skip null ptr
 	{
 		log_write("the game has been started with a null environment...");
@@ -21,13 +20,7 @@ _Bool core_game_start(Player pPlayers[], int players_count, CardDeck * pDeck, Ga
 	while (core_game_check_winners(pPlayers, players_count)==false)
 	{
 		log_write("turn #%d is starting...", pStatus->total_turns);
-		deck_print_log_count(pDeck);
 
-		ed_count = core_deck_count_of_type_n(pDeck, EXPLODING_DJANNI);
-		printf("There are still %d %s in the deck! (%.2f%% to draw one)\n", ed_count, get_card_type_name(EXPLODING_DJANNI), (double)ed_count/pDeck->count*100.0);
-
-		// log the turn data
-		player_log_turn_data(&pPlayers[pStatus->player_turn], pStatus);
 		// process the menu and returns false in case of quitting
 		if (core_game_pause_menu(pPlayers, players_count, pDeck, pStatus)==false)
 			return false;
@@ -119,12 +112,29 @@ _Bool core_game_pause_menu(const Player pPlayers[], int players_count, const Car
 
 _Bool core_game_process(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv)
 {
+	int ed_count; // exploding djanni counter
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
 
 	// check out-of-range issue
 	if (pStatus->player_turn >= players_count)
 		return false;
+
+		// log deck count
+		deck_print_log_count(pDeck);
+		// log the turn data
+		player_log_turn_data(&pPlayers[pStatus->player_turn], pStatus);
+
+		// log exploding djanni pct draw
+		ed_count = core_deck_count_of_type_n(pDeck, EXPLODING_DJANNI);
+		printf("There are still %d %s in the deck! (%.2f%% to draw one)\n", ed_count, get_card_type_name(EXPLODING_DJANNI), (double)ed_count/pDeck->count*100.0);
+
+		// check if attacked
+		if (pStatus->is_attacked==true)
+		{
+			printf("You are under attack! Use an attack card or repeat the turn twice!\n");
+			log_write("player #%d (%s) is under attack...", pStatus->player_turn+1, pPlayers[pStatus->player_turn].name);
+		}
 
 	if (pPlayers[pStatus->player_turn].type==AI && core_game_process_ai_player(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
 		return false;
@@ -146,7 +156,7 @@ _Bool core_game_get_next_turn(const Player pPlayers[], int players_count, GameSt
 	if (core_game_check_winners(pPlayers, players_count)==true) // we at least know that two are still alive
 		return true;
 
-	if (pStatus->is_attacked==false || pEnv->has_attacked==true) // switch player's turn if not being attacked or has attacked others
+	if (pStatus->is_attacked==false) // switch player's turn if not being attacked or has attacked others
 	{
 		// pick up a valid next turn
 		do
@@ -154,6 +164,12 @@ _Bool core_game_get_next_turn(const Player pPlayers[], int players_count, GameSt
 			pStatus->player_turn = (pStatus->player_turn + 1) % players_count; // rotate the turns if exceeds the max count
 		}
 		while (pPlayers[pStatus->player_turn].is_alive==false); // repeat if the next is dead
+		// set the attack flag for the next turn
+		if (pEnv->has_attacked==true)
+		{
+			pEnv->has_attacked = false;
+			pStatus->is_attacked = true;
+		}
 	}
 	else // reset the is attacked flag repeating another turn
 		pStatus->is_attacked = false;
@@ -330,7 +346,7 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 	if (used_card==NULL) // did the player already lost that card?
 		return false;
 
-	log_write("checking if can be noped by other players...");
+	log_write("checking if it can be noped by other players...");
 	pEnv->is_noped = false;
 	do
 	{
@@ -417,8 +433,11 @@ _Bool core_game_process_player_card(Player pPlayers[], int players_count, int pl
 		case ATTACK:
 			if (core_game_card_can_nope(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
 			{
+				pStatus->is_attacked = false;
 				pEnv->has_attacked = true;
 				pEnv->has_drawn = true;
+				printf("You have declared attack!\n");
+				log_write("player #%d (%s) has declared attack...", player_index+1, pPlayers[player_index].name);
 			}
 			break;
 		case SKIP:
