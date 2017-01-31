@@ -20,7 +20,7 @@ _Bool core_game_start(Player pPlayers[], int players_count, CardDeck * pDeck, Ga
 	// looping until we have a winner (they could be all dead even before starting
 	while (core_game_check_winners(pPlayers, players_count)==false)
 	{
-		log_write("turn #%d is starting...", pStatus->player_turn);
+		log_write("turn #%d is starting...", pStatus->total_turns);
 		ed_count = core_deck_count_of_type_n(pDeck, EXPLODING_DJANNI);
 		printf("There are still %d %s in the deck! (%.2f%% to draw one)\n", ed_count, get_card_type_name(EXPLODING_DJANNI), (double)ed_count/pDeck->count*100.0);
 		// log the turn data
@@ -191,7 +191,7 @@ _Bool core_game_continue_menu(Player pPlayers[], int players_count, CardDeck * p
 	do
 	{
 		player_log_turn_data(&pPlayers[pStatus->player_turn], pStatus);
-		printf("What do you want to do? (0:draw a card, 1:use a card, q:quit)\n");
+		printf("What do you want to do? (1:draw a card, 2:use a card, q:quit)\n");
 		if (pEnv->has_drawn==false)
 			printf("\t1. Draw a card\n");
 		if (pEnv->has_used_cards==false)

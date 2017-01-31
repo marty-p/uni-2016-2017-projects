@@ -203,7 +203,7 @@ CardNode * card_node_find_first_n_type_and_delete(CardNode * first, CardType n_t
 	if (tmp!=NULL)
 	{
 		if (is_deleted!=NULL)
-			*is_deleted = false;
+			*is_deleted = true;
 		if (tmp_prev==NULL) // head
 		{
 			return card_node_remove_head(first);
