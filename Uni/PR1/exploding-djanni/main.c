@@ -2,6 +2,8 @@
 
 int main(void)
 {
+	srand(time(NULL));
+
 	log_init("log.txt"); // initialize the logging file
 
 	core_run(); // run the game

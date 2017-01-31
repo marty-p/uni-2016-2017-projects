@@ -98,7 +98,7 @@ CardNode * card_node_check_remove(CardNode * first, int n, _Bool * is_deleted)
 {
 	int count = 0;
 	CardNode * tmp = first;
-	CardNode * prevtmp = first;
+	CardNode * prevtmp = NULL;
 	if (is_deleted!=NULL)
 		*is_deleted = false;
 

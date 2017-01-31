@@ -87,27 +87,45 @@ void core_shuffle_deck(CardDeck * pGivenDeck)
 
 void core_shuffle_deck_head(CardDeck * pGivenDeck)
 {
-	CardNode * tmp = NULL; // points to given_deck->card_list->head
-	CardNode * prevtmp = NULL;
-	CardNode * oldhead = NULL;
-	CardNode * newhead = NULL;
-	int count = 1; // counter for iteration
+	Card first_card = {{0}};
 	int random_number; // dummy variable for random numbers
+
 	if (pGivenDeck!=NULL && pGivenDeck->card_list!=NULL && pGivenDeck->card_list->next!=NULL) // skip null ptr or if the deck's length is <=1
 	{
-		oldhead = pGivenDeck->card_list;
-		newhead = pGivenDeck->card_list->next;
-		random_number = get_random_number(count, pGivenDeck->count-1);
-		tmp = newhead;
-		while (tmp!=NULL && count++<random_number)
+		first_card = pGivenDeck->card_list->card; // save first
+		core_remove_deck_head(pGivenDeck); // remove first
+		random_number = get_random_number(0, pGivenDeck->count);
+		core_insert_deck_in_n(pGivenDeck, first_card, random_number); //re-add first
+	}
+}
+
+void core_insert_deck_in_n(CardDeck * pGivenDeck, Card card, int n)
+{
+	CardNode * tmp = NULL; // points to given_deck->card_list->head
+	CardNode * prevtmp = NULL;
+	int count = 0;
+	if (pGivenDeck!=NULL)
+	{
+		tmp = pGivenDeck->card_list;
+		while (tmp!=NULL && count<n)
 		{
 			prevtmp=tmp;
 			tmp=tmp->next;
+			count++;
 		}
-		if (prevtmp==NULL) // skip if it's head again
-			return;
-		prevtmp->next = oldhead;
-		oldhead->next = tmp;
+		if (count==n) // skip if doesn't match
+		{
+			if (prevtmp) // after head
+			{
+				prevtmp->next = card_node_insert_head(tmp, card);
+				pGivenDeck->count++;
+			}
+			else // head
+			{
+				pGivenDeck->card_list = card_node_insert_head(tmp, card);
+				pGivenDeck->count++;
+			}
+		}
 	}
 }
 
