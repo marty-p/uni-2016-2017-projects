@@ -28,6 +28,12 @@ extern void core_shutdown(Player pPlayers[], int players_count, CardDeck * pDeck
 
 extern void core_shuffle_deck(CardDeck * pGivenDeck);
 
+extern void core_remove_deck_n_card(CardDeck * pGivenDeck, int selected_card);
+extern void core_remove_deck_head(CardDeck * pGivenDeck);
+extern void core_remove_player_n_card(Player * pGivenPlayer, int selected_card);
+extern void core_remove_player_card_type(Player * pGivenPlayer, CardType card_type);
+extern _Bool core_player_has_in(Player * pGivenPlayer, CardType card_type);
+
 extern const char * get_card_type_name(CardType card_type);
 extern const char * get_player_type_name(PlayerType player_type);
 extern const char * get_card_count_type_name(CardCountType card_count_type);

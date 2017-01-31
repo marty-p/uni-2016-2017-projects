@@ -94,6 +94,47 @@ CardNode * card_node_remove(CardNode * first, int n)
 	return first; // it returns the updated head
 }
 
+CardNode * card_node_check_remove(CardNode * first, int n, _Bool * is_deleted)
+{
+	int count = 0;
+	CardNode * tmp = first;
+	CardNode * prevtmp = first;
+	if (is_deleted!=NULL)
+		*is_deleted = false;
+
+	// check if the index is negative:
+	if (n < 0)
+		return first;
+
+	// check if the index is the head:
+	if (n==0)
+	{
+		if (is_deleted!=NULL)
+			*is_deleted = true;
+		return card_node_remove_head(first);
+	}
+
+	while (tmp != NULL && count <= n) // iter till null or n
+	{
+		if (count==n) // if n, it will be deleted
+		{
+			if (is_deleted!=NULL)
+				*is_deleted = true;
+			prevtmp->next = tmp->next;
+			free(tmp);
+			return first; // it returns the updated head
+		}
+		else // if not n, it counts and goes further
+		{
+			prevtmp = tmp;
+			tmp = tmp->next;
+			count++;
+		}
+	}
+
+	return first; // it returns the updated head
+}
+
 void card_node_print(CardNode * first)
 {
 	while (first!=NULL) // skip null ptr
@@ -152,15 +193,21 @@ CardNode * card_node_find_first_n_type(CardNode * first, CardType n_type, CardNo
 	return NULL;
 }
 
-CardNode * card_node_find_first_n_type_and_delete(CardNode * first, CardType n_type)
+CardNode * card_node_find_first_n_type_and_delete(CardNode * first, CardType n_type, _Bool * is_deleted)
 {
 	CardNode * tmp_prev = NULL;
 	CardNode * tmp = NULL;
+	if (is_deleted!=NULL)
+		*is_deleted = false;
 	tmp = card_node_find_first_n_type(first, n_type, &tmp_prev);
 	if (tmp!=NULL)
 	{
+		if (is_deleted!=NULL)
+			*is_deleted = false;
 		if (tmp_prev==NULL) // head
+		{
 			return card_node_remove_head(first);
+		}
 		tmp_prev->next = tmp->next;
 		free(tmp);
 		tmp=NULL;

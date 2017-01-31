@@ -110,6 +110,46 @@ void core_shuffle_deck_head(CardDeck * pGivenDeck)
 	}
 }
 
+void core_remove_deck_n_card(CardDeck * pGivenDeck, int selected_card)
+{
+	_Bool is_removed = false;
+	if (pGivenDeck!=NULL)
+	{
+		pGivenDeck->card_list = card_node_check_remove(pGivenDeck->card_list, selected_card, &is_removed);
+		if (is_removed==true)
+			pGivenDeck->count--; // keep O(1)
+	}
+}
+
+void core_remove_deck_head(CardDeck * pGivenDeck)
+{
+	core_remove_deck_n_card(pGivenDeck, 0);
+}
+
+void core_remove_player_n_card(Player * pGivenPlayer, int selected_card)
+{
+	_Bool is_removed = false;
+	if (pGivenPlayer!=NULL)
+	{
+		pGivenPlayer->card_list = card_node_check_remove(pGivenPlayer->card_list, selected_card, &is_removed);
+		if (is_removed==true)
+			pGivenPlayer->card_count--; // keep O(1)
+	}
+}
+
+void core_remove_player_card_type(Player * pGivenPlayer, CardType card_type)
+{
+	_Bool is_removed = false;
+	pGivenPlayer->card_list = card_node_find_first_n_type_and_delete(pGivenPlayer->card_list, card_type, &is_removed);
+	if (is_removed==true)
+		pGivenPlayer->card_count--; // keep O(1)
+}
+
+_Bool core_player_has_in(Player * pGivenPlayer, CardType card_type)
+{
+	return card_node_find_first_n_type(pGivenPlayer->card_list, card_type, NULL)!=NULL;
+}
+
 const char * get_card_type_name(CardType card_type)
 {
 	static const char * name_list[CARD_TYPE_NUM] =
