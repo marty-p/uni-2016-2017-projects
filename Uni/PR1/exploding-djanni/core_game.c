@@ -21,8 +21,11 @@ _Bool core_game_start(Player pPlayers[], int players_count, CardDeck * pDeck, Ga
 	while (core_game_check_winners(pPlayers, players_count)==false)
 	{
 		log_write("turn #%d is starting...", pStatus->total_turns);
+		deck_print_log_count(pDeck);
+
 		ed_count = core_deck_count_of_type_n(pDeck, EXPLODING_DJANNI);
 		printf("There are still %d %s in the deck! (%.2f%% to draw one)\n", ed_count, get_card_type_name(EXPLODING_DJANNI), (double)ed_count/pDeck->count*100.0);
+
 		// log the turn data
 		player_log_turn_data(&pPlayers[pStatus->player_turn], pStatus);
 		// process the menu and returns false in case of quitting
@@ -66,7 +69,7 @@ void core_game_print_winners(const Player pPlayers[], int players_count)
 			if (pPlayers[i].is_alive==true) // increase if alive
 			{
 				printf("The player #%d (%s) has won!\n", i+1, pPlayers[i].name);
-				log_write("The player #%d (%s) has won!", i+1, pPlayers[i].name);
+				log_write("the player #%d (%s) has won!", i+1, pPlayers[i].name);
 			}
 		}
 	}
@@ -275,20 +278,14 @@ _Bool core_game_card_draw(Player pPlayers[], int players_count, CardDeck * pDeck
 			core_remove_deck_head(pDeck); // remove the exploding djanni from the deck
 			pPlayers[pStatus->player_turn].is_alive=false; // set the player as dead
 			printf("You exploded into smithereens and died.\n");
-			log_write("Player #%d (%s) is out of game...", pStatus->player_turn+1, pPlayers[pStatus->player_turn].name);
+			log_write("player #%d (%s) is out of game...", pStatus->player_turn+1, pPlayers[pStatus->player_turn].name);
 			return true;
 		}
 		// a meooow card will be used to not die
-#ifdef _DEBUG
-		deck_print_log_cards(pDeck);
-#endif
 		core_shuffle_deck_head(pDeck); // shuffle the exploding djanni randomly in the deck
-#ifdef _DEBUG
-		deck_print_log_cards(pDeck);
-#endif
 		core_remove_player_card_type(&pPlayers[pStatus->player_turn], MEOOOW); // remove the meooow card from the player
 		printf("You used a meooow card and got saved.\n");
-		log_write("Player #%d (%s) used a meoow card and the exploding djanni has been shuffled again in the deck...", pStatus->player_turn+1, pPlayers[pStatus->player_turn].name);
+		log_write("player #%d (%s) used a meoow card and the exploding djanni has been shuffled again in the deck...", pStatus->player_turn+1, pPlayers[pStatus->player_turn].name);
 		return true;
 	}
 
@@ -322,7 +319,6 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 	int i;
 	char get_choice;
 	_Bool is_nope_reused;
-	CardNode * prev_nope = NULL;
 	CardNode * used_card = NULL;
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
@@ -334,6 +330,7 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 	if (used_card==NULL) // did the player already lost that card?
 		return false;
 
+	log_write("checking if can be noped by other players...");
 	pEnv->is_noped = false;
 	do
 	{
@@ -344,13 +341,18 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 				continue;
 			if (i==player_index) // skip yourself
 				continue;
-			if (card_node_find_first_n_type(pPlayers[i].card_list, NOPE, &prev_nope)==NULL)
+			if (core_player_has_in(&pPlayers[i], NOPE)==true)
 			{
 				if (pPlayers[i].type==REAL)
 				{
-					printf("Player #%d (%s), do you want to use a %s card to block Player #%d (%s)'s %s? (any:yes, n:no)\n",
-							i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
-					);
+					if (is_nope_reused==false)
+						printf("Player #%d (%s), do you want to use a %s card to block Player #%d (%s)'s %s? (any:yes, n:no)\n",
+								i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
+						);
+					else
+						printf("Player #%d (%s), do you want to use a %s card to unblock Player #%d (%s)'s %s? (any:yes, n:no)\n",
+								i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
+						);
 					scanf("%c", &get_choice);
 					clear_input_line(); // clear the input line from junk
 					if (get_choice=='n') // if it's no
@@ -358,7 +360,7 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 					pEnv->is_noped = !pEnv->is_noped;
 					is_nope_reused = true;
 					core_remove_player_card_type(&pPlayers[i], NOPE);
-					log_write("Player #%d (%s) used a %s card to block Player #%d (%s)'s %s",
+					log_write("player #%d (%s) used a %s card to block Player #%d (%s)'s %s",
 							i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
 					);
 				}
@@ -369,7 +371,7 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 						pEnv->is_noped = !pEnv->is_noped;
 						is_nope_reused = true;
 						core_remove_player_card_type(&pPlayers[i], NOPE);
-						log_write("Player #%d (%s) used a %s card to block Player #%d (%s)'s %s",
+						log_write("player #%d (%s) used a %s card to block Player #%d (%s)'s %s",
 								i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
 						);
 					}
@@ -394,6 +396,9 @@ _Bool core_game_process_player_card(Player pPlayers[], int players_count, int pl
 	if (used_card==NULL) // did the player already lost that card?
 		return false;
 
+	log_write("processing player #%d (%s)'s card [%d]%s: %s",
+			player_index+1, pPlayers[player_index].name, used_card->card.type, get_card_type_name(used_card->card.type), used_card->card.title
+	);
 	switch (used_card->card.type)
 	{
 		// with no meaning
@@ -448,9 +453,9 @@ _Bool core_game_real_choose_player_card(Player pPlayers[], int players_count, in
 		clear_input_line(); // clear the input line from junk
 	} while (*selected_card >= pPlayers[player_index].card_count); // repeat if out-of-range
 
-	printf("you chose the following card:\n");
+	printf("You chose to use the following card:\n");
 	player_print_n_card(&pPlayers[player_index], *selected_card);
-	printf("Player #%d (%s) has chose to use:\n", player_index+1, pPlayers[player_index].name);
+	log_write("player #%d (%s) has chose to use:", player_index+1, pPlayers[player_index].name);
 	player_print_log_n_card(&pPlayers[player_index], *selected_card);
 
 	return true;
@@ -466,8 +471,8 @@ _Bool core_game_ai_choose_player_card(Player pPlayers[], int players_count, int 
 
 	core_game_ai_pickup_best_card(&pPlayers[player_index], selected_card);
 
-	printf("you chose the following card:\n");
-	player_print_n_card(&pPlayers[player_index], *selected_card);
+	// printf("You chose the following card:\n");
+	// player_print_n_card(&pPlayers[player_index], *selected_card);
 
 	return true;
 }
