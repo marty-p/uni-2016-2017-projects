@@ -1,6 +1,9 @@
 #ifndef __EDJ_LOG_H__
 #define __EDJ_LOG_H__
 
+/* macro list */
+// #define LOG_IN_APPEND_MODE
+
 /* include list */
 #include "common.h"
 

@@ -215,3 +215,15 @@ CardNode * card_node_find_first_n_type_and_delete(CardNode * first, CardType n_t
 	return first;
 }
 
+int card_node_count_of_type_n(CardNode * first, CardType card_type) // node counter O(n)
+{
+	int count = 0; // counter
+	while (first != NULL) // iter till null
+	{
+		if (first->card.type==card_type)
+			count++; // incremented for each node
+		first = first->next;
+	}
+	return count;
+}
+

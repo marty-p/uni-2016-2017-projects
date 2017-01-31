@@ -21,7 +21,11 @@ void log_init(const char * log_file_name)
 	// if null, we'll initialize it
 	if (*plog_file == NULL)
 	{
+#ifdef LOG_IN_APPEND_MODE
 		*plog_file = fopen(log_file_name, "a"); // open the log file in append mode
+#else
+		*plog_file = fopen(log_file_name, "w"); // open the log file in write mode
+#endif
 		if (*plog_file == NULL) // if it fails, it will print the error
 		{
 			printf("You couldn't open the relative log file: %s\n", log_file_name);

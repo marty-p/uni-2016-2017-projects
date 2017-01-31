@@ -47,6 +47,8 @@ extern void player_print_hand(const Player * pPlayer);
 extern void player_print_n_card(const Player * pPlayer, int selected_card);
 
 extern void core_shuffle_deck_head(CardDeck * pGivenDeck);
+extern void core_player_draw_from_deck(Player * pPlayer, CardDeck * pGivenDeck);
+extern int core_deck_count_of_type_n(CardDeck * pGivenDeck, CardType card_type);
 
 #endif
 

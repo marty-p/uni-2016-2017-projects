@@ -3,6 +3,7 @@
 _Bool core_game_start(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus)
 {
 	GameEnv game_env = {0}; // game environment (not stored in the .sav file)
+	int ed_count; // exploding djanni counter
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL) // skip null ptr
 	{
 		log_write("the game has been started with a null environment...");
@@ -19,6 +20,8 @@ _Bool core_game_start(Player pPlayers[], int players_count, CardDeck * pDeck, Ga
 	// looping until we have a winner
 	do
 	{
+		ed_count = core_deck_count_of_type_n(pDeck, EXPLODING_DJANNI);
+		printf("There are still %d %s in the deck! (%.2f%% to draw one)\n", ed_count, get_card_type_name(EXPLODING_DJANNI), (double)ed_count/pDeck->count*100.0);
 		// log the turn data
 		player_log_turn_data(&pPlayers[pStatus->player_turn], pStatus);
 		// process the menu and returns false in case of quitting
@@ -70,6 +73,7 @@ _Bool core_game_pause_menu(const Player pPlayers[], int players_count, const Car
 	switch (menu_choice)
 	{
 		case '1':
+			log_write("saving...");
 			if (core_init_save_game(pPlayers, players_count, pDeck, pStatus)==false)
 			{
 				log_write("an error occurred in the core_init_save_game function...");
@@ -77,14 +81,17 @@ _Bool core_game_pause_menu(const Player pPlayers[], int players_count, const Car
 			}
 			break;
 		case '2':
+			log_write("saving and quitting...");
 			core_init_save_game(pPlayers, players_count, pDeck, pStatus);
 			return false;
 			break; // redundant line (not executed due to the return statement)
 		case 'q':
+			log_write("quitting...");
 			return false;
 			break; // redundant line (not executed due to the return statement)
 		case '0':
 		default:
+			log_write("continuing...");
 			break;
 	}
 
@@ -188,6 +195,7 @@ _Bool core_game_continue_menu(Player pPlayers[], int players_count, CardDeck * p
 					wrong_choice = true;
 					break;
 				}
+				log_write("drawing...");
 				if (core_game_card_draw(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
 				{
 					log_write("an error occurred in the core_game_card_draw function...");
@@ -201,6 +209,7 @@ _Bool core_game_continue_menu(Player pPlayers[], int players_count, CardDeck * p
 					wrong_choice = true;
 					break;
 				}
+				log_write("using a card...");
 				if (core_game_card_use(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
 				{
 					log_write("an error occurred in the core_game_card_use function...");
@@ -209,6 +218,7 @@ _Bool core_game_continue_menu(Player pPlayers[], int players_count, CardDeck * p
 				pEnv->has_used_cards = true;
 				break;
 			case 'q':
+				log_write("quitting...");
 				return false;
 				break; // redundant line (not executed due to the return statement)
 			default:
@@ -223,27 +233,37 @@ _Bool core_game_continue_menu(Player pPlayers[], int players_count, CardDeck * p
 
 _Bool core_game_card_draw(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv)
 {
-	CardNode * first_card = NULL;
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
 
-	first_card = pDeck->card_list;
-	if (first_card==NULL) // skip null ptr
+	if (pDeck->card_list==NULL) // skip null ptr
 		return false;
 
-	if (first_card->card.type==EXPLODING_DJANNI)
+	log_write("Player #%d (%s) drew the card... [%d]%s: %s",
+		pStatus->player_turn+1, pPlayers[pStatus->player_turn].name, pDeck->card_list->card.type, get_card_type_name(pDeck->card_list->card.type), pDeck->card_list->card.title
+	);
+	printf("You drew the card [%d]%s: %s!\n", pDeck->card_list->card.type, get_card_type_name(pDeck->card_list->card.type), pDeck->card_list->card.title);
+
+	if (pDeck->card_list->card.type==EXPLODING_DJANNI) // check if the first deck card is an exploding djanni
 	{
-		if (card_node_find_first_n_type(pPlayers[pStatus->player_turn].card_list, MEOOOW, NULL)==NULL)
+		if (core_player_has_in(&pPlayers[pStatus->player_turn], MEOOOW)==false) // check if the player doesn't have a meooow
 		{
-			// todo: omae wa mou shindeiru
-			pDeck->card_list = card_node_remove_head(pDeck->card_list);
-			pDeck->count--; // keep O(1)
-			pPlayers[pStatus->player_turn].is_alive=false;
+			core_remove_deck_head(pDeck); // remove the exploding djanni from the deck
+			pPlayers[pStatus->player_turn].is_alive=false; // set the player as dead
+			printf("You exploded into smithereens and died.\n");
+			log_write("Player #%d (%s) is out of game...", pStatus->player_turn+1, pPlayers[pStatus->player_turn].name);
 			return true;
 		}
-		core_shuffle_deck_head(pDeck);
-		pPlayers[pStatus->player_turn].card_list = card_node_find_first_n_type_and_delete(pPlayers[pStatus->player_turn].card_list, MEOOOW);
+		// a meooow card will be used to not die
+		core_shuffle_deck_head(pDeck); // shuffle the exploding djanni randomly in the deck
+		core_remove_player_card_type(&pPlayers[pStatus->player_turn], MEOOOW); // remove the meooow card from the player
+		printf("You used a meooow card and got saved.\n");
+		log_write("Player #%d (%s) used a meoow card and the exploding djanni has been shuffled again in the deck...", pStatus->player_turn+1, pPlayers[pStatus->player_turn].name);
+		return true;
 	}
+
+	core_player_draw_from_deck(&pPlayers[pStatus->player_turn], pDeck);
+
 	return true;
 }
 
@@ -302,8 +322,7 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 				if (get_choice=='n') // if it's no
 					continue;
 				pEnv->is_noped = !pEnv->is_noped;
-				pPlayers[i].card_list = card_node_find_first_n_type_and_delete(pPlayers[i].card_list, NOPE);
-				pPlayers[i].card_count--; // keep O(1)
+				core_remove_player_card_type(&pPlayers[i], NOPE);
 				log_write("Player #%d (%s) used a %s card to block Player #%d (%s)'s %s",
 						i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
 				);
@@ -313,8 +332,7 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 				if (false)//if (core_game_am_i_next(pPlayers, players_count, pStatus==true && core_game_ai_is_it_valuable_card_to_nope()==true)
 				{
 					pEnv->is_noped = !pEnv->is_noped;
-					pPlayers[i].card_list = card_node_find_first_n_type_and_delete(pPlayers[i].card_list, NOPE);
-					pPlayers[i].card_count--; // keep O(1)
+					core_remove_player_card_type(&pPlayers[i], NOPE);
 					log_write("Player #%d (%s) used a %s card to block Player #%d (%s)'s %s",
 							i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
 					);
@@ -364,10 +382,7 @@ _Bool core_game_process_player_card(Player pPlayers[], int players_count, int pl
 	}
 
 	// remove the card from the player's deck
-	pPlayers[player_index].card_list = card_node_remove(pPlayers[player_index].card_list, selected_card);
-	pPlayers[player_index].card_count--; // keep O(1)
-	//CardNode * prev_nope = NULL; //todo code2delete
-	//used_card = card_node_select_n(pPlayers[player_index].card_list, selected_card, prev_nope); //todo code2delete
+	core_remove_player_n_card(&pPlayers[player_index], selected_card);
 
 	return true;
 }

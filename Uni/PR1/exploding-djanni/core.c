@@ -150,6 +150,22 @@ _Bool core_player_has_in(Player * pGivenPlayer, CardType card_type)
 	return card_node_find_first_n_type(pGivenPlayer->card_list, card_type, NULL)!=NULL;
 }
 
+void core_player_draw_from_deck(Player * pPlayer, CardDeck * pGivenDeck)
+{
+	if (pPlayer!=NULL && pGivenDeck!=NULL) // skip null ptr
+	{
+		pPlayer->card_list = card_node_insert_head(pPlayer->card_list, pGivenDeck->card_list->card); // add the first given_deck's card into player's card_list
+		pGivenDeck->card_list = card_node_remove_head(pGivenDeck->card_list); // remove the first given_deck's card
+		pPlayer->card_count++; // keep O(1) card_count updated
+		pGivenDeck->count--; // keep O(1) count updated
+	}
+}
+
+int core_deck_count_of_type_n(CardDeck * pGivenDeck, CardType card_type)
+{
+	return card_node_count_of_type_n(pGivenDeck->card_list, card_type);
+}
+
 const char * get_card_type_name(CardType card_type)
 {
 	static const char * name_list[CARD_TYPE_NUM] =

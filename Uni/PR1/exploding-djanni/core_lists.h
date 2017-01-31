@@ -18,6 +18,7 @@ extern void card_node_log_print(CardNode * first);
 extern CardNode * card_node_select_n(CardNode * first, int n, CardNode ** prev);
 extern CardNode * card_node_find_first_n_type(CardNode * first, CardType n_type, CardNode ** prev);
 extern CardNode * card_node_find_first_n_type_and_delete(CardNode * first, CardType n_type, _Bool * is_deleted);
+extern int card_node_count_of_type_n(CardNode * first, CardType card_type);
 
 #endif
 
