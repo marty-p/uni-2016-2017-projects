@@ -17,9 +17,10 @@ _Bool core_game_start(Player pPlayers[], int players_count, CardDeck * pDeck, Ga
 		return false;
 	}
 
-	// looping until we have a winner
-	do
+	// looping until we have a winner (they could be all dead even before starting
+	while (core_game_check_winners(pPlayers, players_count)==false)
 	{
+		log_write("turn #%d is starting...", pStatus->player_turn);
 		ed_count = core_deck_count_of_type_n(pDeck, EXPLODING_DJANNI);
 		printf("There are still %d %s in the deck! (%.2f%% to draw one)\n", ed_count, get_card_type_name(EXPLODING_DJANNI), (double)ed_count/pDeck->count*100.0);
 		// log the turn data
@@ -36,7 +37,6 @@ _Bool core_game_start(Player pPlayers[], int players_count, CardDeck * pDeck, Ga
 		if (core_game_process(pPlayers, players_count, pDeck, pStatus, &game_env)==false)
 			return false;
 	}
-	while (core_game_check_winners(pPlayers, players_count)==false);
 
 	return true;
 }
@@ -54,6 +54,22 @@ _Bool core_game_check_winners(const Player pPlayers[], int players_count)
 		}
 	}
 	return (alive_players <= 1); // there's a winner only if 1 or less are alive
+}
+
+void core_game_print_winners(const Player pPlayers[], int players_count)
+{
+	int i; // counter for iteration
+	if (pPlayers!=NULL) // skip null ptr
+	{
+		for (i=0; i<players_count; i++) // iter all the players
+		{
+			if (pPlayers[i].is_alive==true) // increase if alive
+			{
+				printf("The player #%d (%s) has won!\n", i+1, pPlayers[i].name);
+				log_write("The player #%d (%s) has won!", i+1, pPlayers[i].name);
+			}
+		}
+	}
 }
 
 _Bool core_game_pause_menu(const Player pPlayers[], int players_count, const CardDeck * pDeck, const GameStatus * pStatus)
@@ -255,7 +271,13 @@ _Bool core_game_card_draw(Player pPlayers[], int players_count, CardDeck * pDeck
 			return true;
 		}
 		// a meooow card will be used to not die
+#ifdef _DEBUG
+		card_node_print(pDeck->card_list);
+#endif
 		core_shuffle_deck_head(pDeck); // shuffle the exploding djanni randomly in the deck
+#ifdef _DEBUG
+		card_node_print(pDeck->card_list);
+#endif
 		core_remove_player_card_type(&pPlayers[pStatus->player_turn], MEOOOW); // remove the meooow card from the player
 		printf("You used a meooow card and got saved.\n");
 		log_write("Player #%d (%s) used a meoow card and the exploding djanni has been shuffled again in the deck...", pStatus->player_turn+1, pPlayers[pStatus->player_turn].name);
