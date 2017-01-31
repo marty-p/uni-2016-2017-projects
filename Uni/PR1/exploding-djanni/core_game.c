@@ -323,7 +323,6 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 	char get_choice;
 	_Bool is_nope_reused;
 	CardNode * prev_nope = NULL;
-	//CardNode * cur_nope = NULL;
 	CardNode * used_card = NULL;
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
@@ -384,13 +383,18 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 
 _Bool core_game_process_player_card(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card)
 {
+	CardNode * used_card = NULL;
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
 
 	if (player_index>=players_count) // skip out-of-range
 		return false;
 
-	switch (selected_card)
+	used_card = card_node_select_n(pPlayers[player_index].card_list, selected_card, NULL);
+	if (used_card==NULL) // did the player already lost that card?
+		return false;
+
+	switch (used_card->card.type)
 	{
 		// with no meaning
 		case EXPLODING_DJANNI: // it should be impossible to draw it though
