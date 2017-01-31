@@ -46,7 +46,7 @@ void core_shuffle_deck(CardDeck * pGivenDeck)
 	int i; // counter for iteration
 	Card tmp_card; // dummy card for shifting values
 	int random_number; // dummy variable for random numbers
-	if (pGivenDeck!=NULL)
+	if (pGivenDeck!=NULL) // skip null ptr
 	{
 		// create a dynamic array to temporary store all the cards
 		cards = calloc(pGivenDeck->count, sizeof(Card*)); // deck.count==O(1) instead of card_node_count(deck.card_list)==O(n)
@@ -73,7 +73,7 @@ void core_shuffle_deck(CardDeck * pGivenDeck)
 			random_number = get_random_number(0, pGivenDeck->count-1);
 			if (random_number==i)
 				continue;
-			// shifting values
+			// swapping values
 			tmp_card = *cards[i];
 			*cards[i] = *cards[random_number];
 			*cards[random_number] = tmp_card;
@@ -94,7 +94,7 @@ void core_shuffle_deck_head(CardDeck * pGivenDeck)
 	{
 		first_card = pGivenDeck->card_list->card; // save first
 		core_remove_deck_head(pGivenDeck); // remove first
-		random_number = get_random_number(0, pGivenDeck->count);
+		random_number = get_random_number(0, pGivenDeck->count); // it will stop count-1, so it should be safe not decreasing count by 1 in here
 		core_insert_deck_in_n(pGivenDeck, first_card, random_number); //re-add first
 	}
 }
@@ -306,6 +306,17 @@ void player_print_n_card(const Player * pPlayer, int selected_card)
 	tmp = card_node_select_n(pPlayer->card_list, selected_card, NULL);
 	if (tmp!=NULL)
 		printf("\t(%d) [%d]%s: %s\n", selected_card, tmp->card.type, get_card_type_name(tmp->card.type), tmp->card.title);
+}
+
+void player_print_log_n_card(const Player * pPlayer, int selected_card)
+{
+	CardNode * tmp = NULL;
+	if (pPlayer==NULL) // skip null ptr
+		return;
+
+	tmp = card_node_select_n(pPlayer->card_list, selected_card, NULL);
+	if (tmp!=NULL)
+		log_write("\t(%d) [%d]%s: %s\n", selected_card, tmp->card.type, get_card_type_name(tmp->card.type), tmp->card.title);
 }
 
 void deck_print_cards(const CardDeck * pDeck)

@@ -321,6 +321,7 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 {
 	int i;
 	char get_choice;
+	_Bool is_nope_reused;
 	CardNode * prev_nope = NULL;
 	//CardNode * cur_nope = NULL;
 	CardNode * used_card = NULL;
@@ -334,44 +335,53 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 	if (used_card==NULL) // did the player already lost that card?
 		return false;
 
-	for (i=0; i<players_count; i++)
+	pEnv->is_noped = false;
+	do
 	{
-		if (pPlayers[i].is_alive==false) // skip dead players
-			continue;
-		if (i==player_index) // skip yourself
-			continue;
-		if (card_node_find_first_n_type(pPlayers[i].card_list, NOPE, &prev_nope)==NULL)
+		is_nope_reused = false;
+		for (i=0; i<players_count; i++)
 		{
-			if (pPlayers[i].type==REAL)
+			if (pPlayers[i].is_alive==false) // skip dead players
+				continue;
+			if (i==player_index) // skip yourself
+				continue;
+			if (card_node_find_first_n_type(pPlayers[i].card_list, NOPE, &prev_nope)==NULL)
 			{
-				printf("Player #%d (%s), do you want to use a %s card to block Player #%d (%s)'s %s? (any:yes, n:no)\n",
-						i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
-				);
-				scanf("%c", &get_choice);
-				clear_input_line(); // clear the input line from junk
-				if (get_choice=='n') // if it's no
-					continue;
-				pEnv->is_noped = !pEnv->is_noped;
-				core_remove_player_card_type(&pPlayers[i], NOPE);
-				log_write("Player #%d (%s) used a %s card to block Player #%d (%s)'s %s",
-						i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
-				);
-			}
-			else if (pPlayers[i].type==AI)
-			{
-				if (false)//if (core_game_am_i_next(pPlayers, players_count, pStatus==true && core_game_ai_is_it_valuable_card_to_nope()==true)
+				if (pPlayers[i].type==REAL)
 				{
+					printf("Player #%d (%s), do you want to use a %s card to block Player #%d (%s)'s %s? (any:yes, n:no)\n",
+							i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
+					);
+					scanf("%c", &get_choice);
+					clear_input_line(); // clear the input line from junk
+					if (get_choice=='n') // if it's no
+						continue;
 					pEnv->is_noped = !pEnv->is_noped;
+					is_nope_reused = true;
 					core_remove_player_card_type(&pPlayers[i], NOPE);
 					log_write("Player #%d (%s) used a %s card to block Player #%d (%s)'s %s",
 							i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
 					);
 				}
+				else if (pPlayers[i].type==AI)
+				{
+					if (false)//if (core_game_am_i_next(pPlayers, players_count, pStatus==true && core_game_ai_is_it_valuable_card_to_nope()==true)
+					{
+						pEnv->is_noped = !pEnv->is_noped;
+						is_nope_reused = true;
+						core_remove_player_card_type(&pPlayers[i], NOPE);
+						log_write("Player #%d (%s) used a %s card to block Player #%d (%s)'s %s",
+								i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
+						);
+					}
+				}
 			}
 		}
 	}
+	while (is_nope_reused==true); // repeat the loop in case someone uses a nope
 	return pEnv->is_noped;
 }
+
 _Bool core_game_process_player_card(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card)
 {
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
@@ -436,6 +446,8 @@ _Bool core_game_real_choose_player_card(Player pPlayers[], int players_count, in
 
 	printf("you chose the following card:\n");
 	player_print_n_card(&pPlayers[player_index], *selected_card);
+	printf("Player #%d (%s) has chose to use:\n", player_index+1, pPlayers[player_index].name);
+	player_print_log_n_card(&pPlayers[player_index], *selected_card);
 
 	return true;
 }
