@@ -237,7 +237,7 @@ void players_log_data(const Player * pPlayers, int players_count)
 		{
 			// print the player's status and all the relative cards
 			log_write("Player #%d's name: %s, is_alive: %d, type: [%u]%s", i+1, pPlayers[i].name, pPlayers[i].is_alive, pPlayers[i].type, get_player_type_name(pPlayers[i].type));
-			log_write("List of the player #%d's cards: (count: %d)", i+1, pPlayers[i].card_count);
+			log_write("List of the player #%d's cards: (count: %d==%d)", i+1, pPlayers[i].card_count, card_node_count(pPlayers[i].card_list));
 			card_node_log_print(pPlayers[i].card_list);
 		}
 	}
@@ -249,7 +249,7 @@ void player_log_turn_data(const Player * pPlayer, const GameStatus * pStatus)
 	{
 		// log the player's status and the relative cards
 		log_write("Turn #%d: Player #%d's name: %s, is_alive: %d, type: [%u]%s, is_attacked: %d", pStatus->total_turns, pStatus->player_turn+1, pPlayer->name, pPlayer->is_alive, pPlayer->type, get_player_type_name(pPlayer->type), pStatus->is_attacked);
-		log_write("List of the player #%d's cards: (count: %d)", pStatus->player_turn+1, pPlayer->card_count);
+		log_write("List of the player #%d's cards: (count: %d==%d)", pStatus->player_turn+1, pPlayer->card_count, card_node_count(pPlayer->card_list));
 		card_node_log_print(pPlayer->card_list);
 	}
 }
@@ -288,5 +288,17 @@ void player_print_n_card(const Player * pPlayer, int selected_card)
 	tmp = card_node_select_n(pPlayer->card_list, selected_card, NULL);
 	if (tmp!=NULL)
 		printf("\t(%d) [%d]%s: %s\n", selected_card, tmp->card.type, get_card_type_name(tmp->card.type), tmp->card.title);
+}
+
+void deck_print_cards(const CardDeck * pDeck)
+{
+	printf("deck: (count %d==%d)\n", pDeck->count, card_node_count(pDeck->card_list));
+	card_node_print(pDeck->card_list);
+}
+
+void deck_print_log_cards(const CardDeck * pDeck)
+{
+	log_write("deck: (count %d==%d)", pDeck->count, card_node_count(pDeck->card_list));
+	card_node_log_print(pDeck->card_list);
 }
 

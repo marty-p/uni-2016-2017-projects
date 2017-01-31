@@ -272,11 +272,11 @@ _Bool core_game_card_draw(Player pPlayers[], int players_count, CardDeck * pDeck
 		}
 		// a meooow card will be used to not die
 #ifdef _DEBUG
-		card_node_print(pDeck->card_list);
+		deck_print_log_cards(pDeck);
 #endif
 		core_shuffle_deck_head(pDeck); // shuffle the exploding djanni randomly in the deck
 #ifdef _DEBUG
-		card_node_print(pDeck->card_list);
+		deck_print_log_cards(pDeck);
 #endif
 		core_remove_player_card_type(&pPlayers[pStatus->player_turn], MEOOOW); // remove the meooow card from the player
 		printf("You used a meooow card and got saved.\n");

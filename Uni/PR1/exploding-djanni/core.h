@@ -50,5 +50,8 @@ extern void core_shuffle_deck_head(CardDeck * pGivenDeck);
 extern void core_player_draw_from_deck(Player * pPlayer, CardDeck * pGivenDeck);
 extern int core_deck_count_of_type_n(CardDeck * pGivenDeck, CardType card_type);
 
+extern void deck_print_cards(const CardDeck * pDeck);
+extern void deck_print_log_cards(const CardDeck * pDeck);
+
 #endif
 
