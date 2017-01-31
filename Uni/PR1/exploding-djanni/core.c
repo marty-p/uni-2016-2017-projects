@@ -41,6 +41,9 @@ void core_shutdown(Player pPlayers[], int players_count, CardDeck * pDeck)
 
 void core_shuffle_deck(CardDeck * pGivenDeck)
 {
+#ifdef _DEBUG
+	deck_print_log_cards(pGivenDeck);
+#endif
 	Card ** cards = NULL; // used to store all the cards' ptr for easy shuffling
 	CardNode * tmp = NULL; // points to given_deck->card_list->head
 	int i; // counter for iteration
@@ -83,6 +86,9 @@ void core_shuffle_deck(CardDeck * pGivenDeck)
 		free(cards);
 		log_write("the deck has been shuffled");
 	}
+#ifdef _DEBUG
+	deck_print_log_cards(pGivenDeck);
+#endif
 }
 
 void core_shuffle_deck_head(CardDeck * pGivenDeck)
@@ -319,15 +325,27 @@ void player_print_log_n_card(const Player * pPlayer, int selected_card)
 		log_write("\t(%d) [%d]%s: %s\n", selected_card, tmp->card.type, get_card_type_name(tmp->card.type), tmp->card.title);
 }
 
+void deck_print_count(const CardDeck * pDeck)
+{
+	if (pDeck!=NULL)
+		printf("deck: (count %d==%d)\n", pDeck->count, card_node_count(pDeck->card_list));
+}
+
+void deck_print_log_count(const CardDeck * pDeck)
+{
+	if (pDeck!=NULL)
+		log_write("deck: (count %d==%d)", pDeck->count, card_node_count(pDeck->card_list));
+}
+
 void deck_print_cards(const CardDeck * pDeck)
 {
-	printf("deck: (count %d==%d)\n", pDeck->count, card_node_count(pDeck->card_list));
+	deck_print_count(pDeck);
 	card_node_print(pDeck->card_list);
 }
 
 void deck_print_log_cards(const CardDeck * pDeck)
 {
-	log_write("deck: (count %d==%d)", pDeck->count, card_node_count(pDeck->card_list));
+	deck_print_log_count(pDeck);
 	card_node_log_print(pDeck->card_list);
 }
 
