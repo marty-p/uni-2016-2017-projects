@@ -84,6 +84,32 @@ void core_shuffle_deck(CardDeck * pGivenDeck)
 	}
 }
 
+void core_shuffle_deck_head(CardDeck * pGivenDeck)
+{
+	CardNode * tmp = NULL; // points to given_deck->card_list->head
+	CardNode * prevtmp = NULL;
+	CardNode * oldhead = NULL;
+	CardNode * newhead = NULL;
+	int count = 1; // counter for iteration
+	int random_number; // dummy variable for random numbers
+	if (pGivenDeck!=NULL && pGivenDeck->card_list!=NULL && pGivenDeck->card_list->next!=NULL) // skip null ptr or if the deck's length is <=1
+	{
+		oldhead = pGivenDeck->card_list;
+		newhead = pGivenDeck->card_list->next;
+		random_number = get_random_number(count, pGivenDeck->count-1);
+		tmp = newhead;
+		while (tmp!=NULL && count++<random_number)
+		{
+			prevtmp=tmp;
+			tmp=tmp->next;
+		}
+		if (prevtmp==NULL) // skip if it's head again
+			return;
+		prevtmp->next = oldhead;
+		oldhead->next = tmp;
+	}
+}
+
 const char * get_card_type_name(CardType card_type)
 {
 	static const char * name_list[CARD_TYPE_NUM] =

@@ -82,6 +82,7 @@ typedef struct
 	_Bool has_attacked;
 	_Bool is_noped;
 	_Bool has_drawn;
+	_Bool has_used_cards;
 } GameEnv; // game environment (not stored in .sav)
 
 #endif

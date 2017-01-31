@@ -24,5 +24,7 @@ extern _Bool core_game_ai_choose_player_card(Player pPlayers[], int players_coun
 
 extern _Bool core_game_ai_pickup_best_card(const Player * pPlayer, int * selected_card);
 
+extern _Bool core_game_process_player_card(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card);
+
 #endif
 

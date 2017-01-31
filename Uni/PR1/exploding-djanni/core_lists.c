@@ -114,7 +114,7 @@ void card_node_log_print(CardNode * first)
 	}
 }
 
-CardNode * card_node_select_n(CardNode * first, int n, CardNode * prev)
+CardNode * card_node_select_n(CardNode * first, int n, CardNode ** prev)
 {
 	int count=0;
 	CardNode * tmp_prev = NULL;
@@ -124,7 +124,7 @@ CardNode * card_node_select_n(CardNode * first, int n, CardNode * prev)
 		if (count==n)
 		{
 			if (prev!=NULL)
-				prev=tmp_prev;
+				*prev=tmp_prev;
 			return first;
 		}
 		tmp_prev = first;
@@ -132,5 +132,39 @@ CardNode * card_node_select_n(CardNode * first, int n, CardNode * prev)
 		count++;
 	}
 	return NULL;
+}
+
+CardNode * card_node_find_first_n_type(CardNode * first, CardType n_type, CardNode ** prev)
+{
+	CardNode * tmp_prev = NULL;
+
+	while (first!=NULL) // skip null ptr
+	{
+		if (n_type==first->card.type)
+		{
+			if (prev!=NULL)
+				*prev=tmp_prev;
+			return first;
+		}
+		tmp_prev = first;
+		first = first->next;
+	}
+	return NULL;
+}
+
+CardNode * card_node_find_first_n_type_and_delete(CardNode * first, CardType n_type)
+{
+	CardNode * tmp_prev = NULL;
+	CardNode * tmp = NULL;
+	tmp = card_node_find_first_n_type(first, n_type, &tmp_prev);
+	if (tmp!=NULL)
+	{
+		if (tmp_prev==NULL) // head
+			return card_node_remove_head(first);
+		tmp_prev->next = tmp->next;
+		free(tmp);
+		tmp=NULL;
+	}
+	return first;
 }
 

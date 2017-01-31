@@ -40,5 +40,7 @@ extern void status_log_data(const GameStatus * pStatus);
 extern void player_print_hand(const Player * pPlayer);
 extern void player_print_n_card(const Player * pPlayer, int selected_card);
 
+extern void core_shuffle_deck_head(CardDeck * pGivenDeck);
+
 #endif
 
