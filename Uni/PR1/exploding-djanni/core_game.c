@@ -456,7 +456,12 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 			for (i=0; i<players_count; i++)
 			{
 				if (i!=player_index && pPlayers[i].is_alive==true)
-					printf("(%d) Player #%d (%s)\n", i, i+1, pPlayers[i].name);
+				{
+					printf("(%d) Player #%d (%s)", i, i+1, pPlayers[i].name);
+					if (pPlayers[i].card_count <= 0) // check if empty ended
+						printf(" (empty-handed)");
+					printf("\n");
+				}
 			}
 			scanf("%d", &selected_player_index);
 			clear_input_line(); // clear the input line from junk
