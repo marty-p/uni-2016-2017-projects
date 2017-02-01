@@ -41,14 +41,14 @@ void core_shutdown(Player pPlayers[], int players_count, CardDeck * pDeck)
 
 void core_shuffle_deck(CardDeck * pGivenDeck)
 {
-#ifdef _DEBUG
-	deck_print_log_cards(pGivenDeck);
-#endif
 	Card ** cards = NULL; // used to store all the cards' ptr for easy shuffling
 	CardNode * tmp = NULL; // points to given_deck->card_list->head
 	int i; // counter for iteration
 	Card tmp_card; // dummy card for shifting values
 	int random_number; // dummy variable for random numbers
+#ifdef _DEBUG
+	deck_print_log_cards(pGivenDeck);
+#endif
 	if (pGivenDeck!=NULL) // skip null ptr
 	{
 		// create a dynamic array to temporary store all the cards
