@@ -13,7 +13,6 @@
 #define STARTING_OTHER_CARDS_NUM 4 // number of other cards to give to each player on first turn
 #define STARTING_MEOOOW_NUM 1 // number of meooow cards to give to each player on first turn
 #define SEE_THE_FUTURE_FORESEE_NUM 3 // number of cards you can foresee with the see the future card
-#define DJANNI_COUPLE_MATCH_NUM 1 // +1;
 #define DJANNI_TRIPLE_MATCH_NUM 2 // +1;
 #define SAVEFILE_FILENAME "partita.sav" // default savefile filename (used if you input a blank string)
 #define FILEPATH_LEN 259 // +1; the same of MAX_PATH on windows
@@ -38,6 +37,7 @@ extern void core_remove_deck_n_card(CardDeck * pGivenDeck, int selected_card);
 extern void core_remove_deck_head(CardDeck * pGivenDeck);
 extern void core_remove_player_n_card(Player * pGivenPlayer, int selected_card);
 extern void core_remove_player_card_type(Player * pGivenPlayer, CardType card_type);
+extern void core_remove_player_first_matched_card(Player * pGivenPlayer, Card copy_card);
 extern _Bool core_player_has_in(Player * pGivenPlayer, CardType card_type);
 
 extern void core_player_give_card_n_to_player(Player * pGiver, Player * pReceiver, int selected_card);

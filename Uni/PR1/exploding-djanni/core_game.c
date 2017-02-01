@@ -575,6 +575,8 @@ _Bool core_game_card_use_djanni_cards(Player pPlayers[], int players_count, int 
 	else // if only the single mode is available, no need to ask
 		chosen_mode = DM_SINGLE;
 
+	log_write("player #%d (%s) chose the %s djanni card mode...", player_index+1, pPlayers[player_index].name, get_djanni_mode_name(chosen_mode));
+
 	// process the mode
 	switch (chosen_mode)
 	{
@@ -582,11 +584,87 @@ _Bool core_game_card_use_djanni_cards(Player pPlayers[], int players_count, int 
 			return false; // it will be removed externally since we did nothing
 			break;
 		case DM_COUPLE:
+			if (core_game_card_use_djanni_cards_couple(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
+				return false;
+			break;
 		case DM_TRIPLE:
-			// core_remove_player_n_card(&pPlayers[player_index], selected_card); // internal delete
+			if (core_game_card_use_djanni_cards_triple(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
+				return false;
 			break;
 	}
 
+	return true;
+}
+
+_Bool core_game_card_use_djanni_cards_couple(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card)
+{
+	int chosen_set; // chosen set to use
+	_Bool right_choice; // flag to stop the loop
+	_Bool selected_player_index; // selected player which you take the card
+	CardNode * used_card = NULL; // used card ptr
+	CardNode * used_card2 = NULL; // second card to use ptr
+	Card copy_card = {{0}}; // copy of used card
+	Card copy_card2 = {{0}}; // copy of second card to use
+	CardNode * tmp = NULL; // for itering
+	int i=0; // for itering
+	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
+		return false;
+
+	if (player_index>=players_count) // skip out-of-range
+		return false;
+
+	if (core_game_card_can_use_djanni_cards_couple(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false) // double check
+		return false;
+
+	used_card = card_node_select_n(pPlayers[player_index].card_list, selected_card, NULL);
+	if (used_card==NULL) // have the player already lost that card?
+		return false;
+
+	do
+	{
+		// reset iter variables
+		i=0;
+		tmp = pPlayers[player_index].card_list;
+		right_choice = false;
+
+		// check the available sets
+		printf("Which kind of couple set do you want to use?\n");
+		while (tmp!=NULL)
+		{
+			if (i!=selected_card && tmp->card.type==DJANNI_CARDS)
+			{
+				if (strcmp(used_card->card.title, tmp->card.title) != 0)
+					printf("(%d) [%d]%s: %s\n", i, tmp->card.type, get_card_type_name(tmp->card.type), tmp->card.title);
+			}
+			tmp = tmp->next;
+			i++;
+		}
+		scanf("%d", &chosen_set); // grab the value
+		clear_input_line(); // clear the input line from junk
+
+		// select the chosen card
+		used_card2 = card_node_select_n(pPlayers[player_index].card_list, chosen_set, NULL);
+		if (used_card2!=NULL) // have the player selected the wrong set?
+		{
+			right_choice = (used_card2->card.type==DJANNI_CARDS && strcmp(used_card->card.title, used_card2->card.title) != 0); // repeat if wrong
+			if (right_choice==true)
+			{
+				copy_card = used_card->card;
+				copy_card2 = used_card2->card;
+			}
+		}
+	}
+	while (right_choice==false);
+
+	// choose a card of the other players as hidden and take it
+	core_remove_player_first_matched_card(&pPlayers[player_index], copy_card); // delete the used card
+	core_remove_player_first_matched_card(&pPlayers[player_index], copy_card2); // delete the second card
+
+	return true;
+}
+
+_Bool core_game_card_use_djanni_cards_triple(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card)
+{
 	return true;
 }
 
@@ -595,7 +673,6 @@ _Bool core_game_card_can_use_djanni_cards_couple(Player pPlayers[], int players_
 	CardNode * used_card = NULL;
 	CardNode * tmp = NULL;
 	int i;
-	int match_count = 0;
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
 
@@ -608,18 +685,18 @@ _Bool core_game_card_can_use_djanni_cards_couple(Player pPlayers[], int players_
 
 	tmp = pPlayers[player_index].card_list;
 	i = 0;
-	while (tmp!=NULL && match_count<DJANNI_COUPLE_MATCH_NUM)
+	while (tmp!=NULL)
 	{
 		if (selected_card!=i && tmp->card.type==DJANNI_CARDS) // skip itself
 		{
 			if (strcmp(used_card->card.title, tmp->card.title) != 0) // increase if they have different titles
-				match_count++;
+				return true;
 		}
 		tmp = tmp->next;
 		i++;
 	}
 
-	return match_count>=DJANNI_COUPLE_MATCH_NUM;
+	return false;
 }
 
 _Bool core_game_card_can_use_djanni_cards_triple(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card)

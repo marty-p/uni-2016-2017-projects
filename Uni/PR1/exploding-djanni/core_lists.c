@@ -237,6 +237,46 @@ CardNode * card_node_find_first_n_type_and_delete(CardNode * first, CardType n_t
 	return first;
 }
 
+CardNode * card_node_find_first_matched_card(CardNode * first, Card copy_card, CardNode ** prev)
+{
+	CardNode * tmp_prev = NULL;
+
+	while (first!=NULL) // skip null ptr
+	{
+		if (copy_card.type==first->card.type && strcmp(copy_card.title, first->card.title)==0) // if type and title are the same
+		{
+			if (prev!=NULL)
+				*prev=tmp_prev;
+			return first;
+		}
+		tmp_prev = first;
+		first = first->next;
+	}
+	return NULL;
+}
+
+CardNode * card_node_find_first_matched_card_and_delete(CardNode * first, Card copy_card, _Bool * is_deleted)
+{
+	CardNode * tmp_prev = NULL;
+	CardNode * tmp = NULL;
+	if (is_deleted!=NULL)
+		*is_deleted = false;
+	tmp = card_node_find_first_matched_card(first, copy_card, &tmp_prev);
+	if (tmp!=NULL)
+	{
+		if (is_deleted!=NULL)
+			*is_deleted = true;
+		if (tmp_prev==NULL) // head
+		{
+			return card_node_remove_head(first);
+		}
+		tmp_prev->next = tmp->next;
+		free(tmp);
+		tmp=NULL;
+	}
+	return first;
+}
+
 int card_node_count_of_type_n(CardNode * first, CardType card_type) // node counter O(n)
 {
 	int count = 0; // counter

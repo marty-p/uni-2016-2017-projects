@@ -170,6 +170,14 @@ void core_remove_player_card_type(Player * pGivenPlayer, CardType card_type)
 		pGivenPlayer->card_count--; // keep O(1)
 }
 
+void core_remove_player_first_matched_card(Player * pGivenPlayer, Card copy_card)
+{
+	_Bool is_removed = false;
+	pGivenPlayer->card_list = card_node_find_first_matched_card_and_delete(pGivenPlayer->card_list, copy_card, &is_removed);
+	if (is_removed==true)
+		pGivenPlayer->card_count--; // keep O(1)
+}
+
 _Bool core_player_has_in(Player * pGivenPlayer, CardType card_type)
 {
 	return card_node_find_first_n_type(pGivenPlayer->card_list, card_type, NULL)!=NULL;
