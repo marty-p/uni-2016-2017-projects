@@ -458,7 +458,7 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 				if (i!=player_index && pPlayers[i].is_alive==true)
 				{
 					printf("(%d) Player #%d (%s)", i, i+1, pPlayers[i].name);
-					if (pPlayers[i].card_count <= 0) // check if empty ended
+					if (pPlayers[i].card_count <= 0) // check if empty-handed
 						printf(" (empty-handed)");
 					printf("\n");
 				}
@@ -472,6 +472,13 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 	{
 		// todo
 		selected_player_index = 0;
+	}
+
+	// skip empty-handed players (the card will be consumed anyway)
+	if (pPlayers[selected_player_index].card_count <= 0)
+	{
+		printf("The Player #%d (%s) has no more cards.\n", selected_player_index+1, pPlayers[selected_player_index].name);
+		return false;
 	}
 
 	log_write("switching interaction to player #%d (%s)...", selected_player_index+1, pPlayers[selected_player_index].name);
@@ -561,7 +568,7 @@ _Bool core_game_card_use_djanni_cards(Player pPlayers[], int players_count, int 
 			if (can_triple==true)
 				printf("%u. Triple Mode\n", DM_TRIPLE, get_djanni_mode_name(DM_TRIPLE));
 			scanf("%u", &chosen_mode);
-			// clear
+			clear_input_line(); // clear the input line from junk
 		}
 		while (chosen_mode>=DJANNI_MODE_NUM || (chosen_mode==DM_COUPLE && can_couple==false) || (chosen_mode==DM_TRIPLE && can_triple==false)); // note: it's unsigned
 	}
