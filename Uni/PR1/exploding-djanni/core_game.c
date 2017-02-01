@@ -468,7 +468,7 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 		// todo
 	}
 
-	log_write("switching interaction to player #%d (%s)...\n", selected_player_index+1, pPlayers[selected_player_index].name);
+	log_write("switching interaction to player #%d (%s)...", selected_player_index+1, pPlayers[selected_player_index].name);
 #ifdef CLEAR_CONSOLE_EACH_TURN
 	printf("Waiting for %d seconds before cleaning the console!\n", CLEAR_CONSOLE_TIME_WAIT); // wait three seconds
 	wait_for_n_seconds(CLEAR_CONSOLE_TIME_WAIT);
@@ -484,7 +484,7 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 	{
 		printf("Player #%d (%s), which card do you want to give?\n");
 		if (core_game_real_choose_player_card(pPlayers, players_count, selected_player_index, pDeck, pStatus, pEnv, &selected_player_card)==false)
-			return true; // after all... it's player's fault for choosing an empty hand (in case of returning false due to empty hand)
+			return false;
 	}
 	else if (pPlayers[player_index].type==AI)
 	{
@@ -505,7 +505,7 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 			player_index+1, pPlayers[player_index].name
 	);
 
-	log_write("switching interaction to player #%d (%s)...\n", player_index+1, pPlayers[player_index].name);
+	log_write("switching interaction to player #%d (%s)...", player_index+1, pPlayers[player_index].name);
 #ifdef CLEAR_CONSOLE_EACH_TURN
 	printf("Waiting for %d seconds before cleaning the console!\n", CLEAR_CONSOLE_TIME_WAIT); // wait three seconds
 	wait_for_n_seconds(CLEAR_CONSOLE_TIME_WAIT);
@@ -590,7 +590,8 @@ _Bool core_game_process_player_card(Player pPlayers[], int players_count, int pl
 			break;
 		case FAVOR: // ask to another player a card (chosen by the other player)
 			if (core_game_card_can_nope(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
-				core_game_card_use_favor(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv);
+				if (core_game_card_use_favor(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv)==true)
+					selected_card++; // we received a card... it must be shifted by 1
 			break;
 		case DJANNI_CARDS: // it has 3 modes... single which does nothing, double if two different djanni cards are used, and triple if three same djanni cards are used
 			if (core_game_card_can_nope(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
