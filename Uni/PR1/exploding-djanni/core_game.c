@@ -593,6 +593,9 @@ _Bool core_game_card_use_djanni_cards(Player pPlayers[], int players_count, int 
 _Bool core_game_card_can_use_djanni_cards_couple(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card)
 {
 	CardNode * used_card = NULL;
+	CardNode * tmp = NULL;
+	int i;
+	int match_count = 0;
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
 
@@ -603,13 +606,28 @@ _Bool core_game_card_can_use_djanni_cards_couple(Player pPlayers[], int players_
 	if (used_card==NULL) // have the player already lost that card?
 		return false;
 
-	// log_write("player #%d (%s) is going to select a djanni card mode...", player_index+1, pPlayers[player_index].name);
-	return true;
+	tmp = pPlayers[player_index].card_list;
+	i = 0;
+	while (tmp!=NULL && match_count<DJANNI_COUPLE_MATCH_NUM)
+	{
+		if (selected_card!=i && tmp->card.type==DJANNI_CARDS) // skip itself
+		{
+			if (strcmp(used_card->card.title, tmp->card.title) != 0) // increase if they have different titles
+				match_count++;
+		}
+		tmp = tmp->next;
+		i++;
+	}
+
+	return match_count>=DJANNI_COUPLE_MATCH_NUM;
 }
 
 _Bool core_game_card_can_use_djanni_cards_triple(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card)
 {
 	CardNode * used_card = NULL;
+	CardNode * tmp = NULL;
+	int i;
+	int match_count = 0;
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
 
@@ -620,8 +638,20 @@ _Bool core_game_card_can_use_djanni_cards_triple(Player pPlayers[], int players_
 	if (used_card==NULL) // have the player already lost that card?
 		return false;
 
-	// log_write("player #%d (%s) is going to select a djanni card mode...", player_index+1, pPlayers[player_index].name);
-	return true;
+	tmp = pPlayers[player_index].card_list;
+	i = 0;
+	while (tmp!=NULL && match_count<DJANNI_TRIPLE_MATCH_NUM)
+	{
+		if (selected_card!=i && tmp->card.type==DJANNI_CARDS) // skip itself
+		{
+			if (strcmp(used_card->card.title, tmp->card.title) == 0) // increase if they have same titles
+				match_count++;
+		}
+		tmp = tmp->next;
+		i++;
+	}
+
+	return match_count>=DJANNI_TRIPLE_MATCH_NUM;
 }
 
 _Bool core_game_process_player_card(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card)
