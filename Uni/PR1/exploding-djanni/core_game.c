@@ -216,7 +216,7 @@ _Bool core_game_continue_menu(Player pPlayers[], int players_count, CardDeck * p
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
 
-	printf("Player #%d (%s)'s turn!\n", pStatus->player_turn+1, pPlayers[pStatus->player_turn].name);
+	printf("Player #%d (%s)'s turn! (Turn #%d)\n", pStatus->player_turn+1, pPlayers[pStatus->player_turn].name, pStatus->total_turns);
 	printf("List of the current cards:\n");
 	player_print_hand(&pPlayers[pStatus->player_turn]);
 

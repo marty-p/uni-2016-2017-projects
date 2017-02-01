@@ -24,7 +24,7 @@ void clear_console(void) // clear the console
 
 void wait_for_n_seconds(int seconds)
 {
-	int end_time = time(NULL) + seconds; // the only "standard" way to keep the cpu busy for n seconds
+	time_t end_time = time(NULL) + seconds; // the only "standard" way to keep the cpu busy for n seconds
 	while (time(0) < end_time)
 		continue;
 }

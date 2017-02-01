@@ -2,15 +2,20 @@
 #define __EDJ_COMMON_H__
 
 /* macro list */
-#ifndef _DEBUG // already defined in visual studio
-//#define _DEBUG
+#ifdef _MSC_VER // already defined in visual studio
+#undef _DEBUG
 #endif
-#define CURRENT_DATE_LEN 19 // +1;
 
-#define CLEAR_CONSOLE_EACH_TURN
-#ifdef CLEAR_CONSOLE_EACH_TURN
-#define CLEAR_CONSOLE_TIME_WAIT 3 // n seconds
+#ifndef _DEBUG
+// #define _DEBUG // debug flag
 #endif
+
+#define CLEAR_CONSOLE_EACH_TURN // clear the console each turn
+#ifdef CLEAR_CONSOLE_EACH_TURN
+#define CLEAR_CONSOLE_TIME_WAIT 3 // n seconds to wait before cleaning
+#endif
+
+#define CURRENT_DATE_LEN 19 // +1; current data format length
 
 /* include list */
 #include <stdio.h> // almost all i/o and file

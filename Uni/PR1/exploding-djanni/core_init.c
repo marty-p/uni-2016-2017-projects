@@ -128,6 +128,7 @@ _Bool core_init_load_game(Player pPlayers[], int players_count, CardDeck * pDeck
 	status_log_data(pStatus); // log the loaded status
 
 	log_write("the save file %s has been successfully loaded", savefile_path);
+	printf("The save file %s has been successfully loaded!\n", savefile_path);
 	return true;
 }
 
