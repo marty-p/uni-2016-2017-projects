@@ -22,6 +22,13 @@ void clear_console(void) // clear the console
 #endif
 }
 
+void wait_for_n_seconds(int seconds)
+{
+	int end_time = time(NULL) + seconds; // the only "standard" way to keep the cpu busy for n seconds
+	while (time(0) < end_time)
+		continue;
+}
+
 int get_random_number(int min, int max)
 {
 	return min + rand() % (max-min+1); // generates a random number between min and max

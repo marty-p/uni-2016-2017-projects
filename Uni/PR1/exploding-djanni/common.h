@@ -3,9 +3,14 @@
 
 /* macro list */
 #ifndef _DEBUG // already defined in visual studio
-#define _DEBUG
+//#define _DEBUG
 #endif
 #define CURRENT_DATE_LEN 19 // +1;
+
+#define CLEAR_CONSOLE_EACH_TURN
+#ifdef CLEAR_CONSOLE_EACH_TURN
+#define CLEAR_CONSOLE_TIME_WAIT 3 // n seconds
+#endif
 
 /* include list */
 #include <stdio.h> // almost all i/o and file
@@ -27,6 +32,7 @@
 extern void clear_input_line(void);
 extern void clear_file_input_line(FILE * fp);
 extern void clear_console(void);
+extern void wait_for_n_seconds(int seconds);
 extern int get_random_number(int min, int max);
 extern void get_current_date_format(char * datebuf, int datebuf_len);
 

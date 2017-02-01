@@ -19,6 +19,11 @@ _Bool core_game_start(Player pPlayers[], int players_count, CardDeck * pDeck, Ga
 	// looping until we have a winner (they could be all dead even before starting
 	while (core_game_check_winners(pPlayers, players_count)==false)
 	{
+#ifdef CLEAR_CONSOLE_EACH_TURN
+		printf("Waiting for %d seconds before cleaning the console!\n", CLEAR_CONSOLE_TIME_WAIT); // wait three seconds
+		wait_for_n_seconds(CLEAR_CONSOLE_TIME_WAIT);
+		clear_console();
+#endif
 		log_write("turn #%d is starting...", pStatus->total_turns);
 
 		// process the menu and returns false in case of quitting
@@ -211,6 +216,10 @@ _Bool core_game_continue_menu(Player pPlayers[], int players_count, CardDeck * p
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
 
+	printf("Player #%d (%s)'s turn!\n", pStatus->player_turn+1, pPlayers[pStatus->player_turn].name);
+	printf("List of the current cards:\n");
+	player_print_hand(&pPlayers[pStatus->player_turn]);
+
 	do
 	{
 		player_log_turn_data(&pPlayers[pStatus->player_turn], pStatus);
@@ -355,7 +364,7 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 		{
 			if (pPlayers[i].is_alive==false) // skip dead players
 				continue;
-			if (i==player_index) // skip yourself
+			if (i==player_index && is_nope_reused==false) // skip yourself when "blocking", allowed when "unblocking"
 				continue;
 			if (core_player_has_in(&pPlayers[i], NOPE)==true)
 			{
@@ -363,11 +372,11 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 				{
 					if (is_nope_reused==false)
 						printf("Player #%d (%s), do you want to use a %s card to block Player #%d (%s)'s %s? (any:yes, n:no)\n",
-								i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
+								i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index+1, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
 						);
 					else
 						printf("Player #%d (%s), do you want to use a %s card to unblock Player #%d (%s)'s %s? (any:yes, n:no)\n",
-								i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
+								i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index+1, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
 						);
 					scanf("%c", &get_choice);
 					clear_input_line(); // clear the input line from junk
@@ -377,7 +386,7 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 					is_nope_reused = true;
 					core_remove_player_card_type(&pPlayers[i], NOPE);
 					log_write("player #%d (%s) used a %s card to block Player #%d (%s)'s %s",
-							i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
+							i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index+1, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
 					);
 				}
 				else if (pPlayers[i].type==AI)
@@ -388,7 +397,7 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 						is_nope_reused = true;
 						core_remove_player_card_type(&pPlayers[i], NOPE);
 						log_write("player #%d (%s) used a %s card to block Player #%d (%s)'s %s",
-								i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
+								i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index+1, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
 						);
 					}
 				}
@@ -424,7 +433,10 @@ _Bool core_game_process_player_card(Player pPlayers[], int players_count, int pl
 			break;
 		case SHUFFLE: // shuffle the deck
 			if (core_game_card_can_nope(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
+			{
 				core_shuffle_deck(pDeck);
+				printf("The deck has been shuffled.\n");
+			}
 			break;
 		case SEE_THE_FUTURE:
 			if (core_game_card_can_nope(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)

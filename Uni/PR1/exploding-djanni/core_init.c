@@ -80,6 +80,7 @@ _Bool core_init_load_game(Player pPlayers[], int players_count, CardDeck * pDeck
 	if (save_fp==NULL) // exit in case of failure
 	{
 		log_write("the save file %s couldn't be open", savefile_path);
+		printf("the save file %s couldn't be open\n", savefile_path);
 		return false;
 	}
 
@@ -154,6 +155,7 @@ _Bool core_init_save_game(const Player pPlayers[], int players_count, const Card
 	if (save_fp==NULL) // exit in case of failure
 	{
 		log_write("the save file %s couldn't be open", savefile_path);
+		printf("the save file %s couldn't be open\n", savefile_path);
 		return false;
 	}
 
@@ -206,6 +208,7 @@ _Bool core_init_save_game(const Player pPlayers[], int players_count, const Card
 
 	fclose(save_fp);
 	log_write("the save file %s has been successfully saved", savefile_path);
+	printf("The save file %s has been successfully saved!\n", savefile_path);
 	return true;
 }
 
@@ -264,7 +267,9 @@ _Bool core_init_default_status(GameStatus * pStatus, Player pPlayers[], int play
 void core_init_default_players(Player pPlayers[], int players_count)
 {
 	int i; // player's iter counter
+#ifdef _DEBUG
 	char dummychar; // dummy variable for scanf
+#endif
 
 	log_write("initializing the players...");
 	if (pPlayers!=NULL) // skip null ptr
@@ -288,6 +293,8 @@ void core_init_default_players(Player pPlayers[], int players_count)
 			scanf("%c", &dummychar);
 			clear_input_line(); // clear the input line from junk
 			pPlayers[i].is_alive = (dummychar!='n');
+#else
+			pPlayers[i].is_alive = true;
 #endif
 
 			// choose the type
