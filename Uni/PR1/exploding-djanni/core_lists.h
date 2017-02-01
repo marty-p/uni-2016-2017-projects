@@ -14,6 +14,8 @@ extern CardNode * card_node_check_remove(CardNode * first, int n, _Bool * is_del
 
 extern void card_node_print(CardNode * first);
 extern void card_node_log_print(CardNode * first);
+extern void card_node_print_first_n(CardNode * first, int n);
+extern void card_node_log_print_first_n(CardNode * first, int n);
 
 extern CardNode * card_node_select_n(CardNode * first, int n, CardNode ** prev);
 extern CardNode * card_node_find_first_n_type(CardNode * first, CardType n_type, CardNode ** prev);

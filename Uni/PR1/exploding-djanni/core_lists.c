@@ -155,6 +155,28 @@ void card_node_log_print(CardNode * first)
 	}
 }
 
+void card_node_print_first_n(CardNode * first, int n)
+{
+	int count = 0;
+	while (first!=NULL && count++<n) // skip null ptr
+	{
+		// print all its values
+		printf("\t[%d]%s: %s\n", first->card.type, get_card_type_name(first->card.type), first->card.title);
+		first = first->next;
+	}
+}
+
+void card_node_log_print_first_n(CardNode * first, int n)
+{
+	int count = 0;
+	while (first!=NULL && count++<n) // skip null ptr
+	{
+		// log all its values
+		log_write("\t[%d]%s: %s", first->card.type, get_card_type_name(first->card.type), first->card.title);
+		first = first->next;
+	}
+}
+
 CardNode * card_node_select_n(CardNode * first, int n, CardNode ** prev)
 {
 	int count=0;

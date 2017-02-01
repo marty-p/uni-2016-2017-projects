@@ -29,7 +29,7 @@ _Bool core_game_start(Player pPlayers[], int players_count, CardDeck * pDeck, Ga
 		// process the menu and returns false in case of quitting
 		if (core_game_pause_menu(pPlayers, players_count, pDeck, pStatus)==false)
 			return false;
-		// todo: reset game_env
+		// reset game_env
 		game_env.has_drawn = false;
 		game_env.has_used_cards = false;
 		game_env.is_noped = false;
@@ -126,7 +126,7 @@ _Bool core_game_process(Player pPlayers[], int players_count, CardDeck * pDeck, 
 		return false;
 
 		// log deck count
-		deck_print_log_count(pDeck);
+		deck_log_print_count(pDeck);
 		// log the turn data
 		player_log_turn_data(&pPlayers[pStatus->player_turn], pStatus);
 
@@ -408,6 +408,29 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 	return pEnv->is_noped;
 }
 
+_Bool core_game_card_use_see_the_future(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv)
+{
+	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
+		return false;
+
+	if (player_index>=players_count) // skip out-of-range
+		return false;
+
+	log_write("player #%d (%s) is going to see the future...", player_index+1, pPlayers[player_index].name);
+	if (pPlayers[player_index].type==REAL)
+	{
+		printf("You're going to see the future!\n");
+		deck_print_first_n_cards(pDeck, SEE_THE_FUTURE_FORESEE_NUM);
+		deck_log_print_first_n_cards(pDeck, SEE_THE_FUTURE_FORESEE_NUM);
+	}
+	else if (pPlayers[player_index].type==AI)
+	{
+		// todo
+		deck_log_print_first_n_cards(pDeck, SEE_THE_FUTURE_FORESEE_NUM);
+	}
+	return true;
+}
+
 _Bool core_game_process_player_card(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card)
 {
 	CardNode * used_card = NULL;
@@ -440,7 +463,7 @@ _Bool core_game_process_player_card(Player pPlayers[], int players_count, int pl
 			break;
 		case SEE_THE_FUTURE:
 			if (core_game_card_can_nope(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
-				;//core_game_card_use_see_the_future();
+				core_game_card_use_see_the_future(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv);
 			break;
 		case ATTACK:
 			if (core_game_card_can_nope(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
@@ -448,8 +471,9 @@ _Bool core_game_process_player_card(Player pPlayers[], int players_count, int pl
 				pStatus->is_attacked = false;
 				pEnv->has_attacked = true;
 				pEnv->has_drawn = true;
-				printf("You have declared attack!\n");
-				log_write("player #%d (%s) has declared attack...", player_index+1, pPlayers[player_index].name);
+				if (pPlayers[player_index].type==REAL)
+					printf("You have declared an attack!\n");
+				log_write("player #%d (%s) has declared an attack...", player_index+1, pPlayers[player_index].name);
 			}
 			break;
 		case SKIP:
@@ -487,7 +511,7 @@ _Bool core_game_real_choose_player_card(Player pPlayers[], int players_count, in
 	printf("You chose to use the following card:\n");
 	player_print_n_card(&pPlayers[player_index], *selected_card);
 	log_write("player #%d (%s) has chose to use:", player_index+1, pPlayers[player_index].name);
-	player_print_log_n_card(&pPlayers[player_index], *selected_card);
+	player_log_print_n_card(&pPlayers[player_index], *selected_card);
 
 	return true;
 }

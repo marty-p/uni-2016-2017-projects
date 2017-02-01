@@ -2,7 +2,7 @@
 #define __EDJ_COMMON_H__
 
 /* macro list */
-#ifdef _MSC_VER // already defined in visual studio
+#if defined(_MSC_VER) && defined(_DEBUG) // already defined in visual studio (target debug)
 #undef _DEBUG
 #endif
 

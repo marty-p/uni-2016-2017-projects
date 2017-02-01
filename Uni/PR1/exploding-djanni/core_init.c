@@ -128,7 +128,6 @@ _Bool core_init_load_game(Player pPlayers[], int players_count, CardDeck * pDeck
 	status_log_data(pStatus); // log the loaded status
 
 	log_write("the save file %s has been successfully loaded", savefile_path);
-	printf("The save file %s has been successfully loaded!\n", savefile_path);
 	return true;
 }
 
@@ -379,7 +378,7 @@ _Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pG
 
 #ifdef _DEBUG
 	log_write("main deck before deck merging and player's assignment:");
-	deck_print_log_cards(pGivenDeck);
+	deck_log_print_cards(pGivenDeck);
 #endif
 
 	core_shuffle_deck(&cc.cards[N_OTHER_CARDS]); // shuffle the other cards
@@ -388,7 +387,7 @@ _Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pG
 
 #ifdef _DEBUG
 	log_write("main deck before the second deck merging:");
-	deck_print_log_cards(pGivenDeck);
+	deck_log_print_cards(pGivenDeck);
 #endif
 
 	core_merge_default_deck(pGivenDeck, &cc.cards[N_EXPLODING_DJANNI]); // merge the exploding djanni deck to the main one
@@ -397,20 +396,20 @@ _Bool core_load_default_deck(Player pPlayers[], int players_count, CardDeck * pG
 
 #ifdef _DEBUG
 	log_write("main deck before shuffling it:");
-	deck_print_log_cards(pGivenDeck);
+	deck_log_print_cards(pGivenDeck);
 #endif
 
 	core_shuffle_deck(pGivenDeck); // merge the main deck for the last time
 
 #ifdef _DEBUG
 	log_write("main deck after being shuffled:");
-	deck_print_log_cards(pGivenDeck);
+	deck_log_print_cards(pGivenDeck);
 	log_write("exploding djanni deck after merging:");
-	deck_print_log_cards(&cc.cards[N_EXPLODING_DJANNI]);
+	deck_log_print_cards(&cc.cards[N_EXPLODING_DJANNI]);
 	log_write("meooow deck after merging:");
-	deck_print_log_cards(&cc.cards[N_MEOOOW]);
+	deck_log_print_cards(&cc.cards[N_MEOOOW]);
 	log_write("other cards deck after merging:");
-	deck_print_log_cards(&cc.cards[N_OTHER_CARDS]);
+	deck_log_print_cards(&cc.cards[N_OTHER_CARDS]);
 #endif
 
 	log_write("the cards have been assigned to each player...");

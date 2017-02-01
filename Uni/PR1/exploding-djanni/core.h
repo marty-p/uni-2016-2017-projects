@@ -11,6 +11,7 @@
 #define CARD_COUNT_NUM 3 // count of CardCountType
 #define STARTING_OTHER_CARDS_NUM 4 // number of other cards to give to each player on first turn
 #define STARTING_MEOOOW_NUM 1 // number of meooow cards to give to each player on first turn
+#define SEE_THE_FUTURE_FORESEE_NUM 3 // number of cards you can foresee with the see the future card
 #define SAVEFILE_FILENAME "partita.sav" // default savefile filename (used if you input a blank string)
 #define FILEPATH_LEN 259 // +1; the same of MAX_PATH on windows
 
@@ -50,13 +51,16 @@ extern void status_log_data(const GameStatus * pStatus);
 
 extern void player_print_hand(const Player * pPlayer);
 extern void player_print_n_card(const Player * pPlayer, int selected_card);
-extern void player_print_log_n_card(const Player * pPlayer, int selected_card);
+extern void player_log_print_n_card(const Player * pPlayer, int selected_card);
 
 extern void deck_print_count(const CardDeck * pDeck);
-extern void deck_print_log_count(const CardDeck * pDeck);
+extern void deck_log_print_count(const CardDeck * pDeck);
 
 extern void deck_print_cards(const CardDeck * pDeck);
-extern void deck_print_log_cards(const CardDeck * pDeck);
+extern void deck_log_print_cards(const CardDeck * pDeck);
+
+extern void deck_print_first_n_cards(const CardDeck * pDeck, int n);
+extern void deck_log_print_first_n_cards(const CardDeck * pDeck, int n);
 
 #endif
 
