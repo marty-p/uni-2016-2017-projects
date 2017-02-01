@@ -31,7 +31,6 @@ _Bool core_game_start(Player pPlayers[], int players_count, CardDeck * pDeck, Ga
 			return false;
 		// reset game_env
 		game_env.has_drawn = false;
-		game_env.has_used_cards = false;
 		game_env.is_noped = false;
 		game_env.has_attacked = false;
 		// process the turn and returns false in case of problems
@@ -226,7 +225,7 @@ _Bool core_game_continue_menu(Player pPlayers[], int players_count, CardDeck * p
 		printf("What do you want to do? (1:draw a card, 2:use a card, q:quit)\n");
 		if (pEnv->has_drawn==false)
 			printf("\t1. Draw a card\n");
-		if (pEnv->has_used_cards==false)
+		if (pPlayers[pStatus->player_turn].card_count > 0)
 			printf("\t2. Use a card\n");
 		printf("\tq. Quit the game\n");
 
@@ -252,18 +251,15 @@ _Bool core_game_continue_menu(Player pPlayers[], int players_count, CardDeck * p
 				pEnv->has_drawn = true;
 				break;
 			case '2':
-				if (pEnv->has_used_cards==true)
+				log_write("using a card...");
+				if (pPlayers[pStatus->player_turn].card_count <= 0)
 				{
+					printf("You have no more cards.\n");
 					wrong_choice = true;
 					break;
 				}
-				log_write("using a card...");
 				if (core_game_card_use(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
-				{
-					log_write("an error occurred in the core_game_card_use function...");
 					return false;
-				}
-				pEnv->has_used_cards = true;
 				break;
 			case 'q':
 				log_write("quitting...");
@@ -499,9 +495,16 @@ _Bool core_game_real_choose_player_card(Player pPlayers[], int players_count, in
 	if (player_index>=players_count) // skip out-of-range
 		return false;
 
+	if (pPlayers[player_index].card_count <= 0)
+	{
+		printf("You have no more cards.\n");
+		log_write("player #%d (%s) has no more cards to use.", player_index+1, pPlayers[player_index].name);
+		return false;
+	}
+
 	do
 	{
-		printf("List of the current cards:\n");
+		printf("List of your current cards:\n");
 		player_print_hand(&pPlayers[player_index]);
 		printf("Choose one of them: (0-%d)\n", pPlayers[pStatus->player_turn].card_count-1);
 		scanf("%d", selected_card);
