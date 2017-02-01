@@ -530,7 +530,7 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 	return true;
 }
 
-_Bool core_game_card_use_djanni_cards(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv)
+_Bool core_game_card_use_djanni_cards(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card)
 {
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
@@ -539,6 +539,7 @@ _Bool core_game_card_use_djanni_cards(Player pPlayers[], int players_count, int 
 		return false;
 
 	log_write("player #%d (%s) is going to select a djanni card mode...", player_index+1, pPlayers[player_index].name);
+
 	return true;
 }
 
@@ -598,7 +599,7 @@ _Bool core_game_process_player_card(Player pPlayers[], int players_count, int pl
 			break;
 		case DJANNI_CARDS: // it has 3 modes... single which does nothing, double if two different djanni cards are used, and triple if three same djanni cards are used
 			if (core_game_card_can_nope(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
-				core_game_card_use_djanni_cards(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv);
+				internal_delete = core_game_card_use_djanni_cards(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card);
 			break;
 	}
 
