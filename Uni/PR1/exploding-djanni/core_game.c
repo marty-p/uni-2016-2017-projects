@@ -370,16 +370,16 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 				if (pPlayers[i].type==REAL)
 				{
 					if (is_nope_reused==false)
-						printf("Player #%d (%s), do you want to use a %s card to block Player #%d (%s)'s %s? (any:yes, n:no)\n",
+						printf("Player #%d (%s), do you want to use a %s card to block Player #%d (%s)'s %s? (y:yes, any:no)\n",
 								i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index+1, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
 						);
 					else
-						printf("Player #%d (%s), do you want to use a %s card to unblock Player #%d (%s)'s %s? (any:yes, n:no)\n",
+						printf("Player #%d (%s), do you want to use a %s card to unblock Player #%d (%s)'s %s? (y:yes, any:no)\n",
 								i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index+1, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
 						);
 					scanf("%c", &get_choice);
 					clear_input_line(); // clear the input line from junk
-					if (get_choice=='n') // if it's no
+					if (get_choice!='y') // if it's not yes
 						continue;
 					pEnv->is_noped = !pEnv->is_noped;
 					is_nope_reused = true;
@@ -430,7 +430,7 @@ _Bool core_game_card_use_see_the_future(Player pPlayers[], int players_count, in
 	return true;
 }
 
-_Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv)
+_Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card)
 {
 	int selected_player_index;
 	int selected_player_card;
@@ -495,14 +495,14 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 	if (used_card==NULL) // did the player already lost that card?
 		return false;
 
-	log_write("giving player #%d (%s)'s card [%d]%s (%s) to player #%d (%s)...",
+	log_write("player #%d (%s) received from player #%d (%s) the card [%d]%s (%s)",
+			player_index+1, pPlayers[player_index].name,
 			selected_player_index+1, pPlayers[selected_player_index].name,
-			used_card->card.type, get_card_type_name(used_card->card.type), used_card->card.title,
-			player_index+1, pPlayers[player_index].name
+			used_card->card.type, get_card_type_name(used_card->card.type), used_card->card.title
 	);
-	printf("You gave the card [%d]%s (%s) to Player #%d (%s)!",
-			used_card->card.type, get_card_type_name(used_card->card.type), used_card->card.title,
-			player_index+1, pPlayers[player_index].name
+	printf("You gave the following card to Player #%d (%s): [%d]%s (%s)\n",
+			player_index+1, pPlayers[player_index].name,
+			used_card->card.type, get_card_type_name(used_card->card.type), used_card->card.title
 	);
 
 	log_write("switching interaction to player #%d (%s)...", player_index+1, pPlayers[player_index].name);
@@ -517,9 +517,10 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 	clear_console();
 #endif
 
-	printf("You received the card [%d]%s (%s) from Player #%d (%s)!\n",
-			used_card->card.type, get_card_type_name(used_card->card.type), used_card->card.title,
-			selected_player_card+1, pPlayers[selected_player_card].name
+	core_remove_player_n_card(&pPlayers[player_index], selected_card); // internal delete
+	printf("You received the following card from Player #%d (%s): [%d]%s (%s)\n",
+			selected_player_card+1, pPlayers[selected_player_card].name,
+			used_card->card.type, get_card_type_name(used_card->card.type), used_card->card.title
 	);
 	core_player_give_card_n_to_player(&pPlayers[selected_player_index], &pPlayers[player_index], selected_player_card); // after this, used_card will become a dandling ptr
 	used_card = NULL;
@@ -542,6 +543,7 @@ _Bool core_game_card_use_djanni_cards(Player pPlayers[], int players_count, int 
 _Bool core_game_process_player_card(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card)
 {
 	CardNode * used_card = NULL;
+	_Bool internal_delete = false; // in case the processed card has been deleted inside another block (favor/djanni cards)
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
 
@@ -590,8 +592,7 @@ _Bool core_game_process_player_card(Player pPlayers[], int players_count, int pl
 			break;
 		case FAVOR: // ask to another player a card (chosen by the other player)
 			if (core_game_card_can_nope(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
-				if (core_game_card_use_favor(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv)==true)
-					selected_card++; // we received a card... it must be shifted by 1
+				internal_delete = core_game_card_use_favor(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card);
 			break;
 		case DJANNI_CARDS: // it has 3 modes... single which does nothing, double if two different djanni cards are used, and triple if three same djanni cards are used
 			if (core_game_card_can_nope(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
@@ -600,7 +601,8 @@ _Bool core_game_process_player_card(Player pPlayers[], int players_count, int pl
 	}
 
 	// remove the card from the player's deck
-	core_remove_player_n_card(&pPlayers[player_index], selected_card);
+	if (internal_delete==false) // skip if already deleted elsewhere
+		core_remove_player_n_card(&pPlayers[player_index], selected_card);
 
 	return true;
 }
