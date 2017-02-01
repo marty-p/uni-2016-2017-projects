@@ -322,7 +322,7 @@ void player_print_log_n_card(const Player * pPlayer, int selected_card)
 
 	tmp = card_node_select_n(pPlayer->card_list, selected_card, NULL);
 	if (tmp!=NULL)
-		log_write("\t(%d) [%d]%s: %s\n", selected_card, tmp->card.type, get_card_type_name(tmp->card.type), tmp->card.title);
+		log_write("\t(%d) [%d]%s: %s", selected_card, tmp->card.type, get_card_type_name(tmp->card.type), tmp->card.title);
 }
 
 void deck_print_count(const CardDeck * pDeck)
