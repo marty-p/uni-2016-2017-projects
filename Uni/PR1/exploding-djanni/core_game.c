@@ -351,7 +351,7 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 		return false;
 
 	used_card = card_node_select_n(pPlayers[player_index].card_list, selected_card, NULL);
-	if (used_card==NULL) // did the player already lost that card?
+	if (used_card==NULL) // have the player already lost that card?
 		return false;
 
 	log_write("checking if it can be noped by other players...");
@@ -494,7 +494,7 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 	}
 
 	used_card = card_node_select_n(pPlayers[selected_player_index].card_list, selected_player_card, NULL);
-	if (used_card==NULL) // did the player already lost that card?
+	if (used_card==NULL) // have the player already lost that card?
 		return false;
 
 	log_write("player #%d (%s) received from player #%d (%s) the card [%d]%s (%s)",
@@ -532,14 +532,83 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 
 _Bool core_game_card_use_djanni_cards(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card)
 {
+	_Bool can_couple = false;
+	_Bool can_triple = false;
+	DjanniMode chosen_mode;
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
 
 	if (player_index>=players_count) // skip out-of-range
 		return false;
 
-	log_write("player #%d (%s) is going to select a djanni card mode...", player_index+1, pPlayers[player_index].name);
+	can_couple = core_game_card_can_use_djanni_cards_couple(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card);
+	can_triple = core_game_card_can_use_djanni_cards_triple(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card);
 
+	log_write("player #%d (%s) is going to select a djanni card mode...", player_index+1, pPlayers[player_index].name);
+	if (can_couple==true || can_triple==true)
+	{
+		do
+		{
+			log_write("In which mode do you want to use the djanni cards?");
+			printf("%u. Single Mode\n", DM_SINGLE, get_djanni_mode_name(DM_SINGLE));
+			if (can_couple==true)
+				printf("%u. Couple Mode\n", DM_COUPLE, get_djanni_mode_name(DM_COUPLE));
+			if (can_triple==true)
+				printf("%u. Triple Mode\n", DM_TRIPLE, get_djanni_mode_name(DM_TRIPLE));
+			scanf("%u", &chosen_mode);
+			// clear
+		}
+		while (chosen_mode>=DJANNI_MODE_NUM || (chosen_mode==DM_COUPLE && can_couple==false) || (chosen_mode==DM_TRIPLE && can_triple==false)); // note: it's unsigned
+	}
+	else // if only the single mode is available, no need to ask
+		chosen_mode = DM_SINGLE;
+
+	// process the mode
+	switch (chosen_mode)
+	{
+		case DM_SINGLE:
+			return false; // it will be removed externally since we did nothing
+			break;
+		case DM_COUPLE:
+		case DM_TRIPLE:
+			// core_remove_player_n_card(&pPlayers[player_index], selected_card); // internal delete
+			break;
+	}
+
+	return true;
+}
+
+_Bool core_game_card_can_use_djanni_cards_couple(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card)
+{
+	CardNode * used_card = NULL;
+	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
+		return false;
+
+	if (player_index>=players_count) // skip out-of-range
+		return false;
+
+	used_card = card_node_select_n(pPlayers[player_index].card_list, selected_card, NULL);
+	if (used_card==NULL) // have the player already lost that card?
+		return false;
+
+	// log_write("player #%d (%s) is going to select a djanni card mode...", player_index+1, pPlayers[player_index].name);
+	return true;
+}
+
+_Bool core_game_card_can_use_djanni_cards_triple(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card)
+{
+	CardNode * used_card = NULL;
+	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
+		return false;
+
+	if (player_index>=players_count) // skip out-of-range
+		return false;
+
+	used_card = card_node_select_n(pPlayers[player_index].card_list, selected_card, NULL);
+	if (used_card==NULL) // have the player already lost that card?
+		return false;
+
+	// log_write("player #%d (%s) is going to select a djanni card mode...", player_index+1, pPlayers[player_index].name);
 	return true;
 }
 
@@ -554,7 +623,7 @@ _Bool core_game_process_player_card(Player pPlayers[], int players_count, int pl
 		return false;
 
 	used_card = card_node_select_n(pPlayers[player_index].card_list, selected_card, NULL);
-	if (used_card==NULL) // did the player already lost that card?
+	if (used_card==NULL) // have the player already lost that card?
 		return false;
 
 	log_write("processing player #%d (%s)'s card [%d]%s: %s",
@@ -597,7 +666,7 @@ _Bool core_game_process_player_card(Player pPlayers[], int players_count, int pl
 			if (core_game_card_can_nope(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
 				internal_delete = core_game_card_use_favor(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card);
 			break;
-		case DJANNI_CARDS: // it has 3 modes... single which does nothing, double if two different djanni cards are used, and triple if three same djanni cards are used
+		case DJANNI_CARDS: // it has 3 modes... single which does nothing, couple if two different djanni cards are used, and triple if three same djanni cards are used
 			if (core_game_card_can_nope(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
 				internal_delete = core_game_card_use_djanni_cards(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card);
 			break;

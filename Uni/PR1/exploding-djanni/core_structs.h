@@ -37,6 +37,13 @@ typedef enum
 	N_OTHER_CARDS //2
 } CardCountType;
 
+typedef enum
+{
+	DM_SINGLE, //0
+	DM_COUPLE, //1
+	DM_TRIPLE //2
+} DjanniMode;
+
 /* struct list */
 typedef struct
 {

@@ -9,6 +9,7 @@
 #define CARD_TYPE_NUM 9 // count of CardType
 #define PLAYER_TYPE_NUM 2 // count of PlayerType
 #define CARD_COUNT_NUM 3 // count of CardCountType
+#define DJANNI_MODE_NUM 3 // count of DjanniModeType
 #define STARTING_OTHER_CARDS_NUM 4 // number of other cards to give to each player on first turn
 #define STARTING_MEOOOW_NUM 1 // number of meooow cards to give to each player on first turn
 #define SEE_THE_FUTURE_FORESEE_NUM 3 // number of cards you can foresee with the see the future card
@@ -45,6 +46,7 @@ extern const char * get_card_type_name(CardType card_type);
 extern const char * get_player_type_name(PlayerType player_type);
 extern const char * get_card_count_type_name(CardCountType card_count_type);
 extern const char * get_difficulty_mode_name(DifficultyMode difficulty_mode);
+extern const char * get_djanni_mode_name(DjanniMode djanni_mode);
 
 extern void players_log_data(const Player * pPlayers, int players_count);
 extern void player_log_turn_data(const Player * pPlayer, const GameStatus * pStatus);

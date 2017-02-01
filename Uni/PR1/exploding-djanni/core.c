@@ -184,7 +184,7 @@ void core_player_give_card_n_to_player(Player * pGiver, Player * pReceiver, int 
 	if (pGiver!=NULL && pReceiver!=NULL) // skip null ptr
 	{
 		used_card = card_node_select_n(pGiver->card_list, selected_card, &prev);
-		if (used_card==NULL) // did the player already lost that card?
+		if (used_card==NULL) // have the player already lost that card?
 			return;
 		new_card = used_card->card;
 
@@ -275,6 +275,20 @@ const char * get_difficulty_mode_name(DifficultyMode difficulty_mode)
 	if (difficulty_mode >= DIFFICULTY_MODE_NUM) // note: it's unsigned
 		return "";
 	return name_list[difficulty_mode]; // return the difficulty mode type name as string
+}
+
+const char * get_djanni_mode_name(DjanniMode djanni_mode)
+{
+	static const char * name_list[DJANNI_MODE_NUM] =
+	{
+		"SINGLE",
+		"COUPLE",
+		"TRIPLE",
+	};
+	// prevent out-of-range issues
+	if (djanni_mode >= DJANNI_MODE_NUM) // note: it's unsigned
+		return "";
+	return name_list[djanni_mode]; // return the djanni mode type name as string
 }
 
 void players_log_data(const Player * pPlayers, int players_count)
