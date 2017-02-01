@@ -481,13 +481,13 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 	clear_console();
 #endif
 
-	if (pPlayers[player_index].type==REAL)
+	if (pPlayers[selected_player_index].type==REAL)
 	{
-		printf("Player #%d (%s), which card do you want to give?\n");
+		printf("Player #%d (%s), which card do you want to give?\n", selected_player_index+1, pPlayers[selected_player_index].name);
 		if (core_game_real_choose_player_card(pPlayers, players_count, selected_player_index, pDeck, pStatus, pEnv, &selected_player_card)==false)
 			return false;
 	}
-	else // if (pPlayers[player_index].type==AI)
+	else // if (pPlayers[selected_player_index].type==AI)
 	{
 		// todo
 		selected_player_card = 0;
