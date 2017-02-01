@@ -161,7 +161,7 @@ void card_node_print_first_n(CardNode * first, int n)
 	while (first!=NULL && count++<n) // skip null ptr
 	{
 		// print all its values
-		printf("\t[%d]%s: %s\n", first->card.type, get_card_type_name(first->card.type), first->card.title);
+		printf("\t(%d) [%d]%s: %s\n", count, first->card.type, get_card_type_name(first->card.type), first->card.title);
 		first = first->next;
 	}
 }

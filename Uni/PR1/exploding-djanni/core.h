@@ -37,6 +37,7 @@ extern void core_remove_player_n_card(Player * pGivenPlayer, int selected_card);
 extern void core_remove_player_card_type(Player * pGivenPlayer, CardType card_type);
 extern _Bool core_player_has_in(Player * pGivenPlayer, CardType card_type);
 
+extern void core_player_give_card_n_to_player(Player * pGiver, Player * pReceiver, int selected_card);
 extern void core_player_draw_from_deck(Player * pPlayer, CardDeck * pGivenDeck);
 extern int core_deck_count_of_type_n(CardDeck * pGivenDeck, CardType card_type);
 

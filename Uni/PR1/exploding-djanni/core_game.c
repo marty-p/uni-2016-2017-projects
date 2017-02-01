@@ -25,6 +25,7 @@ _Bool core_game_start(Player pPlayers[], int players_count, CardDeck * pDeck, Ga
 		clear_console();
 #endif
 		log_write("turn #%d is starting...", pStatus->total_turns);
+		printf("Player #%d (%s)'s turn! (Turn #%d)\n", pStatus->player_turn+1, pPlayers[pStatus->player_turn].name, pStatus->total_turns);
 
 		// process the menu and returns false in case of quitting
 		if (core_game_pause_menu(pPlayers, players_count, pDeck, pStatus)==false)
@@ -124,21 +125,21 @@ _Bool core_game_process(Player pPlayers[], int players_count, CardDeck * pDeck, 
 	if (pStatus->player_turn >= players_count)
 		return false;
 
-		// log deck count
-		deck_log_print_count(pDeck);
-		// log the turn data
-		player_log_turn_data(&pPlayers[pStatus->player_turn], pStatus);
+	// log deck count
+	deck_log_print_count(pDeck);
+	// log the turn data
+	player_log_turn_data(&pPlayers[pStatus->player_turn], pStatus);
 
-		// log exploding djanni pct draw
-		ed_count = core_deck_count_of_type_n(pDeck, EXPLODING_DJANNI);
-		printf("There are still %d %s in the deck! (%.2f%% to draw one)\n", ed_count, get_card_type_name(EXPLODING_DJANNI), (double)ed_count/pDeck->count*100.0);
+	// log exploding djanni pct draw
+	ed_count = core_deck_count_of_type_n(pDeck, EXPLODING_DJANNI);
+	printf("There are still %d %s in the deck! (%.2f%% to draw one)\n", ed_count, get_card_type_name(EXPLODING_DJANNI), (double)ed_count/pDeck->count*100.0);
 
-		// check if attacked
-		if (pStatus->is_attacked==true)
-		{
-			printf("You are under attack! Use an attack card or repeat the turn twice!\n");
-			log_write("player #%d (%s) is under attack...", pStatus->player_turn+1, pPlayers[pStatus->player_turn].name);
-		}
+	// check if attacked
+	if (pStatus->is_attacked==true)
+	{
+		printf("You are under attack! Use an attack card or repeat the turn twice!\n");
+		log_write("player #%d (%s) is under attack...", pStatus->player_turn+1, pPlayers[pStatus->player_turn].name);
+	}
 
 	if (pPlayers[pStatus->player_turn].type==AI && core_game_process_ai_player(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
 		return false;
@@ -215,12 +216,11 @@ _Bool core_game_continue_menu(Player pPlayers[], int players_count, CardDeck * p
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
 
-	printf("Player #%d (%s)'s turn! (Turn #%d)\n", pStatus->player_turn+1, pPlayers[pStatus->player_turn].name, pStatus->total_turns);
-	printf("List of the current cards:\n");
-	player_print_hand(&pPlayers[pStatus->player_turn]);
-
 	do
 	{
+		printf("List of your current cards:\n");
+		player_print_hand(&pPlayers[pStatus->player_turn]);
+
 		player_log_turn_data(&pPlayers[pStatus->player_turn], pStatus);
 		printf("What do you want to do? (1:draw a card, 2:use a card, q:quit)\n");
 		if (pEnv->has_drawn==false)
@@ -330,7 +330,10 @@ _Bool core_game_card_use(Player pPlayers[], int players_count, CardDeck * pDeck,
 	}
 	else
 	{
-		core_game_ai_choose_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, &selected_card);
+		if (core_game_ai_choose_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, &selected_card)==false)
+			return false;
+		if (core_game_process_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
+			return false;
 	}
 	return true;
 }
@@ -387,7 +390,7 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 				}
 				else if (pPlayers[i].type==AI)
 				{
-					if (false)//if (core_game_am_i_next(pPlayers, players_count, pStatus==true && core_game_ai_is_it_valuable_card_to_nope()==true)
+					if (false)//if (core_game_am_i_next(pPlayers, players_count, pStatus==true) && core_game_ai_is_it_valuable_card_to_nope()==true)
 					{
 						pEnv->is_noped = !pEnv->is_noped;
 						is_nope_reused = true;
@@ -415,7 +418,7 @@ _Bool core_game_card_use_see_the_future(Player pPlayers[], int players_count, in
 	log_write("player #%d (%s) is going to see the future...", player_index+1, pPlayers[player_index].name);
 	if (pPlayers[player_index].type==REAL)
 	{
-		printf("You're going to see the future!\n");
+		printf("You're going to see the future:\n");
 		deck_print_first_n_cards(pDeck, SEE_THE_FUTURE_FORESEE_NUM);
 		deck_log_print_first_n_cards(pDeck, SEE_THE_FUTURE_FORESEE_NUM);
 	}
@@ -424,6 +427,115 @@ _Bool core_game_card_use_see_the_future(Player pPlayers[], int players_count, in
 		// todo
 		deck_log_print_first_n_cards(pDeck, SEE_THE_FUTURE_FORESEE_NUM);
 	}
+	return true;
+}
+
+_Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv)
+{
+	int selected_player_index;
+	int selected_player_card;
+	CardNode * used_card = NULL;
+	int i;
+
+	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
+		return false;
+
+	if (player_index>=players_count) // skip out-of-range
+		return false;
+
+	if (core_game_check_winners(pPlayers, players_count)==true) // we at least know that two are still alive
+		return false;
+
+	log_write("player #%d (%s) is going to ask for a favor...", player_index+1, pPlayers[player_index].name);
+
+	if (pPlayers[player_index].type==REAL)
+	{
+		do // repeat if out-of-range or yourself or dead players
+		{
+			printf("Choose the player which you want to ask for a favor: (0-%d)\n", players_count);
+			for (i=0; i<players_count; i++)
+			{
+				if (i!=player_index && pPlayers[i].is_alive==true)
+					printf("(%d) Player #%d (%s)\n", i, i+1, pPlayers[i].name);
+			}
+			scanf("%d", &selected_player_index);
+			clear_input_line(); // clear the input line from junk
+		}
+		while (selected_player_index<0 || selected_player_index>=players_count || selected_player_index==player_index || pPlayers[selected_player_index].is_alive==false);
+	}
+	else if (pPlayers[player_index].type==AI)
+	{
+		// todo
+	}
+
+	log_write("switching interaction to player #%d (%s)...\n", selected_player_index+1, pPlayers[selected_player_index].name);
+#ifdef CLEAR_CONSOLE_EACH_TURN
+	printf("Waiting for %d seconds before cleaning the console!\n", CLEAR_CONSOLE_TIME_WAIT); // wait three seconds
+	wait_for_n_seconds(CLEAR_CONSOLE_TIME_WAIT);
+	clear_console();
+	// double warning to give enough time
+	printf("We're going to switch to Player #%d (%s)!\n", selected_player_index+1, pPlayers[selected_player_index].name);
+	printf("Press enter key to continue...\n");
+	clear_input_line(); // simulate enter key press
+	clear_console();
+#endif
+
+	if (pPlayers[player_index].type==REAL)
+	{
+		printf("Player #%d (%s), which card do you want to give?\n");
+		if (core_game_real_choose_player_card(pPlayers, players_count, selected_player_index, pDeck, pStatus, pEnv, &selected_player_card)==false)
+			return true; // after all... it's player's fault for choosing an empty hand (in case of returning false due to empty hand)
+	}
+	else if (pPlayers[player_index].type==AI)
+	{
+		// todo
+	}
+
+	used_card = card_node_select_n(pPlayers[selected_player_index].card_list, selected_player_card, NULL);
+	if (used_card==NULL) // did the player already lost that card?
+		return false;
+
+	log_write("giving player #%d (%s)'s card [%d]%s (%s) to player #%d (%s)...",
+			selected_player_index+1, pPlayers[selected_player_index].name,
+			used_card->card.type, get_card_type_name(used_card->card.type), used_card->card.title,
+			player_index+1, pPlayers[player_index].name
+	);
+	printf("You gave the card [%d]%s (%s) to Player #%d (%s)!",
+			used_card->card.type, get_card_type_name(used_card->card.type), used_card->card.title,
+			player_index+1, pPlayers[player_index].name
+	);
+
+	log_write("switching interaction to player #%d (%s)...\n", player_index+1, pPlayers[player_index].name);
+#ifdef CLEAR_CONSOLE_EACH_TURN
+	printf("Waiting for %d seconds before cleaning the console!\n", CLEAR_CONSOLE_TIME_WAIT); // wait three seconds
+	wait_for_n_seconds(CLEAR_CONSOLE_TIME_WAIT);
+	clear_console();
+	// double warning to give enough time
+	printf("We're going to switch to Player #%d (%s)!\n", player_index+1, pPlayers[player_index].name);
+	printf("Press enter key to continue...\n");
+	clear_input_line(); // simulate enter key press
+	clear_console();
+#endif
+
+	printf("You received the card [%d]%s (%s) from Player #%d (%s)!\n",
+			used_card->card.type, get_card_type_name(used_card->card.type), used_card->card.title,
+			selected_player_card+1, pPlayers[selected_player_card].name
+	);
+	core_player_give_card_n_to_player(&pPlayers[selected_player_index], &pPlayers[player_index], selected_player_card); // after this, used_card will become a dandling ptr
+	used_card = NULL;
+
+	return true;
+}
+
+_Bool core_game_card_use_djanni_cards(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv)
+{
+	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
+		return false;
+
+	if (player_index>=players_count) // skip out-of-range
+		return false;
+
+	log_write("player #%d (%s) is going to select a djanni card mode...", player_index+1, pPlayers[player_index].name);
 	return true;
 }
 
@@ -446,8 +558,8 @@ _Bool core_game_process_player_card(Player pPlayers[], int players_count, int pl
 	switch (used_card->card.type)
 	{
 		// with no meaning
-		case EXPLODING_DJANNI: // it should be impossible to draw it though
-		case MEOOOW: // only when an exploding djanni is drawn
+		case EXPLODING_DJANNI: // it should be impossible to "draw" and use it though
+		case MEOOOW: // used only when an exploding djanni is drawn
 		case NOPE: // it should be used only to "dispel" other cards
 			break;
 		case SHUFFLE: // shuffle the deck
@@ -461,7 +573,7 @@ _Bool core_game_process_player_card(Player pPlayers[], int players_count, int pl
 			if (core_game_card_can_nope(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
 				core_game_card_use_see_the_future(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv);
 			break;
-		case ATTACK:
+		case ATTACK: // attack and skip the draw phase
 			if (core_game_card_can_nope(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
 			{
 				pStatus->is_attacked = false;
@@ -472,12 +584,17 @@ _Bool core_game_process_player_card(Player pPlayers[], int players_count, int pl
 				log_write("player #%d (%s) has declared an attack...", player_index+1, pPlayers[player_index].name);
 			}
 			break;
-		case SKIP:
+		case SKIP: // skip the draw phase
 			if (core_game_card_can_nope(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
 				pEnv->has_drawn = true;
 			break;
-		case FAVOR:
-		case DJANNI_CARDS:
+		case FAVOR: // ask to another player a card (chosen by the other player)
+			if (core_game_card_can_nope(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
+				core_game_card_use_favor(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv);
+			break;
+		case DJANNI_CARDS: // it has 3 modes... single which does nothing, double if two different djanni cards are used, and triple if three same djanni cards are used
+			if (core_game_card_can_nope(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
+				core_game_card_use_djanni_cards(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv);
 			break;
 	}
 
@@ -498,7 +615,7 @@ _Bool core_game_real_choose_player_card(Player pPlayers[], int players_count, in
 	if (pPlayers[player_index].card_count <= 0)
 	{
 		printf("You have no more cards.\n");
-		log_write("player #%d (%s) has no more cards to use.", player_index+1, pPlayers[player_index].name);
+		log_write("player #%d (%s) has no more cards to select.", player_index+1, pPlayers[player_index].name);
 		return false;
 	}
 
@@ -506,14 +623,14 @@ _Bool core_game_real_choose_player_card(Player pPlayers[], int players_count, in
 	{
 		printf("List of your current cards:\n");
 		player_print_hand(&pPlayers[player_index]);
-		printf("Choose one of them: (0-%d)\n", pPlayers[pStatus->player_turn].card_count-1);
+		printf("Choose one of them: (0-%d)\n", pPlayers[player_index].card_count-1);
 		scanf("%d", selected_card);
 		clear_input_line(); // clear the input line from junk
 	} while (*selected_card >= pPlayers[player_index].card_count); // repeat if out-of-range
 
-	printf("You chose to use the following card:\n");
+	printf("You selected the following card:\n");
 	player_print_n_card(&pPlayers[player_index], *selected_card);
-	log_write("player #%d (%s) has chose to use:", player_index+1, pPlayers[player_index].name);
+	log_write("player #%d (%s) has selected:", player_index+1, pPlayers[player_index].name);
 	player_log_print_n_card(&pPlayers[player_index], *selected_card);
 
 	return true;

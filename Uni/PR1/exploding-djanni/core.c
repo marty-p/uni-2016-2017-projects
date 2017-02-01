@@ -175,6 +175,31 @@ _Bool core_player_has_in(Player * pGivenPlayer, CardType card_type)
 	return card_node_find_first_n_type(pGivenPlayer->card_list, card_type, NULL)!=NULL;
 }
 
+void core_player_give_card_n_to_player(Player * pGiver, Player * pReceiver, int selected_card)
+{
+	CardNode * used_card = NULL;
+	Card new_card = {{0}};
+	CardNode * prev = NULL;
+	_Bool is_deleted = false;
+	if (pGiver!=NULL && pReceiver!=NULL) // skip null ptr
+	{
+		used_card = card_node_select_n(pGiver->card_list, selected_card, &prev);
+		if (used_card==NULL) // did the player already lost that card?
+			return;
+		new_card = used_card->card;
+
+		pGiver->card_list = card_node_check_remove(pGiver->card_list, selected_card, &is_deleted); // remove the giver's select card
+		if (is_deleted==true)
+		{
+			pGiver->card_count--; // keep O(1) count updated
+			pReceiver->card_list = card_node_insert_head(pReceiver->card_list, new_card); // add the giver's selected card into player's card_list
+			pReceiver->card_count++; // keep O(1) card_count updated
+		}
+		else
+			log_write("core_player_give_card_n_to_player failed\n");
+	}
+}
+
 void core_player_draw_from_deck(Player * pPlayer, CardDeck * pGivenDeck)
 {
 	if (pPlayer!=NULL && pGivenDeck!=NULL) // skip null ptr

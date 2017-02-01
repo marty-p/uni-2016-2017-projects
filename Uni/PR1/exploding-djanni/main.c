@@ -11,8 +11,8 @@ int main(void)
 	log_deinit(); // deinitialize the logging file
 
 #ifdef _DEBUG
-	printf("Press any key to continue...\n");
-	getchar(); // simulate key press
+	printf("Press enter key to continue...\n");
+	getchar(); // simulate enter key press
 #endif
 	return 0;
 }
