@@ -422,7 +422,7 @@ _Bool core_game_card_use_see_the_future(Player pPlayers[], int players_count, in
 		deck_print_first_n_cards(pDeck, SEE_THE_FUTURE_FORESEE_NUM);
 		deck_log_print_first_n_cards(pDeck, SEE_THE_FUTURE_FORESEE_NUM);
 	}
-	else if (pPlayers[player_index].type==AI)
+	else // if (pPlayers[player_index].type==AI)
 	{
 		// todo
 		deck_log_print_first_n_cards(pDeck, SEE_THE_FUTURE_FORESEE_NUM);
@@ -463,9 +463,10 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 		}
 		while (selected_player_index<0 || selected_player_index>=players_count || selected_player_index==player_index || pPlayers[selected_player_index].is_alive==false);
 	}
-	else if (pPlayers[player_index].type==AI)
+	else // if (pPlayers[player_index].type==AI)
 	{
 		// todo
+		selected_player_index = 0;
 	}
 
 	log_write("switching interaction to player #%d (%s)...", selected_player_index+1, pPlayers[selected_player_index].name);
@@ -486,9 +487,10 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 		if (core_game_real_choose_player_card(pPlayers, players_count, selected_player_index, pDeck, pStatus, pEnv, &selected_player_card)==false)
 			return false;
 	}
-	else if (pPlayers[player_index].type==AI)
+	else // if (pPlayers[player_index].type==AI)
 	{
 		// todo
+		selected_player_card = 0;
 	}
 
 	used_card = card_node_select_n(pPlayers[selected_player_index].card_list, selected_player_card, NULL);
