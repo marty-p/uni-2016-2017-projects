@@ -452,7 +452,7 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 	{
 		do // repeat if out-of-range or yourself or dead players
 		{
-			printf("Choose the player which you want to ask for a favor: (0-%d)\n", players_count);
+			printf("Choose the player which you want to ask for a favor: (0-%d)\n", players_count-1);
 			for (i=0; i<players_count; i++)
 			{
 				if (i!=player_index && pPlayers[i].is_alive==true)
@@ -600,7 +600,8 @@ _Bool core_game_card_use_djanni_cards_couple(Player pPlayers[], int players_coun
 {
 	int chosen_set; // chosen set to use
 	_Bool right_choice; // flag to stop the loop
-	_Bool selected_player_index; // selected player which you take the card
+	int selected_player_index; // selected player which you take the card
+	int selected_player_card; // selected player card to pick up
 	CardNode * used_card = NULL; // used card ptr
 	CardNode * used_card2 = NULL; // second card to use ptr
 	Card copy_card = {{0}}; // copy of used card
@@ -659,6 +660,71 @@ _Bool core_game_card_use_djanni_cards_couple(Player pPlayers[], int players_coun
 	// choose a card of the other players as hidden and take it
 	core_remove_player_first_matched_card(&pPlayers[player_index], copy_card); // delete the used card
 	core_remove_player_first_matched_card(&pPlayers[player_index], copy_card2); // delete the second card
+	used_card = NULL; // fix dandling ptr
+	used_card2 = NULL; // fix dandling ptr
+
+	log_write("player #%d (%s) is going to choose a player...", player_index+1, pPlayers[player_index].name);
+	if (pPlayers[player_index].type==REAL)
+	{
+		do // repeat if out-of-range or yourself or dead players
+		{
+			printf("Choose the player from which you will pick up a card: (0-%d)\n", players_count-1);
+			for (i=0; i<players_count; i++)
+			{
+				if (i!=player_index && pPlayers[i].is_alive==true)
+				{
+					printf("(%d) Player #%d (%s)", i, i+1, pPlayers[i].name);
+					if (pPlayers[i].card_count <= 0) // check if empty-handed
+						printf(" (empty-handed)");
+					printf("\n");
+				}
+			}
+			scanf("%d", &selected_player_index);
+			clear_input_line(); // clear the input line from junk
+		}
+		while (selected_player_index<0 || selected_player_index>=players_count || selected_player_index==player_index || pPlayers[selected_player_index].is_alive==false);
+	}
+	else // if (pPlayers[player_index].type==AI)
+	{
+		// todo
+		selected_player_index = 0;
+	}
+
+	// skip empty-handed players (the card will be consumed anyway)
+	if (pPlayers[selected_player_index].card_count <= 0)
+	{
+		printf("The Player #%d (%s) has no more cards.\n", selected_player_index+1, pPlayers[selected_player_index].name);
+		return true;
+	}
+
+	if (pPlayers[player_index].type==REAL)
+	{
+		printf("Player #%d (%s), which card do you want to pick up?\n", player_index+1, pPlayers[player_index].name);
+		if (core_game_real_choose_another_player_card(pPlayers, players_count, selected_player_index, pDeck, pStatus, pEnv, &selected_player_card, true)==false)
+			return false;
+	}
+	else // if (pPlayers[player_index].type==AI)
+	{
+		// todo
+		selected_player_card = 0;
+	}
+
+	used_card = card_node_select_n(pPlayers[selected_player_index].card_list, selected_player_card, NULL);
+	if (used_card==NULL) // have the player already lost that card?
+		return false;
+
+	log_write("player #%d (%s) picked up from player #%d (%s) the card [%d]%s (%s)",
+			player_index+1, pPlayers[player_index].name,
+			selected_player_index+1, pPlayers[selected_player_index].name,
+			used_card->card.type, get_card_type_name(used_card->card.type), used_card->card.title
+	);
+	printf("You picked up the following card from Player #%d (%s): [%d]%s (%s)\n",
+			selected_player_index+1, pPlayers[selected_player_index].name,
+			used_card->card.type, get_card_type_name(used_card->card.type), used_card->card.title
+	);
+
+	core_player_give_card_n_to_player(&pPlayers[selected_player_index], &pPlayers[player_index], selected_player_card); // after this, used_card will become a dandling ptr
+	used_card = NULL;
 
 	return true;
 }
@@ -825,6 +891,41 @@ _Bool core_game_real_choose_player_card(Player pPlayers[], int players_count, in
 	printf("You selected the following card:\n");
 	player_print_n_card(&pPlayers[player_index], *selected_card);
 	log_write("player #%d (%s) has selected:", player_index+1, pPlayers[player_index].name);
+	player_log_print_n_card(&pPlayers[player_index], *selected_card);
+
+	return true;
+}
+
+_Bool core_game_real_choose_another_player_card(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int * selected_card, _Bool is_secret)
+{
+	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL || selected_card==NULL) // skip null ptr
+		return false;
+
+	if (player_index>=players_count) // skip out-of-range
+		return false;
+
+	if (pPlayers[player_index].card_count <= 0)
+	{
+		printf("The player #%d (%s) has no more cards.\n", player_index+1, pPlayers[player_index].name);
+		log_write("player #%d (%s) has no more cards to pick up.", player_index+1, pPlayers[player_index].name);
+		return false;
+	}
+
+	do
+	{
+		printf("List of player #%d (%s)'s current cards:\n", player_index+1, pPlayers[player_index].name);
+		if (is_secret==true)
+			player_print_secret_hand(&pPlayers[player_index]);
+		else
+			player_print_hand(&pPlayers[player_index]);
+		printf("Choose one of them: (0-%d)\n", pPlayers[player_index].card_count-1);
+		scanf("%d", selected_card);
+		clear_input_line(); // clear the input line from junk
+	} while (*selected_card >= pPlayers[player_index].card_count); // repeat if out-of-range
+
+	printf("You selected the following card:\n");
+	player_print_n_card(&pPlayers[player_index], *selected_card);
+	log_write("player #%d (%s) has selected the following card from player #%d (%s):", pStatus->player_turn+1, pPlayers[pStatus->player_turn].name, player_index+1, pPlayers[player_index].name);
 	player_log_print_n_card(&pPlayers[player_index], *selected_card);
 
 	return true;

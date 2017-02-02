@@ -32,6 +32,7 @@ extern _Bool core_game_card_can_use_djanni_cards_couple(Player pPlayers[], int p
 extern _Bool core_game_card_can_use_djanni_cards_triple(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card);
 
 extern _Bool core_game_real_choose_player_card(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int * selected_card);
+extern _Bool core_game_real_choose_another_player_card(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int * selected_card, _Bool is_secret);
 extern _Bool core_game_ai_choose_player_card(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int * selected_card);
 
 extern _Bool core_game_ai_pickup_best_card(const Player * pPlayer, int * selected_card);

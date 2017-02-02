@@ -55,6 +55,7 @@ extern void player_log_turn_data(const Player * pPlayer, const GameStatus * pSta
 extern void status_log_data(const GameStatus * pStatus);
 
 extern void player_print_hand(const Player * pPlayer);
+extern void player_print_secret_hand(const Player * pPlayer);
 extern void player_print_n_card(const Player * pPlayer, int selected_card);
 extern void player_log_print_n_card(const Player * pPlayer, int selected_card);
 

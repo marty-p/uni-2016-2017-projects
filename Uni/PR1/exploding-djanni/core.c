@@ -350,6 +350,22 @@ void player_print_hand(const Player * pPlayer)
 	}
 }
 
+void player_print_secret_hand(const Player * pPlayer)
+{
+	CardNode * tmp = pPlayer->card_list;
+	int count=0;
+	if (pPlayer==NULL) // skip null ptr
+		return;
+
+	while (tmp!=NULL) // skip null ptr
+	{
+		// print all its values
+		printf("\t(%d) **********\n", count);
+		tmp = tmp->next;
+		count++;
+	}
+}
+
 void player_print_n_card(const Player * pPlayer, int selected_card)
 {
 	CardNode * tmp = NULL;
