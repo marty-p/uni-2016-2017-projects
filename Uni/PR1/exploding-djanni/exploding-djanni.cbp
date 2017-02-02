@@ -41,6 +41,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="core.h" />
+		<Unit filename="core_ai.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="core_ai.h" />
 		<Unit filename="core_game.c">
 			<Option compilerVar="CC" />
 		</Unit>
