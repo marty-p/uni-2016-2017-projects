@@ -562,11 +562,11 @@ _Bool core_game_card_use_djanni_cards(Player pPlayers[], int players_count, int 
 		do
 		{
 			log_write("In which mode do you want to use the djanni cards?");
-			printf("%u. Single Mode\n", DM_SINGLE, get_djanni_mode_name(DM_SINGLE));
+			printf("%u. %s Mode\n", DM_SINGLE, get_djanni_mode_name(DM_SINGLE));
 			if (can_couple==true)
-				printf("%u. Couple Mode\n", DM_COUPLE, get_djanni_mode_name(DM_COUPLE));
+				printf("%u. %s Mode\n", DM_COUPLE, get_djanni_mode_name(DM_COUPLE));
 			if (can_triple==true)
-				printf("%u. Triple Mode\n", DM_TRIPLE, get_djanni_mode_name(DM_TRIPLE));
+				printf("%u. %s Mode\n", DM_TRIPLE, get_djanni_mode_name(DM_TRIPLE));
 			scanf("%u", &chosen_mode);
 			clear_input_line(); // clear the input line from junk
 		}
