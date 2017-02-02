@@ -576,6 +576,9 @@ _Bool core_game_card_use_djanni_cards(Player pPlayers[], int players_count, int 
 		chosen_mode = DM_SINGLE;
 
 	log_write("player #%d (%s) chose the %s djanni card mode...", player_index+1, pPlayers[player_index].name, get_djanni_mode_name(chosen_mode));
+	printf("You have chosen the %s djanni mode!\n", get_djanni_mode_name(chosen_mode));
+	if (core_game_card_can_nope(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
+		return false;
 
 	// process the mode
 	switch (chosen_mode)
@@ -734,7 +737,7 @@ _Bool core_game_card_use_djanni_cards_triple(Player pPlayers[], int players_coun
 	return true;
 }
 
-_Bool core_game_card_can_use_djanni_cards_couple(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card)
+_Bool core_game_card_can_use_djanni_cards_couple(const Player pPlayers[], int players_count, int player_index, const CardDeck * pDeck, const GameStatus * pStatus, const GameEnv * pEnv, int selected_card)
 {
 	CardNode * used_card = NULL;
 	CardNode * tmp = NULL;
@@ -765,7 +768,7 @@ _Bool core_game_card_can_use_djanni_cards_couple(Player pPlayers[], int players_
 	return false;
 }
 
-_Bool core_game_card_can_use_djanni_cards_triple(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card)
+_Bool core_game_card_can_use_djanni_cards_triple(const Player pPlayers[], int players_count, int player_index, const CardDeck * pDeck, const GameStatus * pStatus, const GameEnv * pEnv, int selected_card)
 {
 	CardNode * used_card = NULL;
 	CardNode * tmp = NULL;
@@ -852,8 +855,8 @@ _Bool core_game_process_player_card(Player pPlayers[], int players_count, int pl
 				internal_delete = core_game_card_use_favor(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card);
 			break;
 		case DJANNI_CARDS: // it has 3 modes... single which does nothing, couple if two different djanni cards are used, and triple if three same djanni cards are used
-			if (core_game_card_can_nope(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
-				internal_delete = core_game_card_use_djanni_cards(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card);
+			// nope check inside the function
+			internal_delete = core_game_card_use_djanni_cards(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card);
 			break;
 	}
 
