@@ -117,7 +117,6 @@ _Bool core_game_pause_menu(const Player pPlayers[], int players_count, const Car
 
 _Bool core_game_process(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv)
 {
-	int ed_count; // exploding djanni counter
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
 
@@ -131,8 +130,7 @@ _Bool core_game_process(Player pPlayers[], int players_count, CardDeck * pDeck, 
 	player_log_turn_data(&pPlayers[pStatus->player_turn], pStatus);
 
 	// log exploding djanni pct draw
-	ed_count = core_deck_count_of_type_n(pDeck, EXPLODING_DJANNI);
-	printf("There are still %d %s in the deck! (%.2f%% to draw one)\n", ed_count, get_card_type_name(EXPLODING_DJANNI), (double)ed_count/pDeck->count*100.0);
+	printf("There are still %d %s in the deck! (%.2f%% to draw one)\n", core_deck_count_of_type_n(pDeck, EXPLODING_DJANNI), get_card_type_name(EXPLODING_DJANNI), core_deck_get_pct_of_type_n(pDeck, EXPLODING_DJANNI));
 
 	// check if attacked
 	if (pStatus->is_attacked==true)

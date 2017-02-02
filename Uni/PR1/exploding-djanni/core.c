@@ -221,7 +221,16 @@ void core_player_draw_from_deck(Player * pPlayer, CardDeck * pGivenDeck)
 
 int core_deck_count_of_type_n(CardDeck * pGivenDeck, CardType card_type)
 {
+	if (pGivenDeck==NULL)
+		return 0;
 	return card_node_count_of_type_n(pGivenDeck->card_list, card_type);
+}
+
+double core_deck_get_pct_of_type_n(CardDeck * pGivenDeck, CardType card_type)
+{
+	if (pGivenDeck==NULL)
+		return 0.0;
+	return (double)core_deck_count_of_type_n(pGivenDeck, card_type)/pGivenDeck->count*100.0;
 }
 
 const char * get_card_type_name(CardType card_type)
