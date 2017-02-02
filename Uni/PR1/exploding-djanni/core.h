@@ -13,9 +13,12 @@
 #define STARTING_OTHER_CARDS_NUM 4 // number of other cards to give to each player on first turn
 #define STARTING_MEOOOW_NUM 1 // number of meooow cards to give to each player on first turn
 #define SEE_THE_FUTURE_FORESEE_NUM 3 // number of cards you can foresee with the see the future card
+#define DJANNI_DOUBLE_MATCH_NUM 1 // +1;
 #define DJANNI_TRIPLE_MATCH_NUM 2 // +1;
 #define SAVEFILE_FILENAME "partita.sav" // default savefile filename (used if you input a blank string)
 #define FILEPATH_LEN 259 // +1; the same of MAX_PATH on windows
+
+// #define ENABLE_DJANNI_COUPLE_DIFF_MODE // if enabled, it will take the djanni couple cards only if they are "different"
 
 /* include list */
 #include "common.h"

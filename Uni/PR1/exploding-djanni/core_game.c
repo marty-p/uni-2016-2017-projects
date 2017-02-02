@@ -601,15 +601,19 @@ _Bool core_game_card_use_djanni_cards(Player pPlayers[], int players_count, int 
 
 _Bool core_game_card_use_djanni_cards_couple(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card)
 {
+#ifdef ENABLE_DJANNI_COUPLE_DIFF_MODE
 	int chosen_set; // chosen set to use
 	_Bool right_choice; // flag to stop the loop
+#endif
 	int selected_player_index; // selected player which you take the card
 	int selected_player_card; // selected player card to pick up
 	CardNode * used_card = NULL; // used card ptr
-	CardNode * used_card2 = NULL; // second card to use ptr
 	Card copy_card = {{0}}; // copy of used card
+#ifdef ENABLE_DJANNI_COUPLE_DIFF_MODE
+	CardNode * used_card2 = NULL; // second card to use ptr
 	Card copy_card2 = {{0}}; // copy of second card to use
 	CardNode * tmp = NULL; // for itering
+#endif
 	int i=0; // for itering
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
@@ -624,6 +628,7 @@ _Bool core_game_card_use_djanni_cards_couple(Player pPlayers[], int players_coun
 	if (used_card==NULL) // have the player already lost that card?
 		return false;
 
+#ifdef ENABLE_DJANNI_COUPLE_DIFF_MODE
 	do
 	{
 		// reset iter variables
@@ -665,6 +670,13 @@ _Bool core_game_card_use_djanni_cards_couple(Player pPlayers[], int players_coun
 	core_remove_player_first_matched_card(&pPlayers[player_index], copy_card2); // delete the second card
 	used_card = NULL; // fix dangling ptr
 	used_card2 = NULL; // fix dangling ptr
+#else
+	// choose a card of the other players as hidden and take it
+	copy_card = used_card->card;
+	for (i=0; i<=DJANNI_DOUBLE_MATCH_NUM; i++) // iter n match+1
+		core_remove_player_first_matched_card(&pPlayers[player_index], copy_card); // delete the used card
+	used_card = NULL; // fix dangling ptr
+#endif
 
 	log_write("player #%d (%s) is going to choose a player...", player_index+1, pPlayers[player_index].name);
 	if (pPlayers[player_index].type==REAL)
@@ -845,8 +857,13 @@ _Bool core_game_card_can_use_djanni_cards_couple(const Player pPlayers[], int pl
 	{
 		if (selected_card!=i && tmp->card.type==DJANNI_CARDS) // skip itself
 		{
-			if (strcmp(used_card->card.title, tmp->card.title) != 0) // increase if they have different titles
+#ifdef ENABLE_DJANNI_COUPLE_DIFF_MODE
+			if (strcmp(used_card->card.title, tmp->card.title) != 0) // true if they have different titles
 				return true;
+#else
+			if (strcmp(used_card->card.title, tmp->card.title) != 0) // true if they have same titles
+				return true;
+#endif
 		}
 		tmp = tmp->next;
 		i++;
