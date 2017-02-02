@@ -192,7 +192,6 @@ _Bool core_game_process_ai_player(Player pPlayers[], int players_count, CardDeck
 	if (pStatus->player_turn >= players_count)
 		return false;
 
-	// _Bool should_draw = true; // variable to specify whether the player should draw a card or not
 	return true;
 }
 
@@ -204,7 +203,6 @@ _Bool core_game_process_real_player(Player pPlayers[], int players_count, CardDe
 	if (core_game_continue_menu(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
 		return false;
 
-	// _Bool should_draw = true; // variable to specify whether the player should draw a card or not
 	return true;
 }
 
@@ -218,6 +216,7 @@ _Bool core_game_continue_menu(Player pPlayers[], int players_count, CardDeck * p
 
 	do
 	{
+		log_write("displaying the continue menu...");
 		printf("List of your current cards:\n");
 		player_print_hand(&pPlayers[pStatus->player_turn]);
 
@@ -227,6 +226,7 @@ _Bool core_game_continue_menu(Player pPlayers[], int players_count, CardDeck * p
 			printf("\t1. Draw a card\n");
 		if (pPlayers[pStatus->player_turn].card_count > 0)
 			printf("\t2. Use a card\n");
+		printf("\t3. Save the game\n");
 		printf("\tq. Quit the game\n");
 
 		// ask which choice to make
@@ -260,6 +260,14 @@ _Bool core_game_continue_menu(Player pPlayers[], int players_count, CardDeck * p
 				}
 				if (core_game_card_use(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
 					return false;
+				break;
+			case '3':
+				log_write("saving...");
+				if (core_init_save_game(pPlayers, players_count, pDeck, pStatus)==false)
+				{
+					log_write("an error occurred in the core_init_save_game function...");
+					return false;
+				}
 				break;
 			case 'q':
 				log_write("quitting...");
@@ -533,7 +541,7 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 
 	core_remove_player_n_card(&pPlayers[player_index], selected_card); // internal delete
 	printf("You received the following card from Player #%d (%s): [%d]%s (%s)\n",
-			selected_player_card+1, pPlayers[selected_player_card].name,
+			selected_player_index+1, pPlayers[selected_player_index].name,
 			used_card->card.type, get_card_type_name(used_card->card.type), used_card->card.title
 	);
 	core_player_give_card_n_to_player(&pPlayers[selected_player_index], &pPlayers[player_index], selected_player_card); // after this, used_card will become a dangling ptr
@@ -861,7 +869,7 @@ _Bool core_game_card_can_use_djanni_cards_couple(const Player pPlayers[], int pl
 			if (strcmp(used_card->card.title, tmp->card.title) != 0) // true if they have different titles
 				return true;
 #else
-			if (strcmp(used_card->card.title, tmp->card.title) != 0) // true if they have same titles
+			if (strcmp(used_card->card.title, tmp->card.title) == 0) // true if they have same titles
 				return true;
 #endif
 		}
