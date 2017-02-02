@@ -22,7 +22,7 @@ extern CardNode * card_node_find_first_n_type(CardNode * first, CardType n_type,
 extern CardNode * card_node_find_first_n_type_and_delete(CardNode * first, CardType n_type, _Bool * is_deleted);
 extern CardNode * card_node_find_first_matched_card(CardNode * first, Card copy_card, CardNode ** prev);
 extern CardNode * card_node_find_first_matched_card_and_delete(CardNode * first, Card copy_card, _Bool * is_deleted);
-extern int card_node_count_of_type_n(CardNode * first, CardType card_type);
+extern int card_node_count_of_type_n(const CardNode * first, CardType card_type);
 
 #endif
 

@@ -48,8 +48,10 @@ extern void core_player_give_card_n_to_player(Player * pGiver, Player * pReceive
 extern void core_player_draw_from_deck(Player * pPlayer, CardDeck * pGivenDeck);
 extern void core_player_draw_from_deck(Player * pPlayer, CardDeck * pGivenDeck);
 
-extern int core_deck_count_of_type_n(CardDeck * pGivenDeck, CardType card_type);
-extern double core_deck_get_pct_of_type_n(CardDeck * pGivenDeck, CardType card_type);
+extern int core_deck_count_of_type_n(const CardDeck * pGivenDeck, CardType card_type);
+extern double core_deck_get_pct_of_type_n(const CardDeck * pGivenDeck, CardType card_type);
+extern int core_player_count_of_type_n(const Player * pGivenPlayer, CardType card_type);
+extern double core_player_get_pct_of_type_n(const Player * pGivenPlayer, CardType card_type);
 
 extern const char * get_card_type_name(CardType card_type);
 extern const char * get_player_type_name(PlayerType player_type);

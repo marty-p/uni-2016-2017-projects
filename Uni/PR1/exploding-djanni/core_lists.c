@@ -277,7 +277,7 @@ CardNode * card_node_find_first_matched_card_and_delete(CardNode * first, Card c
 	return first;
 }
 
-int card_node_count_of_type_n(CardNode * first, CardType card_type) // node counter O(n)
+int card_node_count_of_type_n(const CardNode * first, CardType card_type) // node counter O(n)
 {
 	int count = 0; // counter
 	while (first != NULL) // iter till null

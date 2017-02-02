@@ -130,12 +130,14 @@ _Bool core_game_process(Player pPlayers[], int players_count, CardDeck * pDeck, 
 	player_log_turn_data(&pPlayers[pStatus->player_turn], pStatus);
 
 	// log exploding djanni pct draw
-	printf("There are still %d %s in the deck! (%.2f%% to draw one)\n", core_deck_count_of_type_n(pDeck, EXPLODING_DJANNI), get_card_type_name(EXPLODING_DJANNI), core_deck_get_pct_of_type_n(pDeck, EXPLODING_DJANNI));
+	if (pPlayers[pStatus->player_turn].type==REAL)
+		printf("There are still %d %s in the deck! (%.2f%% to draw one)\n", core_deck_count_of_type_n(pDeck, EXPLODING_DJANNI), get_card_type_name(EXPLODING_DJANNI), core_deck_get_pct_of_type_n(pDeck, EXPLODING_DJANNI));
 
 	// check if attacked
 	if (pStatus->is_attacked==true)
 	{
-		printf("You are under attack! Use an attack card or repeat the turn twice!\n");
+		if (pPlayers[pStatus->player_turn].type==REAL)
+			printf("You are under attack! Use an attack card or repeat the turn twice!\n");
 		log_write("player #%d (%s) is under attack...", pStatus->player_turn+1, pPlayers[pStatus->player_turn].name);
 	}
 
@@ -198,6 +200,10 @@ _Bool core_game_continue_menu(Player pPlayers[], int players_count, CardDeck * p
 	_Bool wrong_choice;
 
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
+		return false;
+
+	// check out-of-range issue
+	if (pStatus->player_turn >= players_count)
 		return false;
 
 	do

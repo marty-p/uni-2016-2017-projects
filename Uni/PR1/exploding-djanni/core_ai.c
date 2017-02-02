@@ -5,9 +5,37 @@ _Bool core_game_process_ai_player(Player pPlayers[], int players_count, CardDeck
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
 
+	if (core_game_ai_continue(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
+		return false;
+
+	return true;
+}
+
+_Bool core_game_ai_continue(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv)
+{
+	double expdjanni_pct;
+	_Bool has_meooow;
+
+	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
+		return false;
+
 	// check out-of-range issue
 	if (pStatus->player_turn >= players_count)
 		return false;
+
+	do
+	{
+		log_write("elaborating ai continue...");
+		player_log_turn_data(&pPlayers[pStatus->player_turn], pStatus);
+
+		expdjanni_pct = core_deck_get_pct_of_type_n(pDeck, EXPLODING_DJANNI); // returns pct of drawing the exploding djanni card
+		has_meooow = core_player_count_of_type_n(&pPlayers[pStatus->player_turn], MEOOOW) >= 1; // true if the player has at least 1 meooow
+
+		if (has_meooow==false) // get panicked
+		{
+		}
+	}
+	while (pEnv->has_drawn==false);
 
 	return true;
 }
@@ -21,9 +49,6 @@ _Bool core_game_ai_choose_player_card(Player pPlayers[], int players_count, int 
 		return false;
 
 	core_game_ai_pickup_best_card(&pPlayers[player_index], selected_card);
-
-	// printf("You chose the following card:\n");
-	// player_print_n_card(&pPlayers[player_index], *selected_card);
 
 	return true;
 }
