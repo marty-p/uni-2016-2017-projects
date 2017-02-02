@@ -966,7 +966,7 @@ _Bool core_game_process_player_card(Player pPlayers[], int players_count, int pl
 			if (core_game_card_can_nope(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
 				internal_delete = core_game_card_use_favor(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card);
 			break;
-		case DJANNI_CARDS: // it has 3 modes... single which does nothing, couple if two different djanni cards are used, and triple if three same djanni cards are used
+		case DJANNI_CARDS: // it has 3 modes... single which does nothing, couple if two same djanni cards are used, and triple if three same djanni cards are used
 			// nope check inside the function
 			internal_delete = core_game_card_use_djanni_cards(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card);
 			break;
