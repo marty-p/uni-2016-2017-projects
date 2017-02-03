@@ -34,6 +34,7 @@ _Bool core_game_start(Player pPlayers[], int players_count, CardDeck * pDeck, Ga
 		game_env.has_drawn = false;
 		game_env.is_noped = false;
 		game_env.has_attacked = false;
+		game_env.saw_terrible_future = false;
 		// process the turn and returns false in case of problems
 		if (core_game_process(pPlayers, players_count, pDeck, pStatus, &game_env)==false)
 			return false;
@@ -390,7 +391,8 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 				}
 				else if (pPlayers[i].type==AI)
 				{
-					if (false)//if (core_game_am_i_next(pPlayers, players_count, pStatus==true) && core_game_ai_is_it_valuable_card_to_nope()==true)
+					// consider ATTACK the most
+					if (core_game_am_i_next(pPlayers, players_count, i, pStatus, pEnv, used_card->card.type==ATTACK)==true && core_game_ai_is_it_valuable_card_to_nope(pPlayers, players_count, i, used_card, pEnv)==true)
 					{
 						pEnv->is_noped = !pEnv->is_noped;
 						is_nope_reused = true;
