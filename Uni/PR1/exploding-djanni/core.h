@@ -23,8 +23,6 @@
 #define PCT_MIN 0
 #define PCT_MAX 100
 
-// #define ENABLE_DJANNI_COUPLE_DIFF_MODE // if enabled, it will take the djanni couple cards only if they are "different"
-
 /* include list */
 #include "common.h"
 #include "log.h"

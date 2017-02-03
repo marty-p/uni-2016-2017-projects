@@ -25,10 +25,10 @@ void core_shutdown(Player pPlayers[], int players_count, CardDeck * pDeck)
 	// free every player's card list
 	if (pPlayers!=NULL) // skip null ptr
 	{
-		for (i=0; i<players_count; i++) // iter all the players
+		for (i=0; i<players_count; i++)
 		{
-			card_node_free(pPlayers[i].card_list); // free their cards
-			pPlayers[i].card_list = NULL; // reset the ptr
+			free(pPlayers[i].cards);
+			pPlayers[i].cards = NULL;
 		}
 	}
 	// free the deck list
@@ -153,58 +153,40 @@ void core_remove_deck_head(CardDeck * pGivenDeck)
 
 void core_remove_player_n_card(Player * pGivenPlayer, int selected_card)
 {
-	_Bool is_removed = false;
 	if (pGivenPlayer!=NULL)
-	{
-		pGivenPlayer->card_list = card_node_check_remove(pGivenPlayer->card_list, selected_card, &is_removed);
-		if (is_removed==true)
-			pGivenPlayer->card_count--; // keep O(1)
-	}
+		card_list_remove_n(pGivenPlayer, selected_card);
 }
 
 void core_remove_player_card_type(Player * pGivenPlayer, CardType card_type)
 {
-	_Bool is_removed = false;
-	pGivenPlayer->card_list = card_node_find_first_n_type_and_delete(pGivenPlayer->card_list, card_type, &is_removed);
-	if (is_removed==true)
-		pGivenPlayer->card_count--; // keep O(1)
+	if (pGivenPlayer!=NULL)
+		card_list_remove_first_type_n(pGivenPlayer, card_type);
 }
 
 void core_remove_player_first_matched_card(Player * pGivenPlayer, Card copy_card)
 {
-	_Bool is_removed = false;
-	pGivenPlayer->card_list = card_node_find_first_matched_card_and_delete(pGivenPlayer->card_list, copy_card, &is_removed);
-	if (is_removed==true)
-		pGivenPlayer->card_count--; // keep O(1)
+	if (pGivenPlayer!=NULL)
+		card_list_remove_first_card_n(pGivenPlayer, copy_card);
 }
 
 _Bool core_player_has_in(Player * pGivenPlayer, CardType card_type)
 {
-	return card_node_find_first_n_type(pGivenPlayer->card_list, card_type, NULL)!=NULL;
+	return card_list_has_type_n(pGivenPlayer, card_type);
 }
 
 void core_player_give_card_n_to_player(Player * pGiver, Player * pReceiver, int selected_card)
 {
-	CardNode * used_card = NULL;
+	Card * used_card = NULL;
 	Card new_card = {{0}};
-	CardNode * prev = NULL;
-	_Bool is_deleted = false;
 	if (pGiver!=NULL && pReceiver!=NULL) // skip null ptr
 	{
-		used_card = card_node_select_n(pGiver->card_list, selected_card, &prev);
+		used_card = card_list_select_n(pGiver, selected_card);
 		if (used_card==NULL) // have the player already lost that card?
 			return;
-		new_card = used_card->card;
+		new_card = *used_card;
 
-		pGiver->card_list = card_node_check_remove(pGiver->card_list, selected_card, &is_deleted); // remove the giver's select card
-		if (is_deleted==true)
-		{
-			pGiver->card_count--; // keep O(1) count updated
-			pReceiver->card_list = card_node_insert_head(pReceiver->card_list, new_card); // add the giver's selected card into player's card_list
-			pReceiver->card_count++; // keep O(1) card_count updated
-		}
-		else
-			log_write("core_player_give_card_n_to_player failed\n");
+		card_list_remove_n(pGiver, selected_card); // remove the giver's select card
+		card_list_insert_head(pReceiver, new_card); // add the giver's selected card into player's card_list
 	}
 }
 
@@ -212,9 +194,8 @@ void core_player_draw_from_deck(Player * pPlayer, CardDeck * pGivenDeck)
 {
 	if (pPlayer!=NULL && pGivenDeck!=NULL) // skip null ptr
 	{
-		pPlayer->card_list = card_node_insert_head(pPlayer->card_list, pGivenDeck->card_list->card); // add the first given_deck's card into player's card_list
+		card_list_insert_head(pPlayer, pGivenDeck->card_list->card); // add the first given_deck's card into player's card_list
 		pGivenDeck->card_list = card_node_remove_head(pGivenDeck->card_list); // remove the first given_deck's card
-		pPlayer->card_count++; // keep O(1) card_count updated
 		pGivenDeck->count--; // keep O(1) count updated
 	}
 }
@@ -237,7 +218,7 @@ int core_player_count_of_type_n(const Player * pGivenPlayer, CardType card_type)
 {
 	if (pGivenPlayer==NULL)
 		return 0;
-	return card_node_count_of_type_n(pGivenPlayer->card_list, card_type);
+	return card_list_count_of_type_n(pGivenPlayer, card_type);
 }
 
 double core_player_get_pct_of_type_n(const Player * pGivenPlayer, CardType card_type)
@@ -271,8 +252,8 @@ const char * get_player_type_name(PlayerType player_type)
 {
 	static const char * name_list[PLAYER_TYPE_NUM] =
 	{
-		"AI",
 		"REAL",
+		"AI",
 	};
 	// prevent out-of-range issues
 	if (player_type >= PLAYER_TYPE_NUM) // note: it's unsigned
@@ -331,8 +312,8 @@ void players_log_data(const Player * pPlayers, int players_count)
 		{
 			// print the player's status and all the relative cards
 			log_write("Player #%d's name: %s, is_alive: %d, type: [%u]%s", i+1, pPlayers[i].name, pPlayers[i].is_alive, pPlayers[i].type, get_player_type_name(pPlayers[i].type));
-			log_write("List of the player #%d's cards: (count: %d==%d)", i+1, pPlayers[i].card_count, card_node_count(pPlayers[i].card_list));
-			card_node_log_print(pPlayers[i].card_list);
+			log_write("List of the player #%d's cards: (count: %d)", i+1, pPlayers[i].card_count);
+			card_list_log_print(&pPlayers[i]);
 		}
 	}
 }
@@ -343,8 +324,8 @@ void player_log_turn_data(const Player * pPlayer, const GameStatus * pStatus)
 	{
 		// log the player's status and the relative cards
 		log_write("Turn #%d: Player #%d's name: %s, is_alive: %d, type: [%u]%s, is_attacked: %d", pStatus->total_turns, pStatus->player_turn+1, pPlayer->name, pPlayer->is_alive, pPlayer->type, get_player_type_name(pPlayer->type), pStatus->is_attacked);
-		log_write("List of the player #%d's cards: (count: %d==%d)", pStatus->player_turn+1, pPlayer->card_count, card_node_count(pPlayer->card_list));
-		card_node_log_print(pPlayer->card_list);
+		log_write("List of the player #%d's cards: (count: %d)", pStatus->player_turn+1, pPlayer->card_count);
+		card_list_log_print(pPlayer);
 	}
 }
 
@@ -359,56 +340,43 @@ void status_log_data(const GameStatus * pStatus)
 
 void player_print_hand(const Player * pPlayer)
 {
-	CardNode * tmp = pPlayer->card_list;
-	int count=0;
-	if (pPlayer==NULL) // skip null ptr
+	int i;
+	if (pPlayer==NULL || pPlayer->cards==NULL) // skip null ptr
 		return;
-
-	while (tmp!=NULL) // skip null ptr
-	{
-		// print all its values
-		printf("\t(%d) [%d]%s: %s\n", count, tmp->card.type, get_card_type_name(tmp->card.type), tmp->card.title);
-		tmp = tmp->next;
-		count++;
-	}
+	for (i=0; i<pPlayer->card_count; i++)
+		printf("\t(%d) [%d]%s: %s\n", i, pPlayer->cards[i].type, get_card_type_name(pPlayer->cards[i].type), pPlayer->cards[i].title);
 }
 
 void player_print_secret_hand(const Player * pPlayer)
 {
-	CardNode * tmp = pPlayer->card_list;
-	int count=0;
-	if (pPlayer==NULL) // skip null ptr
+	int i;
+	if (pPlayer==NULL || pPlayer->cards==NULL) // skip null ptr
 		return;
 
-	while (tmp!=NULL) // skip null ptr
-	{
-		// print all its values
-		printf("\t(%d) **********\n", count);
-		tmp = tmp->next;
-		count++;
-	}
+	for (i=0; i<pPlayer->card_count; i++)
+		printf("\t(%d) **********\n", i);
 }
 
 void player_print_n_card(const Player * pPlayer, int selected_card)
 {
-	CardNode * tmp = NULL;
+	const Card * tmp = NULL;
 	if (pPlayer==NULL) // skip null ptr
 		return;
 
-	tmp = card_node_select_n(pPlayer->card_list, selected_card, NULL);
+	tmp = card_list_const_select_n(pPlayer, selected_card);
 	if (tmp!=NULL)
-		printf("\t(%d) [%d]%s: %s\n", selected_card, tmp->card.type, get_card_type_name(tmp->card.type), tmp->card.title);
+		printf("\t(%d) [%d]%s: %s\n", selected_card, tmp->type, get_card_type_name(tmp->type), tmp->title);
 }
 
 void player_log_print_n_card(const Player * pPlayer, int selected_card)
 {
-	CardNode * tmp = NULL;
+	const Card * tmp = NULL;
 	if (pPlayer==NULL) // skip null ptr
 		return;
 
-	tmp = card_node_select_n(pPlayer->card_list, selected_card, NULL);
+	tmp = card_list_const_select_n(pPlayer, selected_card);
 	if (tmp!=NULL)
-		log_write("\t(%d) [%d]%s: %s", selected_card, tmp->card.type, get_card_type_name(tmp->card.type), tmp->card.title);
+		log_write("\t(%d) [%d]%s: %s", selected_card, tmp->type, get_card_type_name(tmp->type), tmp->title);
 }
 
 void deck_print_count(const CardDeck * pDeck)

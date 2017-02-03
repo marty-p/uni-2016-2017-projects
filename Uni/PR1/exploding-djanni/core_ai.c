@@ -190,32 +190,26 @@ _Bool core_game_ai_pickup_best_card(const Player * pPlayer, int * selected_card)
 		FAVOR, //7
 		DJANNI_CARDS //8
 	};
-	CardNode * tmp;
-	int count;
 	_Bool chosen_card = false;
-	int i;
+	int i, j;
 	if (pPlayer==NULL || pPlayer->card_count<=0) // skip null ptr or cards<=0
 		return false;
 
 	for (i=0; i<CARD_TYPE_NUM && chosen_card==false; i++)
 	{
-		tmp = pPlayer->card_list;
-		count = 0;
-		while (tmp!=NULL && count<=pPlayer->card_count && chosen_card==false) // skip null ptr
+		for (j=0; j<pPlayer->card_count && chosen_card==false; j++)
 		{
-			if (wish_list[i]==tmp->card.type)
+			if (wish_list[i]==pPlayer->cards[j].type)
 			{
 				chosen_card = true;
 				*selected_card = i;
 			}
-			tmp = tmp->next;
-			count++;
 		}
 	}
 	return chosen_card;
 }
 
-_Bool core_game_ai_is_it_valuable_card_to_nope(const Player pPlayers[], int players_count, int player_index, const CardNode * used_card, const GameEnv * pEnv)
+_Bool core_game_ai_is_it_valuable_card_to_nope(const Player pPlayers[], int players_count, int player_index, const Card * used_card, const GameEnv * pEnv)
 {
 	static const CardType wish_list[CARD_TYPE_NUM] = {
 		ATTACK, //5
@@ -229,7 +223,7 @@ _Bool core_game_ai_is_it_valuable_card_to_nope(const Player pPlayers[], int play
 
 	for (i=0; i<CARD_TYPE_NUM; i++)
 	{
-		if (wish_list[i]==used_card->card.type)
+		if (wish_list[i]==used_card->type)
 			return true;
 	}
 	return false;

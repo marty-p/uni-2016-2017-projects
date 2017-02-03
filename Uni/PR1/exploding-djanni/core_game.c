@@ -344,14 +344,14 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 	int i;
 	char get_choice;
 	_Bool is_nope_reused;
-	CardNode * used_card = NULL;
+	Card * used_card = NULL;
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
 
 	if (player_index>=players_count) // skip out-of-range
 		return false;
 
-	used_card = card_node_select_n(pPlayers[player_index].card_list, selected_card, NULL);
+	used_card = card_list_select_n(&pPlayers[player_index], selected_card);
 	if (used_card==NULL) // have the player already lost that card?
 		return false;
 
@@ -372,11 +372,11 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 				{
 					if (is_nope_reused==false)
 						printf("Player #%d (%s), do you want to use a %s card to block Player #%d (%s)'s %s? (y:yes, any:no)\n",
-								i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index+1, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
+								i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index+1, pPlayers[player_index].name, get_card_type_name(used_card->type)
 						);
 					else
 						printf("Player #%d (%s), do you want to use a %s card to unblock Player #%d (%s)'s %s? (y:yes, any:no)\n",
-								i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index+1, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
+								i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index+1, pPlayers[player_index].name, get_card_type_name(used_card->type)
 						);
 					scanf("%c", &get_choice);
 					clear_input_line(); // clear the input line from junk
@@ -386,19 +386,19 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 					is_nope_reused = true;
 					core_remove_player_card_type(&pPlayers[i], NOPE);
 					log_write("player #%d (%s) used a %s card to block Player #%d (%s)'s %s",
-							i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index+1, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
+							i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index+1, pPlayers[player_index].name, get_card_type_name(used_card->type)
 					);
 				}
 				else if (pPlayers[i].type==AI)
 				{
 					// consider ATTACK the most
-					if (core_game_am_i_next(pPlayers, players_count, i, pStatus, pEnv, used_card->card.type==ATTACK)==true && core_game_ai_is_it_valuable_card_to_nope(pPlayers, players_count, i, used_card, pEnv)==true)
+					if (core_game_am_i_next(pPlayers, players_count, i, pStatus, pEnv, used_card->type==ATTACK)==true && core_game_ai_is_it_valuable_card_to_nope(pPlayers, players_count, i, used_card, pEnv)==true)
 					{
 						pEnv->is_noped = !pEnv->is_noped;
 						is_nope_reused = true;
 						core_remove_player_card_type(&pPlayers[i], NOPE);
 						log_write("player #%d (%s) used a %s card to block Player #%d (%s)'s %s",
-								i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index+1, pPlayers[player_index].name, get_card_type_name(used_card->card.type)
+								i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index+1, pPlayers[player_index].name, get_card_type_name(used_card->type)
 						);
 					}
 				}
@@ -436,7 +436,7 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 {
 	int selected_player_index;
 	int selected_player_card;
-	CardNode * used_card = NULL;
+	Card * used_card = NULL;
 	int i;
 
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
@@ -507,18 +507,18 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 		selected_player_card = 0;
 	}
 
-	used_card = card_node_select_n(pPlayers[selected_player_index].card_list, selected_player_card, NULL);
+	used_card = card_list_select_n(&pPlayers[selected_player_index], selected_player_card);
 	if (used_card==NULL) // have the player already lost that card?
 		return false;
 
 	log_write("player #%d (%s) received from player #%d (%s) the card [%d]%s (%s)",
 			player_index+1, pPlayers[player_index].name,
 			selected_player_index+1, pPlayers[selected_player_index].name,
-			used_card->card.type, get_card_type_name(used_card->card.type), used_card->card.title
+			used_card->type, get_card_type_name(used_card->type), used_card->title
 	);
 	printf("You gave the following card to Player #%d (%s): [%d]%s (%s)\n",
 			player_index+1, pPlayers[player_index].name,
-			used_card->card.type, get_card_type_name(used_card->card.type), used_card->card.title
+			used_card->type, get_card_type_name(used_card->type), used_card->title
 	);
 
 	log_write("switching interaction to player #%d (%s)...", player_index+1, pPlayers[player_index].name);
@@ -536,7 +536,7 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 	core_remove_player_n_card(&pPlayers[player_index], selected_card); // internal delete
 	printf("You received the following card from Player #%d (%s): [%d]%s (%s)\n",
 			selected_player_index+1, pPlayers[selected_player_index].name,
-			used_card->card.type, get_card_type_name(used_card->card.type), used_card->card.title
+			used_card->type, get_card_type_name(used_card->type), used_card->title
 	);
 	core_player_give_card_n_to_player(&pPlayers[selected_player_index], &pPlayers[player_index], selected_player_card); // after this, used_card will become a dangling ptr
 	used_card = NULL;
@@ -549,7 +549,7 @@ _Bool core_game_card_use_djanni_cards(Player pPlayers[], int players_count, int 
 	_Bool can_couple = false;
 	_Bool can_triple = false;
 	DjanniMode chosen_mode;
-	CardNode * used_card = NULL; // used card ptr
+	const Card * used_card = NULL; // used card ptr
 	Card copy_card = {{0}}; // copy of used card
 	int i;
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
@@ -585,10 +585,10 @@ _Bool core_game_card_use_djanni_cards(Player pPlayers[], int players_count, int 
 	if (core_game_card_can_nope(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==true)
 	{
 		// select that djanni card
-		used_card = card_node_select_n(pPlayers[player_index].card_list, selected_card, NULL);
+		used_card = card_list_const_select_n(&pPlayers[player_index], selected_card);
 		if (used_card==NULL) // have the player already lost that card?
 			return false;
-		copy_card = used_card->card;
+		copy_card = *used_card;
 
 		// delete the djanni cards
 		switch (chosen_mode)
@@ -630,19 +630,10 @@ _Bool core_game_card_use_djanni_cards(Player pPlayers[], int players_count, int 
 
 _Bool core_game_card_use_djanni_cards_couple(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card)
 {
-#ifdef ENABLE_DJANNI_COUPLE_DIFF_MODE
-	int chosen_set; // chosen set to use
-	_Bool right_choice; // flag to stop the loop
-#endif
 	int selected_player_index; // selected player which you take the card
 	int selected_player_card; // selected player card to pick up
-	CardNode * used_card = NULL; // used card ptr
+	const Card * used_card = NULL; // used card ptr
 	Card copy_card = {{0}}; // copy of used card
-#ifdef ENABLE_DJANNI_COUPLE_DIFF_MODE
-	CardNode * used_card2 = NULL; // second card to use ptr
-	Card copy_card2 = {{0}}; // copy of second card to use
-	CardNode * tmp = NULL; // for itering
-#endif
 	int i=0; // for itering
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
@@ -653,59 +644,15 @@ _Bool core_game_card_use_djanni_cards_couple(Player pPlayers[], int players_coun
 	if (core_game_card_can_use_djanni_cards_couple(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false) // double check
 		return false;
 
-	used_card = card_node_select_n(pPlayers[player_index].card_list, selected_card, NULL);
+	used_card = card_list_const_select_n(&pPlayers[player_index], selected_card);
 	if (used_card==NULL) // have the player already lost that card?
 		return false;
 
-#ifdef ENABLE_DJANNI_COUPLE_DIFF_MODE
-	do
-	{
-		// reset iter variables
-		i=0;
-		tmp = pPlayers[player_index].card_list;
-		right_choice = false;
-
-		// check the available sets
-		printf("Which kind of couple set do you want to use?\n");
-		while (tmp!=NULL)
-		{
-			if (i!=selected_card && tmp->card.type==DJANNI_CARDS)
-			{
-				if (strcmp(used_card->card.title, tmp->card.title) != 0)
-					printf("(%d) [%d]%s: %s\n", i, tmp->card.type, get_card_type_name(tmp->card.type), tmp->card.title);
-			}
-			tmp = tmp->next;
-			i++;
-		}
-		scanf("%d", &chosen_set); // grab the value
-		clear_input_line(); // clear the input line from junk
-
-		// select the chosen card
-		used_card2 = card_node_select_n(pPlayers[player_index].card_list, chosen_set, NULL);
-		if (used_card2!=NULL) // have the player selected the wrong set?
-		{
-			right_choice = (used_card2->card.type==DJANNI_CARDS && strcmp(used_card->card.title, used_card2->card.title) != 0); // repeat if wrong
-			if (right_choice==true)
-			{
-				copy_card = used_card->card;
-				copy_card2 = used_card2->card;
-			}
-		}
-	}
-	while (right_choice==false);
-
 	// delete the djanni cards
-	core_remove_player_first_matched_card(&pPlayers[player_index], copy_card); // delete the used card
-	core_remove_player_first_matched_card(&pPlayers[player_index], copy_card2); // delete the second card
-	used_card = NULL; // fix dangling ptr
-	used_card2 = NULL; // fix dangling ptr
-#else
-	// delete the djanni cards
-	copy_card = used_card->card;
+	copy_card = *used_card;
 	for (i=0; i<=DJANNI_DOUBLE_MATCH_NUM; i++) // iter n match+1
 		core_remove_player_first_matched_card(&pPlayers[player_index], copy_card); // delete the used card
 	used_card = NULL; // fix dangling ptr
-#endif
 
 	// choose a card of the other players as hidden and take it
 	log_write("player #%d (%s) is going to choose a player...", player_index+1, pPlayers[player_index].name);
@@ -754,18 +701,18 @@ _Bool core_game_card_use_djanni_cards_couple(Player pPlayers[], int players_coun
 		selected_player_card = 0;
 	}
 
-	used_card = card_node_select_n(pPlayers[selected_player_index].card_list, selected_player_card, NULL);
+	used_card = card_list_select_n(&pPlayers[selected_player_index], selected_player_card);
 	if (used_card==NULL) // have the player already lost that card?
 		return false;
 
 	log_write("player #%d (%s) picked up from player #%d (%s) the card [%d]%s (%s)",
 			player_index+1, pPlayers[player_index].name,
 			selected_player_index+1, pPlayers[selected_player_index].name,
-			used_card->card.type, get_card_type_name(used_card->card.type), used_card->card.title
+			used_card->type, get_card_type_name(used_card->type), used_card->title
 	);
 	printf("You picked up the following card from Player #%d (%s): [%d]%s (%s)\n",
 			selected_player_index+1, pPlayers[selected_player_index].name,
-			used_card->card.type, get_card_type_name(used_card->card.type), used_card->card.title
+			used_card->type, get_card_type_name(used_card->type), used_card->title
 	);
 
 	core_player_give_card_n_to_player(&pPlayers[selected_player_index], &pPlayers[player_index], selected_player_card); // after this, used_card will become a dangling ptr
@@ -778,7 +725,7 @@ _Bool core_game_card_use_djanni_cards_triple(Player pPlayers[], int players_coun
 {
 	int selected_player_index; // selected player which you take the card
 	int selected_player_card; // selected player card to pick up
-	CardNode * used_card = NULL; // used card ptr
+	const Card * used_card = NULL; // used card ptr
 	Card copy_card = {{0}}; // copy of used card
 	int i=0; // for itering
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
@@ -790,10 +737,10 @@ _Bool core_game_card_use_djanni_cards_triple(Player pPlayers[], int players_coun
 	if (core_game_card_can_use_djanni_cards_triple(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false) // double check
 		return false;
 
-	used_card = card_node_select_n(pPlayers[player_index].card_list, selected_card, NULL);
+	used_card = card_list_const_select_n(&pPlayers[player_index], selected_card);
 	if (used_card==NULL) // have the player already lost that card?
 		return false;
-	copy_card = used_card->card;
+	copy_card = *used_card;
 
 	// delete the djanni cards
 	for (i=0; i<=DJANNI_TRIPLE_MATCH_NUM; i++) // iter n match+1
@@ -847,18 +794,18 @@ _Bool core_game_card_use_djanni_cards_triple(Player pPlayers[], int players_coun
 		selected_player_card = 0;
 	}
 
-	used_card = card_node_select_n(pPlayers[selected_player_index].card_list, selected_player_card, NULL);
+	used_card = card_list_const_select_n(&pPlayers[selected_player_index], selected_player_card);
 	if (used_card==NULL) // have the player already lost that card?
 		return false;
 
 	log_write("player #%d (%s) picked up from player #%d (%s) the card [%d]%s (%s)",
 			player_index+1, pPlayers[player_index].name,
 			selected_player_index+1, pPlayers[selected_player_index].name,
-			used_card->card.type, get_card_type_name(used_card->card.type), used_card->card.title
+			used_card->type, get_card_type_name(used_card->type), used_card->title
 	);
 	printf("You picked up the following card from Player #%d (%s): [%d]%s (%s)\n",
 			selected_player_index+1, pPlayers[selected_player_index].name,
-			used_card->card.type, get_card_type_name(used_card->card.type), used_card->card.title
+			used_card->type, get_card_type_name(used_card->type), used_card->title
 	);
 
 	core_player_give_card_n_to_player(&pPlayers[selected_player_index], &pPlayers[player_index], selected_player_card); // after this, used_card will become a dangling ptr
@@ -869,8 +816,7 @@ _Bool core_game_card_use_djanni_cards_triple(Player pPlayers[], int players_coun
 
 _Bool core_game_card_can_use_djanni_cards_couple(const Player pPlayers[], int players_count, int player_index, const CardDeck * pDeck, const GameStatus * pStatus, const GameEnv * pEnv, int selected_card)
 {
-	CardNode * used_card = NULL;
-	CardNode * tmp = NULL;
+	const Card * used_card = NULL;
 	int i;
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
@@ -878,26 +824,17 @@ _Bool core_game_card_can_use_djanni_cards_couple(const Player pPlayers[], int pl
 	if (player_index>=players_count) // skip out-of-range
 		return false;
 
-	used_card = card_node_select_n(pPlayers[player_index].card_list, selected_card, NULL);
+	used_card = card_list_const_select_n(&pPlayers[player_index], selected_card);
 	if (used_card==NULL) // have the player already lost that card?
 		return false;
 
-	tmp = pPlayers[player_index].card_list;
-	i = 0;
-	while (tmp!=NULL)
+	for (i=0; i<pPlayers[player_index].card_count; i++)
 	{
-		if (selected_card!=i && tmp->card.type==DJANNI_CARDS) // skip itself
+		if (selected_card!=i && pPlayers[player_index].cards[i].type==DJANNI_CARDS) // skip itself
 		{
-#ifdef ENABLE_DJANNI_COUPLE_DIFF_MODE
-			if (strcmp(used_card->card.title, tmp->card.title) != 0) // true if they have different titles
+			if (strcmp(used_card->title, pPlayers[player_index].cards[i].title) == 0) // true if they have same titles
 				return true;
-#else
-			if (strcmp(used_card->card.title, tmp->card.title) == 0) // true if they have same titles
-				return true;
-#endif
 		}
-		tmp = tmp->next;
-		i++;
 	}
 
 	return false;
@@ -905,8 +842,7 @@ _Bool core_game_card_can_use_djanni_cards_couple(const Player pPlayers[], int pl
 
 _Bool core_game_card_can_use_djanni_cards_triple(const Player pPlayers[], int players_count, int player_index, const CardDeck * pDeck, const GameStatus * pStatus, const GameEnv * pEnv, int selected_card)
 {
-	CardNode * used_card = NULL;
-	CardNode * tmp = NULL;
+	const Card * used_card = NULL;
 	int i;
 	int match_count = 0;
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
@@ -915,21 +851,17 @@ _Bool core_game_card_can_use_djanni_cards_triple(const Player pPlayers[], int pl
 	if (player_index>=players_count) // skip out-of-range
 		return false;
 
-	used_card = card_node_select_n(pPlayers[player_index].card_list, selected_card, NULL);
+	used_card = card_list_const_select_n(&pPlayers[player_index], selected_card);
 	if (used_card==NULL) // have the player already lost that card?
 		return false;
 
-	tmp = pPlayers[player_index].card_list;
-	i = 0;
-	while (tmp!=NULL && match_count<DJANNI_TRIPLE_MATCH_NUM)
+	for (i=0; i<pPlayers[player_index].card_count && match_count<DJANNI_TRIPLE_MATCH_NUM; i++)
 	{
-		if (selected_card!=i && tmp->card.type==DJANNI_CARDS) // skip itself
+		if (selected_card!=i && pPlayers[player_index].type==DJANNI_CARDS) // skip itself
 		{
-			if (strcmp(used_card->card.title, tmp->card.title) == 0) // increase if they have same titles
+			if (strcmp(used_card->title, pPlayers[player_index].cards[i].title) == 0) // increase if they have same titles
 				match_count++;
 		}
-		tmp = tmp->next;
-		i++;
 	}
 
 	return match_count>=DJANNI_TRIPLE_MATCH_NUM;
@@ -937,7 +869,7 @@ _Bool core_game_card_can_use_djanni_cards_triple(const Player pPlayers[], int pl
 
 _Bool core_game_process_player_card(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card)
 {
-	CardNode * used_card = NULL;
+	const Card * used_card = NULL;
 	_Bool internal_delete = false; // in case the processed card has been deleted inside another block (favor/djanni cards)
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
@@ -945,14 +877,14 @@ _Bool core_game_process_player_card(Player pPlayers[], int players_count, int pl
 	if (player_index>=players_count) // skip out-of-range
 		return false;
 
-	used_card = card_node_select_n(pPlayers[player_index].card_list, selected_card, NULL);
+	used_card = card_list_const_select_n(&pPlayers[player_index], selected_card);
 	if (used_card==NULL) // have the player already lost that card?
 		return false;
 
 	log_write("processing player #%d (%s)'s card [%d]%s: %s",
-			player_index+1, pPlayers[player_index].name, used_card->card.type, get_card_type_name(used_card->card.type), used_card->card.title
+			player_index+1, pPlayers[player_index].name, used_card->type, get_card_type_name(used_card->type), used_card->title
 	);
-	switch (used_card->card.type)
+	switch (used_card->type)
 	{
 		// with no meaning
 		case EXPLODING_DJANNI: // it should be impossible to "draw" and use it though

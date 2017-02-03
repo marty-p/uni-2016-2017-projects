@@ -98,7 +98,7 @@ _Bool core_init_load_game(Player pPlayers[], int players_count, CardDeck * pDeck
 			{
 				fread(tmp_card.title, sizeof(tmp_card.title), 1, save_fp);
 				fread(&tmp_card.type, sizeof(tmp_card.type), 1, save_fp);
-				pPlayers[i].card_list = card_node_insert_tail(pPlayers[i].card_list, tmp_card);
+				card_list_insert_tail(&pPlayers[i], tmp_card);
 			}
 		}
 	}
@@ -169,17 +169,15 @@ _Bool core_init_save_game(const Player pPlayers[], int players_count, const Card
 		{
 			fwrite(&pPlayers[i].card_count, sizeof(pPlayers[i].card_count), 1, save_fp);
 			fwrite(&pPlayers[i].type, sizeof(pPlayers[i].type), 1, save_fp);
-			pTmpCardNode = pPlayers[i].card_list;
-			for (j=0; j<pPlayers[i].card_count && pTmpCardNode!=NULL; j++)
+			for (j=0; j<pPlayers[i].card_count; j++)
 			{
-				fwrite(pTmpCardNode->card.title, sizeof(pTmpCardNode->card.title), 1, save_fp);
-				fwrite(&pTmpCardNode->card.type, sizeof(pTmpCardNode->card.type), 1, save_fp);
-				pTmpCardNode = pTmpCardNode->next;
+				fwrite(pPlayers[i].cards[j].title, sizeof(pPlayers[i].cards[j].title), 1, save_fp);
+				fwrite(&pPlayers[i].cards[j].type, sizeof(pPlayers[i].cards[j].type), 1, save_fp);
 			}
 			// redundant check in case we encountered runtime errors
 			if (j!=pPlayers[i].card_count)
 			{
-				log_write("an error occurred when saving the player #%d's deck [j: %d, count: %d, node count: %d]", i, j, pPlayers[i].card_count, card_node_count(pPlayers[i].card_list));
+				log_write("an error occurred when saving the player #%d's deck [j: %d, count: %d]", i, j, pPlayers[i].card_count);
 				return false;
 			}
 		}
@@ -307,8 +305,8 @@ void core_init_default_players(Player pPlayers[], int players_count)
 			while (pPlayers[i].type >= PLAYER_TYPE_NUM); // note: it's unsigned (repeat if invalid)
 
 			// null initialize the rest
-			card_node_free(pPlayers[i].card_list);
-			pPlayers[i].card_list = NULL;
+			free(pPlayers[i].cards);
+			pPlayers[i].cards = NULL;
 			pPlayers[i].card_count = 0;
 
 		}
@@ -427,9 +425,8 @@ void core_assign_default_deck(Player pPlayers[], int players_count, CardDeck * p
 		{
 			for (j=0; j<given_cards && pGivenDeck->card_list!=NULL; j++) // give j cards for i players
 			{
-				pPlayers[i].card_list = card_node_insert_head(pPlayers[i].card_list, pGivenDeck->card_list->card); // add the first given_deck's card into player's card_list
+				card_list_insert_head(&pPlayers[i], pGivenDeck->card_list->card); // add the first given_deck's card into player's card_list
 				pGivenDeck->card_list = card_node_remove_head(pGivenDeck->card_list); // remove the first given_deck's card
-				pPlayers[i].card_count++; // keep O(1) card_count updated
 				pGivenDeck->count--; // keep O(1) count updated
 			}
 		}

@@ -26,8 +26,8 @@ typedef enum
 
 typedef enum
 {
-	AI, //0
-	REAL //1
+	REAL, //0
+	AI //1
 } PlayerType;
 
 typedef enum
@@ -63,7 +63,7 @@ typedef struct
 	_Bool is_alive;
 	int card_count;
 	PlayerType type;
-	CardNode * card_list;
+	Card * cards;
 } Player;
 
 typedef struct

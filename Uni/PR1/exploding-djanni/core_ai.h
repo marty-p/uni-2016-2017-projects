@@ -14,7 +14,7 @@ extern _Bool core_game_ai_draw_card(Player pPlayers[], int players_count, CardDe
 extern _Bool core_game_ai_use_first_save_life_card(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv);
 extern _Bool core_game_ai_choose_player_card(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int * selected_card);
 extern _Bool core_game_ai_pickup_best_card(const Player * pPlayer, int * selected_card);
-extern _Bool core_game_ai_is_it_valuable_card_to_nope(const Player pPlayers[], int players_count, int player_index, const CardNode * used_card, const GameEnv * pEnv);
+extern _Bool core_game_ai_is_it_valuable_card_to_nope(const Player pPlayers[], int players_count, int player_index, const Card * used_card, const GameEnv * pEnv);
 extern _Bool core_game_am_i_next(const Player pPlayers[], int players_count, int player_index, const GameStatus * pStatus, const GameEnv * pEnv, _Bool consider_is_attacked);
 
 #endif

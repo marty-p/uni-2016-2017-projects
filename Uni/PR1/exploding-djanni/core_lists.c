@@ -135,7 +135,7 @@ CardNode * card_node_check_remove(CardNode * first, int n, _Bool * is_deleted)
 	return first; // it returns the updated head
 }
 
-void card_node_print(CardNode * first)
+void card_node_print(const CardNode * first)
 {
 	while (first!=NULL) // skip null ptr
 	{
@@ -145,7 +145,7 @@ void card_node_print(CardNode * first)
 	}
 }
 
-void card_node_log_print(CardNode * first)
+void card_node_log_print(const CardNode * first)
 {
 	while (first!=NULL) // skip null ptr
 	{
@@ -155,7 +155,7 @@ void card_node_log_print(CardNode * first)
 	}
 }
 
-void card_node_print_first_n(CardNode * first, int n)
+void card_node_print_first_n(const CardNode * first, int n)
 {
 	int count = 0;
 	while (first!=NULL && count++<n) // skip null ptr
@@ -166,7 +166,7 @@ void card_node_print_first_n(CardNode * first, int n)
 	}
 }
 
-void card_node_log_print_first_n(CardNode * first, int n)
+void card_node_log_print_first_n(const CardNode * first, int n)
 {
 	int count = 0;
 	while (first!=NULL && count++<n) // skip null ptr
@@ -287,5 +287,190 @@ int card_node_count_of_type_n(const CardNode * first, CardType card_type) // nod
 		first = first->next;
 	}
 	return count;
+}
+
+void card_list_insert_head(Player * pPlayer, Card new_card)
+{
+	Card * new_cards = NULL;
+	int i, j;
+	if (pPlayer==NULL)
+		return;
+
+	new_cards = calloc(pPlayer->card_count+1, sizeof(Card));
+	if (new_cards==NULL)
+		exit(EXIT_FAILURE);
+
+	new_cards[0] = new_card;
+	for (i=1, j=0; j<pPlayer->card_count; i++, j++)
+		new_cards[i] = pPlayer->cards[j];
+
+	free(pPlayer->cards);
+	new_cards = pPlayer->cards;
+	pPlayer->card_count++;
+}
+
+void card_list_insert_tail(Player * pPlayer, Card new_card)
+{
+	Card * new_cards = NULL;
+	int i, j;
+	if (pPlayer==NULL)
+		return;
+
+	new_cards = calloc(pPlayer->card_count+1, sizeof(Card));
+	if (new_cards==NULL)
+		exit(EXIT_FAILURE);
+
+	for (i=0, j=0; i<pPlayer->card_count; i++, j++)
+		new_cards[i] = pPlayer->cards[j];
+	new_cards[i] = new_card;
+
+	free(pPlayer->cards);
+	new_cards = pPlayer->cards;
+	pPlayer->card_count++;
+}
+
+void card_list_remove_n(Player * pPlayer, int n)
+{
+	Card * new_cards = NULL;
+	_Bool skip_first = false;
+	int i, j;
+	if (pPlayer==NULL)
+		return;
+	if (n<0 || n >= pPlayer->card_count)
+		return;
+
+	new_cards = calloc(pPlayer->card_count-1, sizeof(Card));
+	if (new_cards==NULL)
+		exit(EXIT_FAILURE);
+
+	for (i=0, j=0; i<pPlayer->card_count; i++)
+		if (i!=n)
+			new_cards[j++] = pPlayer->cards[i];
+		else
+			skip_first = true;
+
+	if (skip_first==true)
+	{
+		free(pPlayer->cards);
+		new_cards = pPlayer->cards;
+		pPlayer->card_count--;
+	}
+	else
+		free(new_cards);
+}
+
+void card_list_remove_first_type_n(Player * pPlayer, CardType card_type)
+{
+	Card * new_cards = NULL;
+	_Bool skip_first = false;
+	int i, j;
+	if (pPlayer==NULL)
+		return;
+	if (pPlayer->card_count <= 0)
+		return;
+
+	new_cards = calloc(pPlayer->card_count-1, sizeof(Card));
+	if (new_cards==NULL)
+		exit(EXIT_FAILURE);
+
+	for (i=0, j=0; i<pPlayer->card_count; i++)
+		if (skip_first==true || pPlayer->cards[i].type!=card_type)
+			new_cards[j++] = pPlayer->cards[i];
+		else
+			skip_first = true;
+
+	if (skip_first==true)
+	{
+		free(pPlayer->cards);
+		new_cards = pPlayer->cards;
+		pPlayer->card_count--;
+	}
+	else
+		free(new_cards);
+}
+
+void card_list_remove_first_card_n(Player * pPlayer, Card copy_card)
+{
+	Card * new_cards = NULL;
+	_Bool skip_first = false;
+	int i, j;
+	if (pPlayer==NULL)
+		return;
+	if (pPlayer->card_count <= 0)
+		return;
+
+	new_cards = calloc(pPlayer->card_count-1, sizeof(Card));
+	if (new_cards==NULL)
+		exit(EXIT_FAILURE);
+
+	for (i=0, j=0; i<pPlayer->card_count; i++)
+		if (skip_first==true || (copy_card.type==pPlayer->cards[i].type && strcmp(copy_card.title, pPlayer->cards[i].title)==0)==false)
+			new_cards[j++] = pPlayer->cards[i];
+		else
+			skip_first = true;
+
+	if (skip_first==true)
+	{
+		free(pPlayer->cards);
+		new_cards = pPlayer->cards;
+		pPlayer->card_count--;
+	}
+	else
+		free(new_cards);
+}
+
+_Bool card_list_has_type_n(const Player * pPlayer, CardType card_type)
+{
+	_Bool has_it = false;
+	int i;
+	if (pPlayer==NULL)
+		return false;
+
+	for (i=0; i<pPlayer->card_count && has_it==false; i++)
+		if (card_type==pPlayer->cards[i].type)
+			has_it = true;
+	return has_it;
+}
+
+int card_list_count_of_type_n(const Player * pPlayer, CardType card_type)
+{
+	int count = 0;
+	int i;
+	if (pPlayer==NULL)
+		return false;
+
+	for (i=0; i<pPlayer->card_count; i++)
+		if (card_type==pPlayer->cards[i].type)
+			count++;
+	return count;
+}
+
+Card * card_list_select_n(Player * pPlayer, int n)
+{
+	if (pPlayer==NULL)
+		return NULL;
+	if (n<0 || n >= pPlayer->card_count)
+		return NULL;
+
+	return &pPlayer->cards[n];
+}
+
+const Card * card_list_const_select_n(const Player * pPlayer, int n)
+{
+	if (pPlayer==NULL)
+		return NULL;
+	if (n<0 || n >= pPlayer->card_count)
+		return NULL;
+
+	return &pPlayer->cards[n];
+}
+
+void card_list_log_print(const Player * pPlayer)
+{
+	int i;
+	if (pPlayer==NULL)
+		return;
+	for (i=0; i<pPlayer->card_count; i++)
+		log_write("\t[%d]%s: %s", pPlayer->cards[i].type, get_card_type_name(pPlayer->cards[i].type), pPlayer->cards[i].title);
 }
 
