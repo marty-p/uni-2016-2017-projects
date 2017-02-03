@@ -62,6 +62,7 @@ _Bool core_init_load_game(Player pPlayers[], int players_count, CardDeck * pDeck
 	FILE * save_fp = NULL; // ptr of the save file
 	int i, j; // counter for iteration
 	Card tmp_card; // dummy variable used when freading
+	int tmp_count; // dummy variable used when freading
 
 	// skip null ptr
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL)
@@ -92,9 +93,9 @@ _Bool core_init_load_game(Player pPlayers[], int players_count, CardDeck * pDeck
 		fread(&pPlayers[i].is_alive, sizeof(pPlayers[i].is_alive), 1, save_fp);
 		if (pPlayers[i].is_alive==true)
 		{
-			fread(&pPlayers[i].card_count, sizeof(pPlayers[i].card_count), 1, save_fp);
+			fread(&tmp_count, sizeof(tmp_count), 1, save_fp);
 			fread(&pPlayers[i].type, sizeof(pPlayers[i].type), 1, save_fp);
-			for (j=0; j<pPlayers[i].card_count; j++)
+			for (j=0; j<tmp_count; j++)
 			{
 				fread(tmp_card.title, sizeof(tmp_card.title), 1, save_fp);
 				fread(&tmp_card.type, sizeof(tmp_card.type), 1, save_fp);

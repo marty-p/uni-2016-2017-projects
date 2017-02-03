@@ -7,7 +7,7 @@
 #endif
 
 #ifndef _DEBUG
-#define _DEBUG // debug flag
+// #define _DEBUG // debug flag
 #endif
 
 #define CLEAR_CONSOLE_EACH_TURN // clear the console each turn

@@ -300,7 +300,7 @@ void card_list_insert_head(Player * pPlayer, Card new_card)
 	if (new_cards==NULL)
 		exit(EXIT_FAILURE);
 
-	new_cards[0] = new_card;
+	new_cards[0] = new_card; // O(n)
 	for (i=1, j=0; j<pPlayer->card_count; i++, j++)
 		new_cards[i] = pPlayer->cards[j];
 
@@ -312,20 +312,16 @@ void card_list_insert_head(Player * pPlayer, Card new_card)
 void card_list_insert_tail(Player * pPlayer, Card new_card)
 {
 	Card * new_cards = NULL;
-	int i, j;
 	if (pPlayer==NULL)
 		return;
 
-	new_cards = calloc(pPlayer->card_count+1, sizeof(Card));
+	new_cards = realloc(pPlayer->cards, (pPlayer->card_count+1)*sizeof(Card));
 	if (new_cards==NULL)
 		exit(EXIT_FAILURE);
 
-	for (i=0, j=0; i<pPlayer->card_count; i++, j++)
-		new_cards[i] = pPlayer->cards[j];
-	new_cards[i] = new_card;
-
-	free(pPlayer->cards);
 	pPlayer->cards = new_cards;
+	pPlayer->cards[pPlayer->card_count] = new_card; // O(1)
+
 	pPlayer->card_count++;
 }
 
