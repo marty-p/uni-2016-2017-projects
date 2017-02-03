@@ -305,7 +305,7 @@ void card_list_insert_head(Player * pPlayer, Card new_card)
 		new_cards[i] = pPlayer->cards[j];
 
 	free(pPlayer->cards);
-	new_cards = pPlayer->cards;
+	pPlayer->cards = new_cards;
 	pPlayer->card_count++;
 }
 
@@ -325,7 +325,7 @@ void card_list_insert_tail(Player * pPlayer, Card new_card)
 	new_cards[i] = new_card;
 
 	free(pPlayer->cards);
-	new_cards = pPlayer->cards;
+	pPlayer->cards = new_cards;
 	pPlayer->card_count++;
 }
 
@@ -352,7 +352,7 @@ void card_list_remove_n(Player * pPlayer, int n)
 	if (skip_first==true)
 	{
 		free(pPlayer->cards);
-		new_cards = pPlayer->cards;
+		pPlayer->cards = new_cards;
 		pPlayer->card_count--;
 	}
 	else
@@ -382,7 +382,7 @@ void card_list_remove_first_type_n(Player * pPlayer, CardType card_type)
 	if (skip_first==true)
 	{
 		free(pPlayer->cards);
-		new_cards = pPlayer->cards;
+		pPlayer->cards = new_cards;
 		pPlayer->card_count--;
 	}
 	else
@@ -412,7 +412,7 @@ void card_list_remove_first_card_n(Player * pPlayer, Card copy_card)
 	if (skip_first==true)
 	{
 		free(pPlayer->cards);
-		new_cards = pPlayer->cards;
+		pPlayer->cards = new_cards;
 		pPlayer->card_count--;
 	}
 	else
