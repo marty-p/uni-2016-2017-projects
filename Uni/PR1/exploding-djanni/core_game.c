@@ -549,6 +549,9 @@ _Bool core_game_card_use_djanni_cards(Player pPlayers[], int players_count, int 
 	_Bool can_couple = false;
 	_Bool can_triple = false;
 	DjanniMode chosen_mode;
+	CardNode * used_card = NULL; // used card ptr
+	Card copy_card = {{0}}; // copy of used card
+	int i;
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
 
@@ -580,7 +583,31 @@ _Bool core_game_card_use_djanni_cards(Player pPlayers[], int players_count, int 
 	log_write("player #%d (%s) chose the %s djanni card mode...", player_index+1, pPlayers[player_index].name, get_djanni_mode_name(chosen_mode));
 	printf("You have chosen the %s djanni mode!\n", get_djanni_mode_name(chosen_mode));
 	if (core_game_card_can_nope(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==true)
-		return false;
+	{
+		// select that djanni card
+		used_card = card_node_select_n(pPlayers[player_index].card_list, selected_card, NULL);
+		if (used_card==NULL) // have the player already lost that card?
+			return false;
+		copy_card = used_card->card;
+
+		// delete the djanni cards
+		switch (chosen_mode)
+		{
+			case DM_SINGLE:
+				core_remove_player_first_matched_card(&pPlayers[player_index], copy_card); // delete the used card
+				break;
+			case DM_COUPLE:
+				for (i=0; i<=DJANNI_DOUBLE_MATCH_NUM; i++) // iter n match+1
+					core_remove_player_first_matched_card(&pPlayers[player_index], copy_card); // delete the used card
+				break;
+			case DM_TRIPLE:
+				for (i=0; i<=DJANNI_TRIPLE_MATCH_NUM; i++) // iter n match+1
+					core_remove_player_first_matched_card(&pPlayers[player_index], copy_card); // delete the used card
+				break;
+		}
+		used_card = NULL; // fix dangling ptr
+		return true;
+	}
 
 	// process the mode
 	switch (chosen_mode)
@@ -667,19 +694,20 @@ _Bool core_game_card_use_djanni_cards_couple(Player pPlayers[], int players_coun
 	}
 	while (right_choice==false);
 
-	// choose a card of the other players as hidden and take it
+	// delete the djanni cards
 	core_remove_player_first_matched_card(&pPlayers[player_index], copy_card); // delete the used card
 	core_remove_player_first_matched_card(&pPlayers[player_index], copy_card2); // delete the second card
 	used_card = NULL; // fix dangling ptr
 	used_card2 = NULL; // fix dangling ptr
 #else
-	// choose a card of the other players as hidden and take it
+	// delete the djanni cards
 	copy_card = used_card->card;
 	for (i=0; i<=DJANNI_DOUBLE_MATCH_NUM; i++) // iter n match+1
 		core_remove_player_first_matched_card(&pPlayers[player_index], copy_card); // delete the used card
 	used_card = NULL; // fix dangling ptr
 #endif
 
+	// choose a card of the other players as hidden and take it
 	log_write("player #%d (%s) is going to choose a player...", player_index+1, pPlayers[player_index].name);
 	if (pPlayers[player_index].type==REAL)
 	{
@@ -767,11 +795,12 @@ _Bool core_game_card_use_djanni_cards_triple(Player pPlayers[], int players_coun
 		return false;
 	copy_card = used_card->card;
 
-	// choose a card of the other players as hidden and take it
+	// delete the djanni cards
 	for (i=0; i<=DJANNI_TRIPLE_MATCH_NUM; i++) // iter n match+1
 		core_remove_player_first_matched_card(&pPlayers[player_index], copy_card); // delete the used card
 	used_card = NULL; // fix dangling ptr
 
+	// choose a card of the other players as hidden and take it
 	log_write("player #%d (%s) is going to choose a player...", player_index+1, pPlayers[player_index].name);
 	if (pPlayers[player_index].type==REAL)
 	{
