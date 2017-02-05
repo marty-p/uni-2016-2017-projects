@@ -90,6 +90,7 @@ typedef struct
 	_Bool is_noped;
 	_Bool has_drawn;
 	_Bool saw_terrible_future; // ai-related
+	DjanniMode selected_djanni_mode; // ai-related
 } GameEnv; // game environment (not stored in .sav)
 
 #endif

@@ -31,6 +31,7 @@ _Bool core_game_start(Player pPlayers[], int players_count, CardDeck * pDeck, Ga
 		game_env.is_noped = false;
 		game_env.has_attacked = false;
 		game_env.saw_terrible_future = false;
+		game_env.selected_djanni_mode = DM_SINGLE;
 		// process the turn and returns false in case of problems
 		if (core_game_process(pPlayers, players_count, pDeck, pStatus, &game_env)==false)
 			return false;
@@ -580,6 +581,7 @@ _Bool core_game_card_use_djanni_cards(Player pPlayers[], int players_count, int 
 
 	log_write("player #%d (%s) chose the %s djanni card mode...", player_index+1, pPlayers[player_index].name, get_djanni_mode_name(chosen_mode));
 	printf("You have chosen the %s djanni mode!\n", get_djanni_mode_name(chosen_mode));
+	pEnv->selected_djanni_mode = chosen_mode;
 	if (core_game_card_can_nope(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==true)
 	{
 		// select that djanni card

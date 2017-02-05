@@ -176,6 +176,8 @@ _Bool core_game_ai_continue(Player pPlayers[], int players_count, CardDeck * pDe
 					if (core_game_ai_draw_card(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
 						return false;
 			}
+			else if (core_game_ai_draw_card(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
+				return false;
 		}
 	}
 	while (pEnv->has_drawn==false);
@@ -408,6 +410,10 @@ _Bool core_game_ai_is_it_valuable_card_to_nope(const Player pPlayers[], int play
 		if (wish_list[i]==used_card->type)
 			return true;
 	}
+
+	if (used_card->type==DJANNI_CARDS && pEnv->selected_djanni_mode==DM_TRIPLE) // hardcoded djanni check
+		return true;
+
 	return false;
 }
 
