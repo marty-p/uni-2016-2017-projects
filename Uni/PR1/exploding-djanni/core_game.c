@@ -482,10 +482,17 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 		}
 		while (selected_player_index<0 || selected_player_index>=players_count || selected_player_index==player_index || pPlayers[selected_player_index].is_alive==false);
 	}
-	else // if (pPlayers[player_index].type==AI)
+	else if (pPlayers[player_index].type==AI)
 	{
-		// todo
+		if (core_game_check_winners(pPlayers, players_count)==true) // we at least know that two are still alive
+			return false;
+
 		selected_player_index = 0;
+		do
+		{
+			selected_player_index = get_random_number(0, players_count-1);
+		}
+		while (pPlayers[selected_player_index].is_alive==false || selected_player_index==player_index || selected_player_index>=players_count); // repeat if dead, itself or out-of-range
 	}
 
 	// skip empty-handed players (the card will be consumed anyway)
@@ -518,10 +525,10 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 		if (core_game_real_choose_player_card(pPlayers, players_count, selected_player_index, pDeck, pStatus, pEnv, &selected_player_card)==false)
 			return false;
 	}
-	else // if (pPlayers[selected_player_index].type==AI)
+	else if (pPlayers[selected_player_index].type==AI)
 	{
-		// todo
-		selected_player_card = 0;
+		if (core_game_ai_pickup_worst_card(&pPlayers[selected_player_index], &selected_player_card)==false)
+			return false;
 	}
 
 	used_card = card_list_select_n(&pPlayers[selected_player_index], selected_player_card);
@@ -698,10 +705,17 @@ _Bool core_game_card_use_djanni_cards_couple(Player pPlayers[], int players_coun
 		}
 		while (selected_player_index<0 || selected_player_index>=players_count || selected_player_index==player_index || pPlayers[selected_player_index].is_alive==false);
 	}
-	else // if (pPlayers[player_index].type==AI)
+	else if (pPlayers[player_index].type==AI)
 	{
-		// todo
+		if (core_game_check_winners(pPlayers, players_count)==true) // we at least know that two are still alive
+			return false;
+
 		selected_player_index = 0;
+		do
+		{
+			selected_player_index = get_random_number(0, players_count-1);
+		}
+		while (pPlayers[selected_player_index].is_alive==false || selected_player_index==player_index || selected_player_index>=players_count); // repeat if dead, itself or out-of-range
 	}
 
 	// skip empty-handed players (the card will be consumed anyway)
@@ -717,11 +731,8 @@ _Bool core_game_card_use_djanni_cards_couple(Player pPlayers[], int players_coun
 		if (core_game_real_choose_another_player_card(pPlayers, players_count, selected_player_index, pDeck, pStatus, pEnv, &selected_player_card, true)==false)
 			return false;
 	}
-	else // if (pPlayers[player_index].type==AI)
-	{
-		// todo
-		selected_player_card = 0;
-	}
+	else if (pPlayers[player_index].type==AI)
+		selected_player_card = get_random_number(0, pPlayers[selected_player_index].card_count-1);
 
 	used_card = card_list_select_n(&pPlayers[selected_player_index], selected_player_card);
 	if (used_card==NULL) // have the player already lost that card?
@@ -791,10 +802,17 @@ _Bool core_game_card_use_djanni_cards_triple(Player pPlayers[], int players_coun
 		}
 		while (selected_player_index<0 || selected_player_index>=players_count || selected_player_index==player_index || pPlayers[selected_player_index].is_alive==false);
 	}
-	else // if (pPlayers[player_index].type==AI)
+	else if (pPlayers[player_index].type==AI)
 	{
-		// todo
+		if (core_game_check_winners(pPlayers, players_count)==true) // we at least know that two are still alive
+			return false;
+
 		selected_player_index = 0;
+		do
+		{
+			selected_player_index = get_random_number(0, players_count-1);
+		}
+		while (pPlayers[selected_player_index].is_alive==false || selected_player_index==player_index || selected_player_index>=players_count); // repeat if dead, itself or out-of-range
 	}
 
 	// skip empty-handed players (the card will be consumed anyway)
@@ -810,10 +828,10 @@ _Bool core_game_card_use_djanni_cards_triple(Player pPlayers[], int players_coun
 		if (core_game_real_choose_another_player_card(pPlayers, players_count, selected_player_index, pDeck, pStatus, pEnv, &selected_player_card, false)==false)
 			return false;
 	}
-	else // if (pPlayers[player_index].type==AI)
+	else if (pPlayers[player_index].type==AI)
 	{
-		// todo
-		selected_player_card = 0;
+		if (core_game_ai_pickup_best_card(&pPlayers[selected_player_index], &selected_player_card)==false)
+			return false;
 	}
 
 	used_card = card_list_const_select_n(&pPlayers[selected_player_index], selected_player_card);

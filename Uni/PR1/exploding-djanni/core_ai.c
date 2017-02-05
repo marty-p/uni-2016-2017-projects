@@ -123,7 +123,7 @@ _Bool core_game_ai_continue(Player pPlayers[], int players_count, CardDeck * pDe
 		if (pStatus->is_attacked==true)
 		{
 			log_write("core_game_ai re-attack...");
-			if (card_list_find_first_type_n(&pPlayers[pStatus->player_turn], ATTACK, &selected_card)==false)
+			if (card_list_find_first_type_n(&pPlayers[pStatus->player_turn], ATTACK, &selected_card)==true)
 			{
 				if (core_game_process_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
 					return false;
@@ -323,13 +323,14 @@ _Bool core_game_ai_pickup_best_card(const Player * pPlayer, int * selected_card)
 {
 	static const CardType wish_list[] = {
 		MEOOOW, //1
-		NOPE, //3
 		ATTACK, //5
 		SKIP, //6
+		NOPE, //3
+		FAVOR, //7
 		SHUFFLE, //2
 		SEE_THE_FUTURE, //4
-		FAVOR, //7
-		DJANNI_CARDS //8
+		DJANNI_CARDS, //8
+		EXPLODING_DJANNI, //0 (even if impossible)
 	};
 	static const int wish_len = sizeof(wish_list)/sizeof(CardType);
 	_Bool chosen_card = false;
@@ -345,6 +346,42 @@ _Bool core_game_ai_pickup_best_card(const Player * pPlayer, int * selected_card)
 		for (j=0; j<pPlayer->card_count && chosen_card==false; j++)
 		{
 			if (wish_list[i]==pPlayer->cards[j].type)
+			{
+				chosen_card = true;
+				*selected_card = j;
+			}
+		}
+	}
+	return chosen_card;
+}
+
+_Bool core_game_ai_pickup_worst_card(const Player * pPlayer, int * selected_card)
+{
+	static const CardType trash_list[] = {
+		MEOOOW, //1
+		ATTACK, //5
+		SKIP, //6
+		NOPE, //3
+		FAVOR, //7
+		SHUFFLE, //2
+		SEE_THE_FUTURE, //4
+		DJANNI_CARDS, //8
+		EXPLODING_DJANNI, //0 (even if impossible)
+	}; // read vice versa than the wish_list
+	static const int trash_len = sizeof(trash_list)/sizeof(CardType);
+	_Bool chosen_card = false;
+	int i, j;
+	if (pPlayer==NULL || pPlayer->card_count<=0) // skip null ptr or cards<=0
+		return false;
+
+	if (pPlayer->card_count<=0)
+		return false;
+
+	for (i=trash_len-1; i>=0 && chosen_card==false; i++)
+	{
+		for (j=0; j<pPlayer->card_count && chosen_card==false; j++)
+		{
+			if (trash_list[i]==pPlayer->cards[j].type)
 			{
 				chosen_card = true;
 				*selected_card = j;
