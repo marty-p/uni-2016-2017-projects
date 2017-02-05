@@ -33,6 +33,7 @@ extern _Bool card_list_has_type_n(const Player * pPlayer, CardType card_type);
 extern int card_list_count_of_type_n(const Player * pPlayer, CardType card_type);
 extern Card * card_list_select_n(Player * pPlayer, int n);
 extern const Card * card_list_const_select_n(const Player * pPlayer, int n);
+extern _Bool card_list_find_first_type_n(const Player * pPlayer, CardType card_type, int * selected_card);
 extern void card_list_log_print(const Player * pPlayer);
 
 #endif

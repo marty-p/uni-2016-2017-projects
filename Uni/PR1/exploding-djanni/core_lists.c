@@ -461,6 +461,24 @@ const Card * card_list_const_select_n(const Player * pPlayer, int n)
 	return &pPlayer->cards[n];
 }
 
+_Bool card_list_find_first_type_n(const Player * pPlayer, CardType card_type, int * selected_card)
+{
+	_Bool has_found = false;
+	if (pPlayer==NULL || selected_card==NULL)
+		return NULL;
+
+	int i;
+	for (i=0; i<pPlayer->card_count && has_found==false; i++)
+	{
+		if (pPlayer->cards[i].type==card_type)
+		{
+			has_found = true;
+			*selected_card = i;
+		}
+	}
+	return has_found;
+}
+
 void card_list_log_print(const Player * pPlayer)
 {
 	int i;

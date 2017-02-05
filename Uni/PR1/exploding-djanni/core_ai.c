@@ -41,6 +41,7 @@ _Bool core_game_ai_is_in_panic(const Player pPlayers[], int players_count, int p
 
 _Bool core_game_ai_is_worried(const Player pPlayers[], int players_count, int player_index, const CardDeck * pDeck, const GameStatus * pStatus, const GameEnv * pEnv)
 {
+	double lazy_pct;
 	double expdjanni_pct;
 	_Bool has_meooow;
 
@@ -53,6 +54,10 @@ _Bool core_game_ai_is_worried(const Player pPlayers[], int players_count, int pl
 
 	if (pPlayers[player_index].card_count<=0) // if no cards are available
 		return false;
+
+	lazy_pct = get_random_number(PCT_MIN, PCT_MAX);
+	if (lazy_pct < AI_WORRIED_BUT_LAZY_PCT)
+		return false; // 30% of getting lazy and doing nothing
 
 	expdjanni_pct = core_deck_get_pct_of_type_n(pDeck, EXPLODING_DJANNI); // returns pct of drawing the exploding djanni card
 	has_meooow = core_player_count_of_type_n(&pPlayers[pStatus->player_turn], MEOOOW) >= 1; // true if the player has at least 1 meooow
@@ -97,6 +102,8 @@ _Bool core_game_process_ai_player(Player pPlayers[], int players_count, CardDeck
 
 _Bool core_game_ai_continue(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv)
 {
+	int selected_card;
+
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
 
@@ -112,21 +119,61 @@ _Bool core_game_ai_continue(Player pPlayers[], int players_count, CardDeck * pDe
 		log_write("elaborating ai continue...");
 		player_log_turn_data(&pPlayers[pStatus->player_turn], pStatus);
 
-		if (core_game_ai_getting_lazy(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv)==true) // if lazy (or empty-handed), draw a card
+		// is ai under attack? then re-attack!
+		if (pStatus->is_attacked==true)
 		{
+			if (card_list_find_first_type_n(&pPlayers[pStatus->player_turn], ATTACK, &selected_card)==false)
+			{
+				if (core_game_process_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
+					return false;
+			}
+		}
+		// ai becomes lazy if not in panic and gets 15% or just empty-handed
+		else if (core_game_ai_getting_lazy(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv)==true) // ai draws a card and finish the turn
+		{
+			printf("core_game_ai_getting_lazy\n");
 			if (core_game_ai_draw_card(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
 				return false;
 		}
+		// ai in panic if it saw a terrible future (starting turn with a death flag: foresaw that the next card is the exploding djanni... or 100% to drop one)
 		else if (core_game_ai_is_in_panic(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv)==true) // try to escape death in any way possible
 		{
-			if (core_game_ai_use_first_save_life_card(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
-				return false;
+			printf("core_game_ai_is_in_panic\n");
+			if (core_game_ai_select_first_save_life_card(pPlayers, players_count, pDeck, pStatus, pEnv, &selected_card)==true)
+			{
+				pEnv->saw_terrible_future = false;
+				if (core_game_process_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
+					return false;
+			}
 		}
+		// ai gets worried if the exploding djanni gets 25% of possibility to drop and it has no meooow card
 		else if (core_game_ai_is_worried(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv)==true) // try to play some cards to feel safe
 		{
+			printf("core_game_ai_is_worried\n");
+			pEnv->saw_terrible_future = false; // this should be already as false at this point
+			if (core_game_ai_select_first_normal_card(pPlayers, players_count, pDeck, pStatus, pEnv, &selected_card)==true)
+			{
+				if (core_game_process_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
+					return false;
+				// if nothing is wrong... draw a card
+				if (pEnv->saw_terrible_future==false)
+					if (core_game_ai_draw_card(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
+						return false;
+			}
 		}
 		else // normal play
 		{
+			printf("core_game_ai_normal_play\n");
+			pEnv->saw_terrible_future = false; // this should be already as false at this point
+			if (core_game_ai_select_first_trivial_card(pPlayers, players_count, pDeck, pStatus, pEnv, &selected_card)==true)
+			{
+				if (core_game_process_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
+					return false;
+				// if nothing is wrong... draw a card
+				if (pEnv->saw_terrible_future==false)
+					if (core_game_ai_draw_card(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
+						return false;
+			}
 		}
 	}
 	while (pEnv->has_drawn==false);
@@ -150,8 +197,20 @@ _Bool core_game_ai_draw_card(Player pPlayers[], int players_count, CardDeck * pD
 	return true;
 }
 
-_Bool core_game_ai_use_first_save_life_card(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv)
+_Bool core_game_ai_select_first_save_life_card(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int * selected_card)
 {
+	static const CardType save_list[] = {
+		ATTACK, //5
+		SKIP, //6
+		SHUFFLE, //2
+		// SEE_THE_FUTURE, //4
+		FAVOR, //7
+		// DJANNI_CARDS //8
+	};
+	static const int save_len = sizeof(save_list)/sizeof(CardType);
+	_Bool chosen_card = false;
+	int i, j;
+
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
 
@@ -162,7 +221,87 @@ _Bool core_game_ai_use_first_save_life_card(Player pPlayers[], int players_count
 	if (pPlayers[pStatus->player_turn].card_count<=0)
 		return true;
 
-	return true;
+	for (i=0; i<save_len && chosen_card==false; i++)
+	{
+		for (j=0; j<pPlayers[pStatus->player_turn].card_count && chosen_card==false; j++)
+		{
+			if (save_list[i]==pPlayers[pStatus->player_turn].cards[j].type)
+			{
+				chosen_card = true;
+				*selected_card = i;
+			}
+		}
+	}
+	return chosen_card;
+}
+
+_Bool core_game_ai_select_first_trivial_card(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int * selected_card)
+{
+	static const CardType trivial_list[] = {
+		SEE_THE_FUTURE, //4
+		FAVOR, //7
+	};
+	static const int trivial_len = sizeof(trivial_list)/sizeof(CardType);
+	_Bool chosen_card = false;
+	int i, j;
+
+	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
+		return false;
+
+	// check out-of-range issue
+	if (pStatus->player_turn >= players_count)
+		return false;
+
+	if (pPlayers[pStatus->player_turn].card_count<=0)
+		return true;
+
+	for (i=0; i<trivial_len && chosen_card==false; i++)
+	{
+		for (j=0; j<pPlayers[pStatus->player_turn].card_count && chosen_card==false; j++)
+		{
+			if (trivial_list[i]==pPlayers[pStatus->player_turn].cards[j].type)
+			{
+				chosen_card = true;
+				*selected_card = i;
+			}
+		}
+	}
+	return chosen_card;
+}
+
+_Bool core_game_ai_select_first_normal_card(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int * selected_card)
+{
+	static const CardType normal_list[] = {
+		SHUFFLE, //2
+		SEE_THE_FUTURE, //4
+		FAVOR, //7
+	};
+	static const int normal_len = sizeof(normal_list)/sizeof(CardType);
+	_Bool chosen_card = false;
+	int i, j;
+
+	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
+		return false;
+
+	// check out-of-range issue
+	if (pStatus->player_turn >= players_count)
+		return false;
+
+	if (pPlayers[pStatus->player_turn].card_count<=0)
+		return true;
+
+	for (i=0; i<normal_len && chosen_card==false; i++)
+	{
+		for (j=0; j<pPlayers[pStatus->player_turn].card_count && chosen_card==false; j++)
+		{
+			if (normal_list[i]==pPlayers[pStatus->player_turn].cards[j].type)
+			{
+				chosen_card = true;
+				*selected_card = i;
+			}
+		}
+	}
+	return chosen_card;
 }
 
 _Bool core_game_ai_choose_player_card(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int * selected_card)
@@ -173,14 +312,14 @@ _Bool core_game_ai_choose_player_card(Player pPlayers[], int players_count, int 
 	if (player_index>=players_count) // skip out-of-range
 		return false;
 
-	core_game_ai_pickup_best_card(&pPlayers[player_index], selected_card);
+	core_game_ai_pickup_best_card(&pPlayers[player_index], selected_card); // todo
 
 	return true;
 }
 
 _Bool core_game_ai_pickup_best_card(const Player * pPlayer, int * selected_card)
 {
-	static const CardType wish_list[CARD_TYPE_NUM] = {
+	static const CardType wish_list[] = {
 		MEOOOW, //1
 		NOPE, //3
 		ATTACK, //5
@@ -190,12 +329,13 @@ _Bool core_game_ai_pickup_best_card(const Player * pPlayer, int * selected_card)
 		FAVOR, //7
 		DJANNI_CARDS //8
 	};
+	static const int wish_len = sizeof(wish_list)/sizeof(CardType);
 	_Bool chosen_card = false;
 	int i, j;
 	if (pPlayer==NULL || pPlayer->card_count<=0) // skip null ptr or cards<=0
 		return false;
 
-	for (i=0; i<CARD_TYPE_NUM && chosen_card==false; i++)
+	for (i=0; i<wish_len && chosen_card==false; i++)
 	{
 		for (j=0; j<pPlayer->card_count && chosen_card==false; j++)
 		{

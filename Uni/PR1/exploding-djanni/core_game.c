@@ -329,7 +329,7 @@ _Bool core_game_card_use(Player pPlayers[], int players_count, CardDeck * pDeck,
 		if (core_game_process_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
 			return false;
 	}
-	else
+	else if (pPlayers[pStatus->player_turn].type==AI) // this block should be unused so far
 	{
 		if (core_game_ai_choose_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, &selected_card)==false)
 			return false;
@@ -397,8 +397,11 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 						pEnv->is_noped = !pEnv->is_noped;
 						is_nope_reused = true;
 						core_remove_player_card_type(&pPlayers[i], NOPE);
-						log_write("player #%d (%s) used a %s card to block Player #%d (%s)'s %s",
-								i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index+1, pPlayers[player_index].name, get_card_type_name(used_card->type)
+						log_write("player #%d (%s) used a %s card to %s Player #%d (%s)'s %s",
+								i+1, pPlayers[i].name, get_card_type_name(NOPE), (pEnv->is_noped==true) ? "block" : "unblock", player_index+1, pPlayers[player_index].name, get_card_type_name(used_card->type)
+						);
+						printf("Player #%d (%s) used a %s card to %s Player #%d (%s)'s %s? (y:yes, any:no)\n",
+								i+1, pPlayers[i].name, get_card_type_name(NOPE), (pEnv->is_noped==true) ? "block" : "unblock", player_index+1, pPlayers[player_index].name, get_card_type_name(used_card->type)
 						);
 					}
 				}
@@ -424,9 +427,10 @@ _Bool core_game_card_use_see_the_future(Player pPlayers[], int players_count, in
 		deck_print_first_n_cards(pDeck, SEE_THE_FUTURE_FORESEE_NUM);
 		deck_log_print_first_n_cards(pDeck, SEE_THE_FUTURE_FORESEE_NUM);
 	}
-	else // if (pPlayers[player_index].type==AI)
+	else if (pPlayers[player_index].type==AI)
 	{
-		// todo
+		if (pDeck->card_list!=NULL && pDeck->card_list->card.type==EXPLODING_DJANNI)
+			pEnv->saw_terrible_future = true;
 		deck_log_print_first_n_cards(pDeck, SEE_THE_FUTURE_FORESEE_NUM);
 	}
 	return true;
