@@ -210,6 +210,8 @@ _Bool core_game_continue_menu(Player pPlayers[], int players_count, CardDeck * p
 	do
 	{
 		log_write("displaying the continue menu...");
+		printf("Count of the players' cards:\n");
+		player_print_all_card_counts(pPlayers, players_count);
 		printf("List of your current cards:\n");
 		player_print_hand(&pPlayers[pStatus->player_turn]);
 

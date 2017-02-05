@@ -81,5 +81,8 @@ extern void deck_log_print_cards(const CardDeck * pDeck);
 extern void deck_print_first_n_cards(const CardDeck * pDeck, int n);
 extern void deck_log_print_first_n_cards(const CardDeck * pDeck, int n);
 
+extern void player_print_all_card_counts(const Player pPlayers[], int players_count);
+extern void player_log_print_all_card_counts(const Player pPlayers[], int players_count);
+
 #endif
 

@@ -122,6 +122,7 @@ _Bool core_game_ai_continue(Player pPlayers[], int players_count, CardDeck * pDe
 		// is ai under attack? then re-attack!
 		if (pStatus->is_attacked==true)
 		{
+			log_write("core_game_ai re-attack...");
 			if (card_list_find_first_type_n(&pPlayers[pStatus->player_turn], ATTACK, &selected_card)==false)
 			{
 				if (core_game_process_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
@@ -131,14 +132,14 @@ _Bool core_game_ai_continue(Player pPlayers[], int players_count, CardDeck * pDe
 		// ai becomes lazy if not in panic and gets 15% or just empty-handed
 		else if (core_game_ai_getting_lazy(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv)==true) // ai draws a card and finish the turn
 		{
-			printf("core_game_ai_getting_lazy\n");
+			log_write("core_game_ai_getting_lazy...");
 			if (core_game_ai_draw_card(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
 				return false;
 		}
 		// ai in panic if it saw a terrible future (starting turn with a death flag: foresaw that the next card is the exploding djanni... or 100% to drop one)
 		else if (core_game_ai_is_in_panic(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv)==true) // try to escape death in any way possible
 		{
-			printf("core_game_ai_is_in_panic\n");
+			log_write("core_game_ai_is_in_panic...");
 			if (core_game_ai_select_first_save_life_card(pPlayers, players_count, pDeck, pStatus, pEnv, &selected_card)==true)
 			{
 				pEnv->saw_terrible_future = false;
@@ -149,7 +150,7 @@ _Bool core_game_ai_continue(Player pPlayers[], int players_count, CardDeck * pDe
 		// ai gets worried if the exploding djanni gets 25% of possibility to drop and it has no meooow card
 		else if (core_game_ai_is_worried(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv)==true) // try to play some cards to feel safe
 		{
-			printf("core_game_ai_is_worried\n");
+			log_write("core_game_ai_is_worried...");
 			pEnv->saw_terrible_future = false; // this should be already as false at this point
 			if (core_game_ai_select_first_normal_card(pPlayers, players_count, pDeck, pStatus, pEnv, &selected_card)==true)
 			{

@@ -413,3 +413,25 @@ void deck_log_print_first_n_cards(const CardDeck * pDeck, int n)
 	card_node_log_print_first_n(pDeck->card_list, n);
 }
 
+void player_print_all_card_counts(const Player pPlayers[], int players_count)
+{
+	int i;
+	if (pPlayers==NULL) // skip null ptr
+		return;
+
+	for (i=0; i<players_count; i++)
+		if (pPlayers[i].is_alive==true)
+			printf("\tPlayer #%d (%s) has %d cards left\n", i+1, pPlayers[i].name, pPlayers[i].card_count);
+}
+
+void player_log_print_all_card_counts(const Player pPlayers[], int players_count)
+{
+	int i;
+	if (pPlayers==NULL) // skip null ptr
+		return;
+
+	for (i=0; i<players_count; i++)
+		if (pPlayers[i].is_alive==true)
+			log_write("\tPlayer #%d (%s) has %d cards left", i+1, pPlayers[i].name, pPlayers[i].card_count);
+}
+
