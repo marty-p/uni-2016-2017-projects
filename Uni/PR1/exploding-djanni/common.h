@@ -38,6 +38,8 @@
 extern void clear_input_line(void);
 extern void clear_file_input_line(FILE * fp);
 extern void clear_console(void);
+extern void clear_all_delayed(void);
+extern void clear_all(void);
 extern void wait_for_n_seconds(int seconds);
 extern int get_random_number(int min, int max);
 extern void get_current_date_format(char * datebuf, int datebuf_len);

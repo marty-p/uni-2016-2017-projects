@@ -22,6 +22,29 @@ void clear_console(void) // clear the console
 #endif
 }
 
+void clear_all_delayed(void) // clear the console after n seconds
+{
+#ifdef CLEAR_CONSOLE_EACH_TURN
+#ifdef DO_NOT_USE_TIME_WAIT
+	printf("Press enter key to clear the console!...\n");
+	getchar(); // simulate enter key press
+#else
+	printf("Waiting for %d seconds before cleaning the console!\n", CLEAR_CONSOLE_TIME_WAIT); // wait three seconds
+	wait_for_n_seconds(CLEAR_CONSOLE_TIME_WAIT);
+#endif
+	clear_console();
+#endif
+}
+
+void clear_all(void) // clear the console and ask for enter key press
+{
+#ifdef CLEAR_CONSOLE_EACH_TURN
+	printf("Press enter key to continue...\n");
+	clear_input_line(); // simulate enter key press
+	clear_console();
+#endif
+}
+
 void wait_for_n_seconds(int seconds)
 {
 	time_t end_time = time(NULL) + seconds; // the only "standard" way to keep the cpu busy for n seconds

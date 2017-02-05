@@ -19,16 +19,7 @@ _Bool core_game_start(Player pPlayers[], int players_count, CardDeck * pDeck, Ga
 	// looping until we have a winner (they could be all dead even before starting
 	while (core_game_check_winners(pPlayers, players_count)==false)
 	{
-#ifdef CLEAR_CONSOLE_EACH_TURN
-#ifdef DO_NOT_USE_TIME_WAIT
-		printf("Press enter key to clear the console!...\n");
-		getchar(); // simulate enter key press
-#else
-		printf("Waiting for %d seconds before cleaning the console!\n", CLEAR_CONSOLE_TIME_WAIT); // wait three seconds
-		wait_for_n_seconds(CLEAR_CONSOLE_TIME_WAIT);
-#endif
-		clear_console();
-#endif
+		clear_all_delayed();
 		log_write("turn #%d is starting...", pStatus->total_turns);
 		printf("Player #%d (%s)'s turn! (Turn #%d)\n", pStatus->player_turn+1, pPlayers[pStatus->player_turn].name, pStatus->total_turns);
 
@@ -298,7 +289,7 @@ _Bool core_game_card_draw(Player pPlayers[], int players_count, CardDeck * pDeck
 	log_write("Player #%d (%s) drew the card... [%d]%s: %s",
 		pStatus->player_turn+1, pPlayers[pStatus->player_turn].name, pDeck->card_list->card.type, get_card_type_name(pDeck->card_list->card.type), pDeck->card_list->card.title
 	);
-	if (pPlayers[pStatus->player_turn].type==REAL)
+	if (pPlayers[pStatus->player_turn].type==REAL || pDeck->card_list->card.type==EXPLODING_DJANNI) // only exploding djanni will be shown for ai players
 		printf("You drew the card [%d]%s: %s!\n", pDeck->card_list->card.type, get_card_type_name(pDeck->card_list->card.type), pDeck->card_list->card.title);
 
 	if (pDeck->card_list->card.type==EXPLODING_DJANNI) // check if the first deck card is an exploding djanni
@@ -503,21 +494,10 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 	}
 
 	log_write("switching interaction to player #%d (%s)...", selected_player_index+1, pPlayers[selected_player_index].name);
-#ifdef CLEAR_CONSOLE_EACH_TURN
-#ifdef DO_NOT_USE_TIME_WAIT
-	printf("Press enter key to continue and clear the console!...\n");
-	getchar(); // simulate enter key press
-#else
-	printf("Waiting for %d seconds before cleaning the console!\n", CLEAR_CONSOLE_TIME_WAIT); // wait three seconds
-	wait_for_n_seconds(CLEAR_CONSOLE_TIME_WAIT);
-#endif
-	clear_console();
+	clear_all_delayed();
 	// double warning to give enough time
 	printf("We're going to switch to Player #%d (%s)!\n", selected_player_index+1, pPlayers[selected_player_index].name);
-	printf("Press enter key to continue...\n");
-	clear_input_line(); // simulate enter key press
-	clear_console();
-#endif
+	clear_all();
 
 	if (pPlayers[selected_player_index].type==REAL)
 	{
@@ -546,21 +526,10 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 	);
 
 	log_write("switching interaction to player #%d (%s)...", player_index+1, pPlayers[player_index].name);
-#ifdef CLEAR_CONSOLE_EACH_TURN
-#ifdef DO_NOT_USE_TIME_WAIT
-	printf("Press enter key to clear the console!...\n");
-	getchar(); // simulate enter key press
-#else
-	printf("Waiting for %d seconds before cleaning the console!\n", CLEAR_CONSOLE_TIME_WAIT); // wait three seconds
-	wait_for_n_seconds(CLEAR_CONSOLE_TIME_WAIT);
-#endif
-	clear_console();
+	clear_all_delayed();
 	// double warning to give enough time
 	printf("We're going to switch to Player #%d (%s)!\n", player_index+1, pPlayers[player_index].name);
-	printf("Press enter key to continue...\n");
-	clear_input_line(); // simulate enter key press
-	clear_console();
-#endif
+	clear_all();
 
 	core_remove_player_n_card(&pPlayers[player_index], selected_card); // internal delete
 	printf("You received the following card from Player #%d (%s): [%d]%s (%s)\n",

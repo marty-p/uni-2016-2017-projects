@@ -165,7 +165,7 @@ _Bool core_game_ai_continue(Player pPlayers[], int players_count, CardDeck * pDe
 		}
 		else // normal play
 		{
-			printf("core_game_ai_normal_play\n");
+			// log_write("core_game_ai_normal_play...");
 			pEnv->saw_terrible_future = false; // this should be already as false at this point
 			if (core_game_ai_select_first_trivial_card(pPlayers, players_count, pDeck, pStatus, pEnv, &selected_card)==true)
 			{
@@ -377,7 +377,7 @@ _Bool core_game_ai_pickup_worst_card(const Player * pPlayer, int * selected_card
 	if (pPlayer->card_count<=0)
 		return false;
 
-	for (i=trash_len-1; i>=0 && chosen_card==false; i++)
+	for (i=trash_len-1; i>=0 && chosen_card==false; i--)
 	{
 		for (j=0; j<pPlayer->card_count && chosen_card==false; j++)
 		{
