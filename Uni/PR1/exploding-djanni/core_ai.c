@@ -219,7 +219,7 @@ _Bool core_game_ai_select_first_save_life_card(Player pPlayers[], int players_co
 		return false;
 
 	if (pPlayers[pStatus->player_turn].card_count<=0)
-		return true;
+		return false;
 
 	for (i=0; i<save_len && chosen_card==false; i++)
 	{
@@ -228,7 +228,7 @@ _Bool core_game_ai_select_first_save_life_card(Player pPlayers[], int players_co
 			if (save_list[i]==pPlayers[pStatus->player_turn].cards[j].type)
 			{
 				chosen_card = true;
-				*selected_card = i;
+				*selected_card = j;
 			}
 		}
 	}
@@ -253,7 +253,7 @@ _Bool core_game_ai_select_first_trivial_card(Player pPlayers[], int players_coun
 		return false;
 
 	if (pPlayers[pStatus->player_turn].card_count<=0)
-		return true;
+		return false;
 
 	for (i=0; i<trivial_len && chosen_card==false; i++)
 	{
@@ -262,7 +262,7 @@ _Bool core_game_ai_select_first_trivial_card(Player pPlayers[], int players_coun
 			if (trivial_list[i]==pPlayers[pStatus->player_turn].cards[j].type)
 			{
 				chosen_card = true;
-				*selected_card = i;
+				*selected_card = j;
 			}
 		}
 	}
@@ -288,7 +288,7 @@ _Bool core_game_ai_select_first_normal_card(Player pPlayers[], int players_count
 		return false;
 
 	if (pPlayers[pStatus->player_turn].card_count<=0)
-		return true;
+		return false;
 
 	for (i=0; i<normal_len && chosen_card==false; i++)
 	{
@@ -297,7 +297,7 @@ _Bool core_game_ai_select_first_normal_card(Player pPlayers[], int players_count
 			if (normal_list[i]==pPlayers[pStatus->player_turn].cards[j].type)
 			{
 				chosen_card = true;
-				*selected_card = i;
+				*selected_card = j;
 			}
 		}
 	}
@@ -335,6 +335,9 @@ _Bool core_game_ai_pickup_best_card(const Player * pPlayer, int * selected_card)
 	if (pPlayer==NULL || pPlayer->card_count<=0) // skip null ptr or cards<=0
 		return false;
 
+	if (pPlayer->card_count<=0)
+		return false;
+
 	for (i=0; i<wish_len && chosen_card==false; i++)
 	{
 		for (j=0; j<pPlayer->card_count && chosen_card==false; j++)
@@ -342,7 +345,7 @@ _Bool core_game_ai_pickup_best_card(const Player * pPlayer, int * selected_card)
 			if (wish_list[i]==pPlayer->cards[j].type)
 			{
 				chosen_card = true;
-				*selected_card = i;
+				*selected_card = j;
 			}
 		}
 	}
