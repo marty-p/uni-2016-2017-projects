@@ -13,6 +13,7 @@
 #define CLEAR_CONSOLE_EACH_TURN // clear the console each turn
 #ifdef CLEAR_CONSOLE_EACH_TURN
 #define CLEAR_CONSOLE_TIME_WAIT 3 // n seconds to wait before cleaning
+#define DO_NOT_USE_TIME_WAIT // use enter key press instead of waiting
 #endif
 
 #define CURRENT_DATE_LEN 19 // +1; current data format length

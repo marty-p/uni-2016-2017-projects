@@ -128,9 +128,10 @@ _Bool core_game_ai_continue(Player pPlayers[], int players_count, CardDeck * pDe
 				if (core_game_process_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
 					return false;
 			}
-		}
+		} // not else... otherwise infinite loop
+
 		// ai becomes lazy if not in panic and gets 15% or just empty-handed
-		else if (core_game_ai_getting_lazy(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv)==true) // ai draws a card and finish the turn
+		if (core_game_ai_getting_lazy(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv)==true) // ai draws a card and finish the turn
 		{
 			log_write("core_game_ai_getting_lazy...");
 			if (core_game_ai_draw_card(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
