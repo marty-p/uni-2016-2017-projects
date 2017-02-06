@@ -129,6 +129,7 @@ _Bool core_game_ai_continue(Player pPlayers[], int players_count, CardDeck * pDe
 	do // repeat until draw
 	{
 #ifdef SHOW_AI_INFO
+		player_print_all_card_counts(pPlayers, players_count);
 		player_print_hand(&pPlayers[pStatus->player_turn]);
 		printf("couple %d, triple %d\n",
 			core_game_ai_can_djanni_couple(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, NULL),
@@ -179,17 +180,17 @@ _Bool core_game_ai_continue(Player pPlayers[], int players_count, CardDeck * pDe
 				if (core_game_process_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
 					return false;
 				// if nothing is wrong... draw a card
-				if (pEnv->saw_terrible_future==false)
+				if (pEnv->saw_terrible_future==false && get_random_number(PCT_MIN, PCT_MAX) <= AI_WORRIED_BUT_DRAW_ANYWAY_PCT) // if unknown future and 30%
 					if (core_game_ai_draw_card(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
 						return false;
 			}
-			else if (get_random_number(PCT_MIN, PCT_MAX) <= AI_MORE_WORRIED_PCT) // 40% of using a safelife card
+			else if (get_random_number(PCT_MIN, PCT_MAX) <= AI_MORE_WORRIED_PCT) // 70% of using a safelife card
 			{
 				if (core_game_ai_select_first_save_life_card(pPlayers, players_count, pDeck, pStatus, pEnv, &selected_card)==true)
 				{
 					if (core_game_process_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
 						return false;
-					if (pEnv->saw_terrible_future==false)
+					if (pEnv->saw_terrible_future==false && get_random_number(PCT_MIN, PCT_MAX) <= AI_WORRIED_BUT_DRAW_ANYWAY_PCT) // if unknown future and 30%
 						if (core_game_ai_draw_card(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
 							return false;
 				}
@@ -197,7 +198,7 @@ _Bool core_game_ai_continue(Player pPlayers[], int players_count, CardDeck * pDe
 		}
 		else // normal play
 		{
-			// log_write("core_game_ai_normal_play...");
+			log_write("core_game_ai_normal_play...");
 			pEnv->saw_terrible_future = false; // this should be already as false at this point
 			if (core_game_ai_select_first_trivial_card(pPlayers, players_count, pDeck, pStatus, pEnv, &selected_card)==true)
 			{

@@ -22,7 +22,8 @@
 #define AI_LAZY_PCT 15 // pct of doing nothing in that specific turn
 #define AI_LAZY_BUT_CRAZY_PCT 10 // pct of using a safelife card in that specific turn when lazy
 #define AI_WORRIED_BUT_LAZY_PCT 30 // pct of doing nothing in that specific turn when worried
-#define AI_MORE_WORRIED_PCT 40 // pct of using a safelife card in that specific turn when worried
+#define AI_WORRIED_BUT_DRAW_ANYWAY_PCT 30 // pct of drawing a card in that specific turn when worried
+#define AI_MORE_WORRIED_PCT 70 // pct of using a safelife card in that specific turn when worried
 #define PCT_MIN 0
 #define PCT_MAX 100
 

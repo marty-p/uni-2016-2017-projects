@@ -26,7 +26,7 @@ void clear_all_delayed(void) // clear the console after n seconds
 {
 #ifdef CLEAR_CONSOLE_EACH_TURN
 #ifdef DO_NOT_USE_TIME_WAIT
-	printf("Press enter key to clear the console!...\n");
+	printf("Press enter key to clear the console!\n");
 	getchar(); // simulate enter key press
 #else
 	printf("Waiting for %d seconds before cleaning the console!\n", CLEAR_CONSOLE_TIME_WAIT); // wait three seconds
