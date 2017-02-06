@@ -292,6 +292,8 @@ _Bool core_game_card_draw(Player pPlayers[], int players_count, CardDeck * pDeck
 	);
 	if (pPlayers[pStatus->player_turn].type==REAL || pDeck->card_list->card.type==EXPLODING_DJANNI) // only exploding djanni will be shown for ai players
 		printf("You drew the card [%d]%s: %s!\n", pDeck->card_list->card.type, get_card_type_name(pDeck->card_list->card.type), pDeck->card_list->card.title);
+	else if (pPlayers[pStatus->player_turn].type==AI)
+		printf("Player #%d (%s) drew a card!\n", pStatus->player_turn+1, pPlayers[pStatus->player_turn].name);
 
 	if (pDeck->card_list->card.type==EXPLODING_DJANNI) // check if the first deck card is an exploding djanni
 	{
@@ -356,10 +358,13 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 		return false;
 
 #ifdef CLEAR_CONSOLE_WHEN_NOPING
-	clear_all_delayed();
-	printf("Player #%d (%s) used the card [%d]%s: %s\n", player_index+1, pPlayers[player_index].name, used_card->type, get_card_type_name(used_card->type), used_card->title);
-	if (used_card->type==DJANNI_CARDS)
-		printf("Player #%d (%s) has chosen the %s djanni mode!\n", player_index+1, pPlayers[player_index].name, get_djanni_mode_name(pEnv->selected_djanni_mode));
+	if (pPlayers[player_index].type==REAL) // no need to hide for ai players
+	{
+		clear_all_delayed();
+		printf("Player #%d (%s) used the card [%d]%s: %s\n", player_index+1, pPlayers[player_index].name, used_card->type, get_card_type_name(used_card->type), used_card->title);
+		if (used_card->type==DJANNI_CARDS)
+			printf("Player #%d (%s) has chosen the %s djanni mode!\n", player_index+1, pPlayers[player_index].name, get_djanni_mode_name(pEnv->selected_djanni_mode));
+	}
 #endif
 
 	log_write("checking if it can be noped by other players...");
@@ -418,8 +423,11 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 	while (is_nope_reused==true); // repeat the loop in case someone uses a nope
 
 #ifdef CLEAR_CONSOLE_WHEN_NOPING
-	printf("We're going to switch to Player #%d (%s)!\n", player_index+1, pPlayers[player_index].name);
-	clear_all();
+	if (pPlayers[player_index].type==REAL) // no need to hide for ai players
+	{
+		printf("We're going to switch to Player #%d (%s)!\n", player_index+1, pPlayers[player_index].name);
+		clear_all();
+	}
 #endif
 
 	return pEnv->is_noped;

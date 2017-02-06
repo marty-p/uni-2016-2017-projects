@@ -128,6 +128,13 @@ _Bool core_game_ai_continue(Player pPlayers[], int players_count, CardDeck * pDe
 
 	do // repeat until draw
 	{
+#ifdef SHOW_AI_INFO
+		player_print_hand(&pPlayers[pStatus->player_turn]);
+		printf("couple %d, triple %d\n",
+			core_game_ai_can_djanni_couple(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv),
+			core_game_ai_can_djanni_triple(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv)
+		);
+#endif
 		log_write("elaborating ai continue...");
 		player_log_turn_data(&pPlayers[pStatus->player_turn], pStatus);
 
@@ -159,6 +166,8 @@ _Bool core_game_ai_continue(Player pPlayers[], int players_count, CardDeck * pDe
 				if (core_game_process_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
 					return false;
 			}
+			else // nothing can erase that terrible future (ai is going to die pretty bad)
+				pEnv->saw_terrible_future = false;
 		}
 		// ai gets worried if the exploding djanni gets 25% of possibility to drop and it has no meooow card
 		else if (core_game_ai_is_worried(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv)==true) // try to play some cards to feel safe
@@ -420,6 +429,9 @@ _Bool core_game_ai_is_it_valuable_card_to_nope(const Player pPlayers[], int play
 	if (player_index>=players_count) // skip out-of-range
 		return false;
 
+	if (pEnv->is_noped==true)
+		return false;
+
 	for (i=0; i<CARD_TYPE_NUM; i++)
 	{
 		if (wish_list[i]==used_card->type)
@@ -453,5 +465,69 @@ _Bool core_game_am_i_next(const Player pPlayers[], int players_count, int player
 	}
 
 	return next_turn==player_index;
+}
+
+_Bool core_game_ai_can_djanni_couple(const Player pPlayers[], int players_count, int player_index, const CardDeck * pDeck, const GameStatus * pStatus, const GameEnv * pEnv)
+{
+	int i, j;
+	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
+		return false;
+
+	// check out-of-range issue
+	if (pStatus->player_turn >= players_count)
+		return false;
+
+	// check out-of-range issue
+	if (player_index >= players_count)
+		return false;
+
+	for (i=0; i<pPlayers[player_index].card_count; i++)
+	{
+		for (j=0; j<pPlayers[player_index].card_count; j++)
+		{
+			if (i==j) // skip itself
+				continue;
+			if (pPlayers[player_index].cards[i].type==DJANNI_CARDS
+				&& pPlayers[player_index].cards[j].type==DJANNI_CARDS
+				&& (strcmp(pPlayers[player_index].cards[i].title, pPlayers[player_index].cards[j].title)==0)
+			)
+				return true;
+		}
+	}
+
+	return false;
+}
+
+_Bool core_game_ai_can_djanni_triple(const Player pPlayers[], int players_count, int player_index, const CardDeck * pDeck, const GameStatus * pStatus, const GameEnv * pEnv)
+{
+	int i, j;
+	int match_count = 0;
+	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
+		return false;
+
+	// check out-of-range issue
+	if (pStatus->player_turn >= players_count)
+		return false;
+
+	// check out-of-range issue
+	if (player_index >= players_count)
+		return false;
+
+	for (i=0; i<pPlayers[player_index].card_count && match_count<DJANNI_TRIPLE_MATCH_NUM; i++)
+	{
+		match_count = 0;
+		for (j=0; j<pPlayers[player_index].card_count && match_count<DJANNI_TRIPLE_MATCH_NUM; j++)
+		{
+			if (i==j) // skip itself
+				continue;
+			if (pPlayers[player_index].cards[i].type==DJANNI_CARDS
+				&& pPlayers[player_index].cards[j].type==DJANNI_CARDS
+				&& (strcmp(pPlayers[player_index].cards[i].title, pPlayers[player_index].cards[j].title)==0)
+			)
+				match_count++;
+		}
+	}
+
+	return match_count>=DJANNI_TRIPLE_MATCH_NUM;
 }
 

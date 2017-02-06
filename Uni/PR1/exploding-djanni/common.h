@@ -9,6 +9,7 @@
 #ifndef _DEBUG
 // #define _DEBUG // debug flag
 #endif
+#define SHOW_AI_INFO
 
 #define CLEAR_CONSOLE_EACH_TURN // clear the console each turn
 #ifdef CLEAR_CONSOLE_EACH_TURN

@@ -19,6 +19,8 @@ extern _Bool core_game_ai_pickup_best_card(const Player * pPlayer, int * selecte
 extern _Bool core_game_ai_pickup_worst_card(const Player * pPlayer, int * selected_card);
 extern _Bool core_game_ai_is_it_valuable_card_to_nope(const Player pPlayers[], int players_count, int player_index, const Card * used_card, const GameEnv * pEnv);
 extern _Bool core_game_am_i_next(const Player pPlayers[], int players_count, int player_index, const GameStatus * pStatus, const GameEnv * pEnv, _Bool consider_is_attacked);
+extern _Bool core_game_ai_can_djanni_couple(const Player pPlayers[], int players_count, int player_index, const CardDeck * pDeck, const GameStatus * pStatus, const GameEnv * pEnv);
+extern _Bool core_game_ai_can_djanni_triple(const Player pPlayers[], int players_count, int player_index, const CardDeck * pDeck, const GameStatus * pStatus, const GameEnv * pEnv);
 
 #endif
 
