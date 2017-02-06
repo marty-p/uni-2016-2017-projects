@@ -36,6 +36,10 @@ _Bool core_game_ai_is_in_panic(const Player pPlayers[], int players_count, int p
 	if (pStatus->player_turn >= players_count)
 		return false;
 
+	// check out-of-range issue
+	if (player_index >= players_count)
+		return false;
+
 	return pEnv->saw_terrible_future;
 }
 
@@ -50,6 +54,10 @@ _Bool core_game_ai_is_worried(const Player pPlayers[], int players_count, int pl
 
 	// check out-of-range issue
 	if (pStatus->player_turn >= players_count)
+		return false;
+
+	// check out-of-range issue
+	if (player_index >= players_count)
 		return false;
 
 	if (pPlayers[player_index].card_count<=0) // if no cards are available
@@ -77,6 +85,10 @@ _Bool core_game_ai_getting_lazy(const Player pPlayers[], int players_count, int 
 
 	// check out-of-range issue
 	if (pStatus->player_turn >= players_count)
+		return false;
+
+	// check out-of-range issue
+	if (player_index >= players_count)
 		return false;
 
 	if (pPlayers[player_index].card_count<=0) // if no cards, just lazy by default
@@ -403,6 +415,9 @@ _Bool core_game_ai_is_it_valuable_card_to_nope(const Player pPlayers[], int play
 	int i;
 
 	if (pPlayers==NULL || used_card==NULL || pEnv==NULL) // skip null ptr or cards<=0
+		return false;
+
+	if (player_index>=players_count) // skip out-of-range
 		return false;
 
 	for (i=0; i<CARD_TYPE_NUM; i++)

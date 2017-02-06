@@ -438,8 +438,8 @@ _Bool core_game_card_use_see_the_future(Player pPlayers[], int players_count, in
 
 _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card)
 {
-	int selected_player_index;
-	int selected_player_card;
+	int selected_player_index = 0;
+	int selected_player_card = 0;
 	Card * used_card = NULL;
 	int i;
 
@@ -630,8 +630,8 @@ _Bool core_game_card_use_djanni_cards(Player pPlayers[], int players_count, int 
 
 _Bool core_game_card_use_djanni_cards_couple(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card)
 {
-	int selected_player_index; // selected player which you take the card
-	int selected_player_card; // selected player card to pick up
+	int selected_player_index = 0; // selected player which you take the card
+	int selected_player_card = 0; // selected player card to pick up
 	const Card * used_card = NULL; // used card ptr
 	Card copy_card = {{0}}; // copy of used card
 	int i=0; // for itering
@@ -727,8 +727,8 @@ _Bool core_game_card_use_djanni_cards_couple(Player pPlayers[], int players_coun
 
 _Bool core_game_card_use_djanni_cards_triple(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int selected_card)
 {
-	int selected_player_index; // selected player which you take the card
-	int selected_player_card; // selected player card to pick up
+	int selected_player_index = 0; // selected player which you take the card
+	int selected_player_card = 0; // selected player card to pick up
 	const Card * used_card = NULL; // used card ptr
 	Card copy_card = {{0}}; // copy of used card
 	int i=0; // for itering
