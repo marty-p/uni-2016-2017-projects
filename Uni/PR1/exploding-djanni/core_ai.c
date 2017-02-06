@@ -131,8 +131,8 @@ _Bool core_game_ai_continue(Player pPlayers[], int players_count, CardDeck * pDe
 #ifdef SHOW_AI_INFO
 		player_print_hand(&pPlayers[pStatus->player_turn]);
 		printf("couple %d, triple %d\n",
-			core_game_ai_can_djanni_couple(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv),
-			core_game_ai_can_djanni_triple(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv)
+			core_game_ai_can_djanni_couple(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, NULL),
+			core_game_ai_can_djanni_triple(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, NULL)
 		);
 #endif
 		log_write("elaborating ai continue...");
@@ -257,6 +257,21 @@ _Bool core_game_ai_select_first_save_life_card(Player pPlayers[], int players_co
 			}
 		}
 	}
+
+	if (chosen_card==false)
+	{
+		if (core_game_ai_can_djanni_triple(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==true)
+		{
+			pEnv->selected_djanni_mode = DM_TRIPLE;
+			return true;
+		}
+		else if (core_game_ai_can_djanni_couple(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==true)
+		{
+			pEnv->selected_djanni_mode = DM_COUPLE;
+			return true;
+		}
+	}
+
 	return chosen_card;
 }
 
@@ -326,6 +341,21 @@ _Bool core_game_ai_select_first_normal_card(Player pPlayers[], int players_count
 			}
 		}
 	}
+
+	if (chosen_card==false)
+	{
+		if (core_game_ai_can_djanni_triple(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==true)
+		{
+			pEnv->selected_djanni_mode = DM_TRIPLE;
+			return true;
+		}
+		else if (core_game_ai_can_djanni_couple(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==true)
+		{
+			pEnv->selected_djanni_mode = DM_COUPLE;
+			return true;
+		}
+	}
+
 	return chosen_card;
 }
 
@@ -467,7 +497,7 @@ _Bool core_game_am_i_next(const Player pPlayers[], int players_count, int player
 	return next_turn==player_index;
 }
 
-_Bool core_game_ai_can_djanni_couple(const Player pPlayers[], int players_count, int player_index, const CardDeck * pDeck, const GameStatus * pStatus, const GameEnv * pEnv)
+_Bool core_game_ai_can_djanni_couple(const Player pPlayers[], int players_count, int player_index, const CardDeck * pDeck, const GameStatus * pStatus, const GameEnv * pEnv, int * selected_card)
 {
 	int i, j;
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
@@ -491,14 +521,18 @@ _Bool core_game_ai_can_djanni_couple(const Player pPlayers[], int players_count,
 				&& pPlayers[player_index].cards[j].type==DJANNI_CARDS
 				&& (strcmp(pPlayers[player_index].cards[i].title, pPlayers[player_index].cards[j].title)==0)
 			)
+			{
+				if (selected_card!=NULL)
+					*selected_card = i;
 				return true;
+			}
 		}
 	}
 
 	return false;
 }
 
-_Bool core_game_ai_can_djanni_triple(const Player pPlayers[], int players_count, int player_index, const CardDeck * pDeck, const GameStatus * pStatus, const GameEnv * pEnv)
+_Bool core_game_ai_can_djanni_triple(const Player pPlayers[], int players_count, int player_index, const CardDeck * pDeck, const GameStatus * pStatus, const GameEnv * pEnv, int * selected_card)
 {
 	int i, j;
 	int match_count = 0;
@@ -524,7 +558,11 @@ _Bool core_game_ai_can_djanni_triple(const Player pPlayers[], int players_count,
 				&& pPlayers[player_index].cards[j].type==DJANNI_CARDS
 				&& (strcmp(pPlayers[player_index].cards[i].title, pPlayers[player_index].cards[j].title)==0)
 			)
+			{
+				if (selected_card!=NULL)
+					*selected_card = i;
 				match_count++;
+			}
 		}
 	}
 

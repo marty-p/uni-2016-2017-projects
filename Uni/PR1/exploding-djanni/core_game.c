@@ -584,18 +584,39 @@ _Bool core_game_card_use_djanni_cards(Player pPlayers[], int players_count, int 
 	log_write("player #%d (%s) is going to select a djanni card mode...", player_index+1, pPlayers[player_index].name);
 	if (can_couple==true || can_triple==true)
 	{
-		do
+		if (pPlayers[player_index].type==REAL)
 		{
-			log_write("In which mode do you want to use the djanni cards?");
-			printf("%u. %s Mode\n", DM_SINGLE, get_djanni_mode_name(DM_SINGLE));
-			if (can_couple==true)
-				printf("%u. %s Mode\n", DM_COUPLE, get_djanni_mode_name(DM_COUPLE));
-			if (can_triple==true)
-				printf("%u. %s Mode\n", DM_TRIPLE, get_djanni_mode_name(DM_TRIPLE));
-			scanf("%u", &chosen_mode);
-			clear_input_line(); // clear the input line from junk
+			do
+			{
+				log_write("In which mode do you want to use the djanni cards?");
+				printf("%u. %s Mode\n", DM_SINGLE, get_djanni_mode_name(DM_SINGLE));
+				if (can_couple==true)
+					printf("%u. %s Mode\n", DM_COUPLE, get_djanni_mode_name(DM_COUPLE));
+				if (can_triple==true)
+					printf("%u. %s Mode\n", DM_TRIPLE, get_djanni_mode_name(DM_TRIPLE));
+				scanf("%u", &chosen_mode);
+				clear_input_line(); // clear the input line from junk
+			}
+			while (chosen_mode>=DJANNI_MODE_NUM || (chosen_mode==DM_COUPLE && can_couple==false) || (chosen_mode==DM_TRIPLE && can_triple==false)); // note: it's unsigned
 		}
-		while (chosen_mode>=DJANNI_MODE_NUM || (chosen_mode==DM_COUPLE && can_couple==false) || (chosen_mode==DM_TRIPLE && can_triple==false)); // note: it's unsigned
+		else if (pPlayers[player_index].type==AI)
+		{
+			chosen_mode = DM_SINGLE;
+			switch (pEnv->selected_djanni_mode) // specified elsewhere
+			{
+				case DM_COUPLE:
+					if (can_couple)
+						chosen_mode = DM_COUPLE;
+					break;
+				case DM_TRIPLE:
+					if (can_triple)
+						chosen_mode = DM_TRIPLE;
+					break;
+				case DM_SINGLE:
+				default:
+					break;
+			}
+		}
 	}
 	else // if only the single mode is available, no need to ask
 		chosen_mode = DM_SINGLE;
