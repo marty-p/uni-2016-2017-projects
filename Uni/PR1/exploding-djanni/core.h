@@ -17,10 +17,12 @@
 #define DJANNI_TRIPLE_MATCH_NUM 2 // +1;
 #define SAVEFILE_FILENAME "partita.sav" // default savefile filename (used if you input a blank string)
 #define FILEPATH_LEN 259 // +1; the same of MAX_PATH on windows
-#define AI_WORRIED_PCT 25 // pct of drawing an exploding djanni that would cause the ai to be worried
+#define AI_WORRIED_PCT 10 // pct of drawing an exploding djanni that would cause the ai to be worried
 #define AI_PANIC_PCT 100 // pct of drawing an exploding djanni that would cause the ai to be in panic
 #define AI_LAZY_PCT 15 // pct of doing nothing in that specific turn
+#define AI_LAZY_BUT_CRAZY_PCT 10 // pct of using a safelife card in that specific turn when lazy
 #define AI_WORRIED_BUT_LAZY_PCT 30 // pct of doing nothing in that specific turn when worried
+#define AI_MORE_WORRIED_PCT 40 // pct of using a safelife card in that specific turn when worried
 #define PCT_MIN 0
 #define PCT_MAX 100
 

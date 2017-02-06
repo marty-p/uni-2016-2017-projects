@@ -71,7 +71,7 @@ _Bool core_game_ai_is_worried(const Player pPlayers[], int players_count, int pl
 	has_meooow = core_player_count_of_type_n(&pPlayers[pStatus->player_turn], MEOOOW) >= 1; // true if the player has at least 1 meooow
 
 	if (has_meooow==false) // very simple check to be in panic
-		return expdjanni_pct >= AI_WORRIED_PCT; // 25%
+		return expdjanni_pct >= AI_WORRIED_PCT; // 10%
 
 	return false;
 }
@@ -183,6 +183,17 @@ _Bool core_game_ai_continue(Player pPlayers[], int players_count, CardDeck * pDe
 					if (core_game_ai_draw_card(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
 						return false;
 			}
+			else if (get_random_number(PCT_MIN, PCT_MAX) <= AI_MORE_WORRIED_PCT) // 40% of using a safelife card
+			{
+				if (core_game_ai_select_first_save_life_card(pPlayers, players_count, pDeck, pStatus, pEnv, &selected_card)==true)
+				{
+					if (core_game_process_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
+						return false;
+					if (pEnv->saw_terrible_future==false)
+						if (core_game_ai_draw_card(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
+							return false;
+				}
+			}
 		}
 		else // normal play
 		{
@@ -193,6 +204,15 @@ _Bool core_game_ai_continue(Player pPlayers[], int players_count, CardDeck * pDe
 				if (core_game_process_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
 					return false;
 				// if nothing is wrong... draw a card
+				if (pEnv->saw_terrible_future==false)
+					if (core_game_ai_draw_card(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
+						return false;
+			}
+			// 10% of randomly using a safelife card
+			else if (get_random_number(PCT_MIN, PCT_MAX) <= AI_LAZY_BUT_CRAZY_PCT && core_game_ai_select_first_save_life_card(pPlayers, players_count, pDeck, pStatus, pEnv, &selected_card)==true)
+			{
+				if (core_game_process_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
+					return false;
 				if (pEnv->saw_terrible_future==false)
 					if (core_game_ai_draw_card(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
 						return false;
