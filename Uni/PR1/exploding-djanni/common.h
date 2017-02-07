@@ -9,7 +9,7 @@
 #ifndef _DEBUG
 // #define _DEBUG // debug flag
 #endif
-#define SHOW_AI_INFO
+// #define SHOW_AI_DEBUG_INFO // print extra ai info (cards and count each turn)
 
 #define CLEAR_CONSOLE_EACH_TURN // clear the console each turn
 #ifdef CLEAR_CONSOLE_EACH_TURN

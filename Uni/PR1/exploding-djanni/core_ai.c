@@ -128,7 +128,7 @@ _Bool core_game_ai_continue(Player pPlayers[], int players_count, CardDeck * pDe
 
 	do // repeat until draw
 	{
-#ifdef SHOW_AI_INFO
+#ifdef SHOW_AI_DEBUG_INFO
 		player_print_all_card_counts(pPlayers, players_count);
 		player_print_hand(&pPlayers[pStatus->player_turn]);
 		printf("couple %d, triple %d\n",
