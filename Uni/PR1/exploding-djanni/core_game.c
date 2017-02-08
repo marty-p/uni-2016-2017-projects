@@ -19,7 +19,7 @@ _Bool core_game_start(Player pPlayers[], int players_count, CardDeck * pDeck, Ga
 	// looping until we have a winner (they could be all dead even before starting
 	while (core_game_check_winners(pPlayers, players_count)==false)
 	{
-		clear_all_delayed();
+		clear_all_delayed(); // clear the console
 		log_write("turn #%d is starting...", pStatus->total_turns);
 		printf("Player #%d (%s)'s turn! (Turn #%d)\n", pStatus->player_turn+1, pPlayers[pStatus->player_turn].name, pStatus->total_turns);
 
@@ -313,7 +313,7 @@ _Bool core_game_card_draw(Player pPlayers[], int players_count, CardDeck * pDeck
 		return true;
 	}
 
-	core_player_draw_from_deck(&pPlayers[pStatus->player_turn], pDeck);
+	core_player_draw_from_deck(&pPlayers[pStatus->player_turn], pDeck); // draw a card
 
 	return true;
 }
@@ -360,7 +360,7 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 #ifdef CLEAR_CONSOLE_WHEN_NOPING
 	if (pPlayers[player_index].type==REAL) // no need to hide for ai players
 	{
-		clear_all_delayed();
+		clear_all_delayed(); // clear the console
 		printf("Player #%d (%s) used the card [%d]%s: %s\n", player_index+1, pPlayers[player_index].name, used_card->type, get_card_type_name(used_card->type), used_card->title);
 		if (used_card->type==DJANNI_CARDS)
 			printf("Player #%d (%s) has chosen the %s djanni mode!\n", player_index+1, pPlayers[player_index].name, get_djanni_mode_name(pEnv->selected_djanni_mode));
@@ -516,7 +516,7 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 	}
 
 	log_write("switching interaction to player #%d (%s)...", selected_player_index+1, pPlayers[selected_player_index].name);
-	clear_all_delayed();
+	clear_all_delayed(); // clear the console
 	// double warning to give enough time
 	printf("We're going to switch to Player #%d (%s)!\n", selected_player_index+1, pPlayers[selected_player_index].name);
 	clear_all();
@@ -548,7 +548,7 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 	);
 
 	log_write("switching interaction to player #%d (%s)...", player_index+1, pPlayers[player_index].name);
-	clear_all_delayed();
+	clear_all_delayed(); // clear the console
 	// double warning to give enough time
 	printf("We're going to switch to Player #%d (%s)!\n", player_index+1, pPlayers[player_index].name);
 	clear_all();

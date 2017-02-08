@@ -205,7 +205,7 @@ _Bool core_init_save_game(const Player pPlayers[], int players_count, const Card
 	fwrite(&pStatus->is_attacked, sizeof(pStatus->is_attacked), 1, save_fp);
 	fwrite(&pStatus->total_turns, sizeof(pStatus->total_turns), 1, save_fp); // extra
 
-	fclose(save_fp);
+	fclose(save_fp); // close the pointer to file
 	log_write("the save file %s has been successfully saved", savefile_path);
 	printf("The save file %s has been successfully saved!\n", savefile_path);
 	return true;

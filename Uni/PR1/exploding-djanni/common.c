@@ -48,7 +48,7 @@ void clear_all(void) // clear the console and ask for enter key press
 void wait_for_n_seconds(int seconds)
 {
 	time_t end_time = time(NULL) + seconds; // the only "standard" way to keep the cpu busy for n seconds
-	while (time(0) < end_time)
+	while (time(NULL) < end_time)
 		continue;
 }
 

@@ -279,7 +279,7 @@ _Bool core_game_ai_select_first_save_life_card(Player pPlayers[], int players_co
 		}
 	}
 
-	if (chosen_card==false)
+	if (chosen_card==false) // if nothing has been found... then chose a djanni mode if available
 	{
 		if (core_game_ai_can_djanni_triple(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==true)
 		{
@@ -313,10 +313,10 @@ _Bool core_game_ai_select_first_trivial_card(Player pPlayers[], int players_coun
 	if (pStatus->player_turn >= players_count)
 		return false;
 
-	if (pPlayers[pStatus->player_turn].card_count<=0)
+	if (pPlayers[pStatus->player_turn].card_count<=0) // skip if empty
 		return false;
 
-	for (i=0; i<trivial_len && chosen_card==false; i++)
+	for (i=0; i<trivial_len && chosen_card==false; i++) // iter all the types and then all the player's cards
 	{
 		for (j=0; j<pPlayers[pStatus->player_turn].card_count && chosen_card==false; j++)
 		{
@@ -348,10 +348,10 @@ _Bool core_game_ai_select_first_normal_card(Player pPlayers[], int players_count
 	if (pStatus->player_turn >= players_count)
 		return false;
 
-	if (pPlayers[pStatus->player_turn].card_count<=0)
+	if (pPlayers[pStatus->player_turn].card_count<=0) // skip if empty
 		return false;
 
-	for (i=0; i<normal_len && chosen_card==false; i++)
+	for (i=0; i<normal_len && chosen_card==false; i++) // iter all the types and then all the player's cards
 	{
 		for (j=0; j<pPlayers[pStatus->player_turn].card_count && chosen_card==false; j++)
 		{
@@ -363,7 +363,7 @@ _Bool core_game_ai_select_first_normal_card(Player pPlayers[], int players_count
 		}
 	}
 
-	if (chosen_card==false)
+	if (chosen_card==false) // if nothing has been found... then chose a djanni mode if available
 	{
 		if (core_game_ai_can_djanni_triple(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==true)
 		{
@@ -382,13 +382,14 @@ _Bool core_game_ai_select_first_normal_card(Player pPlayers[], int players_count
 
 _Bool core_game_ai_choose_player_card(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int * selected_card)
 {
+	// this function shouldn't be used so far
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL || selected_card==NULL) // skip null ptr
 		return false;
 
 	if (player_index>=players_count) // skip out-of-range
 		return false;
 
-	core_game_ai_pickup_best_card(&pPlayers[player_index], selected_card); // todo
+	core_game_ai_pickup_best_card(&pPlayers[player_index], selected_card);
 
 	return true;
 }
@@ -412,10 +413,10 @@ _Bool core_game_ai_pickup_best_card(const Player * pPlayer, int * selected_card)
 	if (pPlayer==NULL || pPlayer->card_count<=0) // skip null ptr or cards<=0
 		return false;
 
-	if (pPlayer->card_count<=0)
+	if (pPlayer->card_count<=0) // skip if empty
 		return false;
 
-	for (i=0; i<wish_len && chosen_card==false; i++)
+	for (i=0; i<wish_len && chosen_card==false; i++) // iter all the types and then all the player's cards
 	{
 		for (j=0; j<pPlayer->card_count && chosen_card==false; j++)
 		{
@@ -448,10 +449,10 @@ _Bool core_game_ai_pickup_worst_card(const Player * pPlayer, int * selected_card
 	if (pPlayer==NULL || pPlayer->card_count<=0) // skip null ptr or cards<=0
 		return false;
 
-	if (pPlayer->card_count<=0)
+	if (pPlayer->card_count<=0) // skip if empty
 		return false;
 
-	for (i=trash_len-1; i>=0 && chosen_card==false; i--)
+	for (i=trash_len-1; i>=0 && chosen_card==false; i--) // iter all the types and then all the player's cards
 	{
 		for (j=0; j<pPlayer->card_count && chosen_card==false; j++)
 		{
@@ -480,7 +481,7 @@ _Bool core_game_ai_is_it_valuable_card_to_nope(const Player pPlayers[], int play
 	if (player_index>=players_count) // skip out-of-range
 		return false;
 
-	if (pEnv->is_noped==true)
+	if (pEnv->is_noped==true) // don't nope again if already noped
 		return false;
 
 	for (i=0; i<CARD_TYPE_NUM; i++)
@@ -532,7 +533,7 @@ _Bool core_game_ai_can_djanni_couple(const Player pPlayers[], int players_count,
 	if (player_index >= players_count)
 		return false;
 
-	for (i=0; i<pPlayers[player_index].card_count; i++)
+	for (i=0; i<pPlayers[player_index].card_count; i++) // iter until there's a match
 	{
 		for (j=0; j<pPlayers[player_index].card_count; j++)
 		{
@@ -568,7 +569,7 @@ _Bool core_game_ai_can_djanni_triple(const Player pPlayers[], int players_count,
 	if (player_index >= players_count)
 		return false;
 
-	for (i=0; i<pPlayers[player_index].card_count && match_count<DJANNI_TRIPLE_MATCH_NUM; i++)
+	for (i=0; i<pPlayers[player_index].card_count && match_count<DJANNI_TRIPLE_MATCH_NUM; i++) // iter until there are 2 matches
 	{
 		match_count = 0;
 		for (j=0; j<pPlayers[player_index].card_count && match_count<DJANNI_TRIPLE_MATCH_NUM; j++)

@@ -99,7 +99,7 @@ CardNode * card_node_check_remove(CardNode * first, int n, _Bool * is_deleted)
 	int count = 0;
 	CardNode * tmp = first;
 	CardNode * prevtmp = NULL;
-	if (is_deleted!=NULL)
+	if (is_deleted!=NULL) // store the result if not null
 		*is_deleted = false;
 
 	// check if the index is negative:
@@ -109,7 +109,7 @@ CardNode * card_node_check_remove(CardNode * first, int n, _Bool * is_deleted)
 	// check if the index is the head:
 	if (n==0)
 	{
-		if (is_deleted!=NULL)
+		if (is_deleted!=NULL) // store the result if not null
 			*is_deleted = true;
 		return card_node_remove_head(first);
 	}
@@ -118,7 +118,7 @@ CardNode * card_node_check_remove(CardNode * first, int n, _Bool * is_deleted)
 	{
 		if (count==n) // if n, it will be deleted
 		{
-			if (is_deleted!=NULL)
+			if (is_deleted!=NULL) // store the result if not null
 				*is_deleted = true;
 			prevtmp->next = tmp->next;
 			free(tmp);
@@ -186,7 +186,7 @@ CardNode * card_node_select_n(CardNode * first, int n, CardNode ** prev)
 	{
 		if (count==n)
 		{
-			if (prev!=NULL)
+			if (prev!=NULL) // store the previous node if not null
 				*prev=tmp_prev;
 			return first;
 		}
@@ -205,7 +205,7 @@ CardNode * card_node_find_first_n_type(CardNode * first, CardType n_type, CardNo
 	{
 		if (n_type==first->card.type)
 		{
-			if (prev!=NULL)
+			if (prev!=NULL) // store the previous node if not null
 				*prev=tmp_prev;
 			return first;
 		}
@@ -219,12 +219,12 @@ CardNode * card_node_find_first_n_type_and_delete(CardNode * first, CardType n_t
 {
 	CardNode * tmp_prev = NULL;
 	CardNode * tmp = NULL;
-	if (is_deleted!=NULL)
+	if (is_deleted!=NULL) // store the result if not null
 		*is_deleted = false;
 	tmp = card_node_find_first_n_type(first, n_type, &tmp_prev);
 	if (tmp!=NULL)
 	{
-		if (is_deleted!=NULL)
+		if (is_deleted!=NULL) // store the result if not null
 			*is_deleted = true;
 		if (tmp_prev==NULL) // head
 		{
@@ -245,7 +245,7 @@ CardNode * card_node_find_first_matched_card(CardNode * first, Card copy_card, C
 	{
 		if (copy_card.type==first->card.type && strcmp(copy_card.title, first->card.title)==0) // if type and title are the same
 		{
-			if (prev!=NULL)
+			if (prev!=NULL) // store the previous node if not null
 				*prev=tmp_prev;
 			return first;
 		}
@@ -259,12 +259,12 @@ CardNode * card_node_find_first_matched_card_and_delete(CardNode * first, Card c
 {
 	CardNode * tmp_prev = NULL;
 	CardNode * tmp = NULL;
-	if (is_deleted!=NULL)
+	if (is_deleted!=NULL) // store the result if not null
 		*is_deleted = false;
 	tmp = card_node_find_first_matched_card(first, copy_card, &tmp_prev);
 	if (tmp!=NULL)
 	{
-		if (is_deleted!=NULL)
+		if (is_deleted!=NULL) // store the result if not null
 			*is_deleted = true;
 		if (tmp_prev==NULL) // head
 		{
@@ -296,17 +296,17 @@ void card_list_insert_head(Player * pPlayer, Card new_card)
 	if (pPlayer==NULL)
 		return;
 
-	new_cards = calloc(pPlayer->card_count+1, sizeof(Card));
+	new_cards = calloc(pPlayer->card_count+1, sizeof(Card)); // allocate a new dynamic array for count+1
 	if (new_cards==NULL)
-		exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE); // exit in case of failure
 
 	new_cards[0] = new_card; // O(n)
-	for (i=1, j=0; j<pPlayer->card_count; i++, j++)
+	for (i=1, j=0; j<pPlayer->card_count; i++, j++) // assign all the previous elements to the new array
 		new_cards[i] = pPlayer->cards[j];
 
-	free(pPlayer->cards);
-	pPlayer->cards = new_cards;
-	pPlayer->card_count++;
+	free(pPlayer->cards); // free the old array
+	pPlayer->cards = new_cards; // save the new array ptr to the old ptr
+	pPlayer->card_count++; // increase the cards by one
 }
 
 void card_list_insert_tail(Player * pPlayer, Card new_card)
@@ -315,14 +315,14 @@ void card_list_insert_tail(Player * pPlayer, Card new_card)
 	if (pPlayer==NULL)
 		return;
 
-	new_cards = realloc(pPlayer->cards, (pPlayer->card_count+1)*sizeof(Card));
+	new_cards = realloc(pPlayer->cards, (pPlayer->card_count+1)*sizeof(Card)); // reallocate the dynamic array for count+1
 	if (new_cards==NULL)
-		exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE); // exit in case of failure
 
-	pPlayer->cards = new_cards;
+	pPlayer->cards = new_cards; // switch ptr in case head was changed
 	pPlayer->cards[pPlayer->card_count] = new_card; // O(1)
 
-	pPlayer->card_count++;
+	pPlayer->card_count++; // increase the cards by one
 }
 
 void card_list_remove_n(Player * pPlayer, int n)
@@ -330,28 +330,28 @@ void card_list_remove_n(Player * pPlayer, int n)
 	Card * new_cards = NULL;
 	_Bool skip_first = false;
 	int i, j;
-	if (pPlayer==NULL)
+	if (pPlayer==NULL) // skip null ptr
 		return;
-	if (n<0 || n >= pPlayer->card_count)
+	if (n<0 || n >= pPlayer->card_count) // check out-of-range issue
 		return;
 
-	new_cards = calloc(pPlayer->card_count-1, sizeof(Card));
+	new_cards = calloc(pPlayer->card_count-1, sizeof(Card)); // allocate new memory for count-1
 	if (new_cards==NULL)
-		exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE); // exit in case of failure
 
-	for (i=0, j=0; i<pPlayer->card_count; i++)
+	for (i=0, j=0; i<pPlayer->card_count; i++) // assign all the elements again except for n
 		if (i!=n)
 			new_cards[j++] = pPlayer->cards[i];
 		else
 			skip_first = true;
 
-	if (skip_first==true)
+	if (skip_first==true) // if n has been skipped... reassign the ptrs and free the old array
 	{
 		free(pPlayer->cards);
 		pPlayer->cards = new_cards;
 		pPlayer->card_count--;
 	}
-	else
+	else // otherwise free the new array
 		free(new_cards);
 }
 
@@ -365,23 +365,23 @@ void card_list_remove_first_type_n(Player * pPlayer, CardType card_type)
 	if (pPlayer->card_count <= 0)
 		return;
 
-	new_cards = calloc(pPlayer->card_count-1, sizeof(Card));
+	new_cards = calloc(pPlayer->card_count-1, sizeof(Card)); // allocate new memory for count-1
 	if (new_cards==NULL)
-		exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE); // exit in case of failure
 
-	for (i=0, j=0; i<pPlayer->card_count; i++)
+	for (i=0, j=0; i<pPlayer->card_count; i++) // assign all the elements again except for type n
 		if (skip_first==true || pPlayer->cards[i].type!=card_type)
 			new_cards[j++] = pPlayer->cards[i];
 		else
 			skip_first = true;
 
-	if (skip_first==true)
+	if (skip_first==true) // if n has been skipped... reassign the ptrs and free the old arrays
 	{
 		free(pPlayer->cards);
 		pPlayer->cards = new_cards;
 		pPlayer->card_count--;
 	}
-	else
+	else // otherwise free the new array
 		free(new_cards);
 }
 
@@ -390,22 +390,22 @@ void card_list_remove_first_card_n(Player * pPlayer, Card copy_card)
 	Card * new_cards = NULL;
 	_Bool skip_first = false;
 	int i, j;
-	if (pPlayer==NULL)
+	if (pPlayer==NULL) // skip null ptr
 		return;
-	if (pPlayer->card_count <= 0)
+	if (pPlayer->card_count <= 0) // skip empty lists
 		return;
 
-	new_cards = calloc(pPlayer->card_count-1, sizeof(Card));
+	new_cards = calloc(pPlayer->card_count-1, sizeof(Card)); // allocate new memory for count-1
 	if (new_cards==NULL)
 		exit(EXIT_FAILURE);
 
-	for (i=0, j=0; i<pPlayer->card_count; i++)
+	for (i=0, j=0; i<pPlayer->card_count; i++) // assign all the elements again except for card n
 		if (skip_first==true || (copy_card.type==pPlayer->cards[i].type && strcmp(copy_card.title, pPlayer->cards[i].title)==0)==false)
 			new_cards[j++] = pPlayer->cards[i];
 		else
 			skip_first = true;
 
-	if (skip_first==true)
+	if (skip_first==true) // if n has been skipped... reassign the ptrs and free the old arrays
 	{
 		free(pPlayer->cards);
 		pPlayer->cards = new_cards;
@@ -419,10 +419,10 @@ _Bool card_list_has_type_n(const Player * pPlayer, CardType card_type)
 {
 	_Bool has_it = false;
 	int i;
-	if (pPlayer==NULL)
+	if (pPlayer==NULL) // skip null ptr
 		return false;
 
-	for (i=0; i<pPlayer->card_count && has_it==false; i++)
+	for (i=0; i<pPlayer->card_count && has_it==false; i++) // iter the list and check
 		if (card_type==pPlayer->cards[i].type)
 			has_it = true;
 	return has_it;
@@ -432,10 +432,10 @@ int card_list_count_of_type_n(const Player * pPlayer, CardType card_type)
 {
 	int count = 0;
 	int i;
-	if (pPlayer==NULL)
+	if (pPlayer==NULL) // skip null ptr
 		return false;
 
-	for (i=0; i<pPlayer->card_count; i++)
+	for (i=0; i<pPlayer->card_count; i++) // iter the list and check
 		if (card_type==pPlayer->cards[i].type)
 			count++;
 	return count;
@@ -443,9 +443,9 @@ int card_list_count_of_type_n(const Player * pPlayer, CardType card_type)
 
 Card * card_list_select_n(Player * pPlayer, int n)
 {
-	if (pPlayer==NULL)
+	if (pPlayer==NULL) // skip null ptr
 		return NULL;
-	if (n<0 || n >= pPlayer->card_count)
+	if (n<0 || n >= pPlayer->card_count) // check out-of-range issues
 		return NULL;
 
 	return &pPlayer->cards[n];
@@ -453,9 +453,9 @@ Card * card_list_select_n(Player * pPlayer, int n)
 
 const Card * card_list_const_select_n(const Player * pPlayer, int n)
 {
-	if (pPlayer==NULL)
+	if (pPlayer==NULL) // skip null ptr
 		return NULL;
-	if (n<0 || n >= pPlayer->card_count)
+	if (n<0 || n >= pPlayer->card_count) // check out-of-range issues
 		return NULL;
 
 	return &pPlayer->cards[n];
@@ -465,10 +465,10 @@ _Bool card_list_find_first_type_n(const Player * pPlayer, CardType card_type, in
 {
 	_Bool has_found = false;
 	int i;
-	if (pPlayer==NULL || selected_card==NULL)
+	if (pPlayer==NULL || selected_card==NULL) // skip null ptr
 		return false;
 
-	for (i=0; i<pPlayer->card_count && has_found==false; i++)
+	for (i=0; i<pPlayer->card_count && has_found==false; i++) // iter the list until matched
 	{
 		if (pPlayer->cards[i].type==card_type)
 		{
@@ -482,9 +482,9 @@ _Bool card_list_find_first_type_n(const Player * pPlayer, CardType card_type, in
 void card_list_log_print(const Player * pPlayer)
 {
 	int i;
-	if (pPlayer==NULL)
+	if (pPlayer==NULL) // skip null ptr
 		return;
-	for (i=0; i<pPlayer->card_count; i++)
+	for (i=0; i<pPlayer->card_count; i++) // iter and log print
 		log_write("\t[%d]%s: %s", pPlayer->cards[i].type, get_card_type_name(pPlayer->cards[i].type), pPlayer->cards[i].title);
 }
 

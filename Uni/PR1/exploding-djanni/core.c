@@ -153,19 +153,19 @@ void core_remove_deck_head(CardDeck * pGivenDeck)
 
 void core_remove_player_n_card(Player * pGivenPlayer, int selected_card)
 {
-	if (pGivenPlayer!=NULL)
+	if (pGivenPlayer!=NULL) // skip null ptr
 		card_list_remove_n(pGivenPlayer, selected_card);
 }
 
 void core_remove_player_card_type(Player * pGivenPlayer, CardType card_type)
 {
-	if (pGivenPlayer!=NULL)
+	if (pGivenPlayer!=NULL) // skip null ptr
 		card_list_remove_first_type_n(pGivenPlayer, card_type);
 }
 
 void core_remove_player_first_matched_card(Player * pGivenPlayer, Card copy_card)
 {
-	if (pGivenPlayer!=NULL)
+	if (pGivenPlayer!=NULL) // skip null ptr
 		card_list_remove_first_card_n(pGivenPlayer, copy_card);
 }
 
@@ -202,30 +202,30 @@ void core_player_draw_from_deck(Player * pPlayer, CardDeck * pGivenDeck)
 
 int core_deck_count_of_type_n(const CardDeck * pGivenDeck, CardType card_type)
 {
-	if (pGivenDeck==NULL)
+	if (pGivenDeck==NULL) // skip null ptr
 		return 0;
 	return card_node_count_of_type_n(pGivenDeck->card_list, card_type);
 }
 
 double core_deck_get_pct_of_type_n(const CardDeck * pGivenDeck, CardType card_type)
 {
-	if (pGivenDeck==NULL)
+	if (pGivenDeck==NULL) // skip null ptr
 		return 0.0;
 	return (double)core_deck_count_of_type_n(pGivenDeck, card_type)/pGivenDeck->count*100.0;
 }
 
 int core_player_count_of_type_n(const Player * pGivenPlayer, CardType card_type)
 {
-	if (pGivenPlayer==NULL)
+	if (pGivenPlayer==NULL) // skip null ptr
 		return 0;
 	return card_list_count_of_type_n(pGivenPlayer, card_type);
 }
 
 double core_player_get_pct_of_type_n(const Player * pGivenPlayer, CardType card_type)
 {
-	if (pGivenPlayer==NULL)
+	if (pGivenPlayer==NULL) // skip null ptr
 		return 0.0;
-	return (double)core_player_count_of_type_n(pGivenPlayer, card_type)/pGivenPlayer->card_count*100.0;
+	return (double)core_player_count_of_type_n(pGivenPlayer, card_type) / pGivenPlayer->card_count * 100.0; // formula to get the right pct
 }
 
 const char * get_card_type_name(CardType card_type)
@@ -381,13 +381,13 @@ void player_log_print_n_card(const Player * pPlayer, int selected_card)
 
 void deck_print_count(const CardDeck * pDeck)
 {
-	if (pDeck!=NULL)
+	if (pDeck!=NULL) // skip null ptr
 		printf("deck: (count %d==%d)\n", pDeck->count, card_node_count(pDeck->card_list));
 }
 
 void deck_log_print_count(const CardDeck * pDeck)
 {
-	if (pDeck!=NULL)
+	if (pDeck!=NULL) // skip null ptr
 		log_write("deck: (count %d==%d)", pDeck->count, card_node_count(pDeck->card_list));
 }
 
@@ -419,7 +419,7 @@ void player_print_all_card_counts(const Player pPlayers[], int players_count)
 	if (pPlayers==NULL) // skip null ptr
 		return;
 
-	for (i=0; i<players_count; i++)
+	for (i=0; i<players_count; i++) // iter all the still alive players
 		if (pPlayers[i].is_alive==true)
 			printf("\tPlayer #%d (%s) has %d cards left\n", i+1, pPlayers[i].name, pPlayers[i].card_count);
 }
@@ -430,7 +430,7 @@ void player_log_print_all_card_counts(const Player pPlayers[], int players_count
 	if (pPlayers==NULL) // skip null ptr
 		return;
 
-	for (i=0; i<players_count; i++)
+	for (i=0; i<players_count; i++) // iter all the still alive players
 		if (pPlayers[i].is_alive==true)
 			log_write("\tPlayer #%d (%s) has %d cards left", i+1, pPlayers[i].name, pPlayers[i].card_count);
 }
