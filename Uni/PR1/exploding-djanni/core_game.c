@@ -559,7 +559,7 @@ _Bool core_game_card_use_djanni_cards(Player pPlayers[], int players_count, int 
 {
 	_Bool can_couple = false;
 	_Bool can_triple = false;
-	DjanniMode chosen_mode;
+	DjanniMode chosen_mode = DM_SINGLE;
 	const Card * used_card = NULL; // used card ptr
 	Card copy_card = {{0}}; // copy of used card
 	int i;

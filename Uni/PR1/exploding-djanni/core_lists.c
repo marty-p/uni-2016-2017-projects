@@ -16,10 +16,7 @@ CardNode * card_node_insert_head(CardNode * first, Card card) // add the node in
 {
 	CardNode * new_first = malloc(sizeof(CardNode)); // allocate dynamic memory
 	if (new_first==NULL) // exit if runtime errors happened
-	{
 		exit(EXIT_FAILURE);
-		return NULL; // redundant line (not executed due to the exit call)
-	}
 	// assign the node values:
 	new_first->card = card;
 	new_first->next = first;
