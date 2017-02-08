@@ -60,7 +60,7 @@ typedef struct CardNode
 typedef struct
 {
 	char name[PLAYER_NAME+1];
-	_Bool is_alive;
+	_Bool is_alive; // true if not dead
 	int card_count;
 	PlayerType type;
 	Card * cards;
@@ -75,7 +75,7 @@ typedef struct
 typedef struct
 {
 	int player_turn;
-	_Bool is_attacked;
+	_Bool is_attacked; // true if the player will repeat the turn
 	int total_turns; // extra data
 } GameStatus; // struct of the game status... 3rd block of the .sav file
 
