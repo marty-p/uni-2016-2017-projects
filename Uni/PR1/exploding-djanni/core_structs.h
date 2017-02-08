@@ -9,7 +9,7 @@ typedef enum
 	EASY, //0
 	MEDIUM, //1
 	HARD //2
-} DifficultyMode;
+} DifficultyMode; // list of the decks' modes
 
 typedef enum
 {
@@ -22,7 +22,7 @@ typedef enum
 	SKIP, //6
 	FAVOR, //7
 	DJANNI_CARDS //8
-} CardType;
+} CardType; // list of the cards' types
 
 typedef enum
 {
@@ -35,27 +35,27 @@ typedef enum
 	N_EXPLODING_DJANNI, //0
 	N_MEOOOW, //1
 	N_OTHER_CARDS //2
-} CardCountType;
+} CardCountType; // list of the counts made in the decks' files
 
 typedef enum
 {
 	DM_SINGLE, //0
 	DM_COUPLE, //1
 	DM_TRIPLE //2
-} DjanniMode;
+} DjanniMode; // list of djanni cards' modes
 
 /* struct list */
 typedef struct
 {
 	char title[CARD_TITLE_LEN+1];
 	CardType type;
-} Card;
+} Card; // card struct
 
 typedef struct CardNode
 {
 	Card card;
 	struct CardNode * next;
-} CardNode;
+} CardNode; // card node struct
 
 typedef struct
 {
@@ -64,33 +64,33 @@ typedef struct
 	int card_count;
 	PlayerType type;
 	Card * cards;
-} Player;
+} Player; // struct of a player... 1st block of the .sav file
 
 typedef struct
 {
 	int count;
 	CardNode * card_list;
-} CardDeck;
+} CardDeck; // struct of a deck... 2nd block of the .sav file
 
 typedef struct
 {
 	int player_turn;
 	_Bool is_attacked;
-	int total_turns; // extra
-} GameStatus;
+	int total_turns; // extra data
+} GameStatus; // struct of the game status... 3rd block of the .sav file
 
 typedef struct
 {
 	CardDeck cards[CARD_COUNT_NUM];
-} CardCount;
+} CardCount; // list of card counts' decks
 
 typedef struct
 {
-	_Bool has_attacked;
-	_Bool is_noped;
-	_Bool has_drawn;
-	_Bool saw_terrible_future; // ai-related
-	DjanniMode selected_djanni_mode; // ai-related
+	_Bool has_attacked; // if the player has attacked
+	_Bool is_noped; // if the card has been noped
+	_Bool has_drawn; // if the player has drawn a card
+	_Bool saw_terrible_future; // ai-related, if the ai saw a djanni card in the head of the deck (or 100% of drawing one)
+	DjanniMode selected_djanni_mode; // ai-related, the djanni mode the ai chose
 } GameEnv; // game environment (not stored in .sav)
 
 #endif

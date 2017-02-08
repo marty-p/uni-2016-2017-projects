@@ -2,7 +2,7 @@
 #define __EDJ_LOG_H__
 
 /* macro list */
-// #define LOG_IN_APPEND_MODE
+// #define LOG_IN_APPEND_MODE // open the log file in the "a" mode instead of "w"
 
 /* include list */
 #include "common.h"
