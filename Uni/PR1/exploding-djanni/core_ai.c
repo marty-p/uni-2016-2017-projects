@@ -380,20 +380,6 @@ _Bool core_game_ai_select_first_normal_card(Player pPlayers[], int players_count
 	return chosen_card;
 }
 
-_Bool core_game_ai_choose_player_card(Player pPlayers[], int players_count, int player_index, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int * selected_card)
-{
-	// this function shouldn't be used so far
-	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL || selected_card==NULL) // skip null ptr
-		return false;
-
-	if (player_index>=players_count) // skip out-of-range
-		return false;
-
-	core_game_ai_pickup_best_card(&pPlayers[player_index], selected_card);
-
-	return true;
-}
-
 _Bool core_game_ai_pickup_best_card(const Player * pPlayer, int * selected_card)
 {
 	static const CardType wish_list[] = {

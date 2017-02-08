@@ -250,7 +250,7 @@ _Bool core_game_continue_menu(Player pPlayers[], int players_count, CardDeck * p
 					wrong_choice = true;
 					break;
 				}
-				if (core_game_card_use(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
+				if (core_game_real_card_use(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
 					return false;
 				break;
 			case '3':
@@ -318,26 +318,17 @@ _Bool core_game_card_draw(Player pPlayers[], int players_count, CardDeck * pDeck
 	return true;
 }
 
-_Bool core_game_card_use(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv)
+_Bool core_game_real_card_use(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv)
 {
 	int selected_card;
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
 
-	if (pPlayers[pStatus->player_turn].type==REAL)
-	{
-		if (core_game_real_choose_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, &selected_card)==false)
-			return false;
-		if (core_game_process_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
-			return false;
-	}
-	else if (pPlayers[pStatus->player_turn].type==AI) // this block should be unused so far
-	{
-		if (core_game_ai_choose_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, &selected_card)==false)
-			return false;
-		if (core_game_process_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
-			return false;
-	}
+	if (core_game_real_choose_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, &selected_card)==false)
+		return false;
+	if (core_game_process_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
+		return false;
+
 	return true;
 }
 
