@@ -338,7 +338,7 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 	char get_choice;
 	_Bool is_nope_reused;
 #ifdef CLEAR_CONSOLE_WHEN_NOPING
-	_Bool is_console_clear = false;;
+	_Bool is_console_clear = false;
 #endif
 	Card * used_card = NULL;
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
