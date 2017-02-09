@@ -337,6 +337,9 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 	int i;
 	char get_choice;
 	_Bool is_nope_reused;
+#ifdef CLEAR_CONSOLE_WHEN_NOPING
+	_Bool is_console_clear = false;;
+#endif
 	Card * used_card = NULL;
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
@@ -347,16 +350,6 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 	used_card = card_list_select_n(&pPlayers[player_index], selected_card);
 	if (used_card==NULL) // have the player already lost that card?
 		return false;
-
-#ifdef CLEAR_CONSOLE_WHEN_NOPING
-	if (pPlayers[player_index].type==REAL) // no need to hide for ai players
-	{
-		clear_all_delayed(); // clear the console
-		printf("Player #%d (%s) used the card [%d]%s: %s\n", player_index+1, pPlayers[player_index].name, used_card->type, get_card_type_name(used_card->type), used_card->title);
-		if (used_card->type==DJANNI_CARDS)
-			printf("Player #%d (%s) has chosen the %s djanni mode!\n", player_index+1, pPlayers[player_index].name, get_djanni_mode_name(pEnv->selected_djanni_mode));
-	}
-#endif
 
 	log_write("checking if it can be noped by other players...");
 	pEnv->is_noped = false;
@@ -373,7 +366,20 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 			{
 				if (pPlayers[i].type==REAL)
 				{
-					if (is_nope_reused==false)
+#ifdef CLEAR_CONSOLE_WHEN_NOPING
+					if (is_console_clear==false)
+					{
+						if (pPlayers[player_index].type==REAL) // no need to hide for ai players
+						{
+							clear_all_delayed(); // clear the console
+							is_console_clear = true;
+							printf("Player #%d (%s) used the card [%d]%s: %s\n", player_index+1, pPlayers[player_index].name, used_card->type, get_card_type_name(used_card->type), used_card->title);
+							if (used_card->type==DJANNI_CARDS)
+								printf("Player #%d (%s) has chosen the %s djanni mode!\n", player_index+1, pPlayers[player_index].name, get_djanni_mode_name(pEnv->selected_djanni_mode));
+						}
+					}
+#endif
+					if (pEnv->is_noped==false)
 						printf("Player #%d (%s), do you want to use a %s card to block Player #%d (%s)'s %s? (y:yes, any:no)\n",
 								i+1, pPlayers[i].name, get_card_type_name(NOPE), player_index+1, pPlayers[player_index].name, get_card_type_name(used_card->type)
 						);
@@ -414,7 +420,7 @@ _Bool core_game_card_can_nope(Player pPlayers[], int players_count, int player_i
 	while (is_nope_reused==true); // repeat the loop in case someone uses a nope
 
 #ifdef CLEAR_CONSOLE_WHEN_NOPING
-	if (pPlayers[player_index].type==REAL) // no need to hide for ai players
+	if (pPlayers[player_index].type==REAL && is_console_clear==true) // no need to hide for ai players
 	{
 		printf("We're going to switch to Player #%d (%s)!\n", player_index+1, pPlayers[player_index].name);
 		clear_all();

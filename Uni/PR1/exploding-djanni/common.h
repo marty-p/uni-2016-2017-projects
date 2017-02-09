@@ -15,7 +15,7 @@
 #ifdef CLEAR_CONSOLE_EACH_TURN
 #define CLEAR_CONSOLE_TIME_WAIT 3 // n seconds to wait before cleaning
 #define DO_NOT_USE_TIME_WAIT // use enter key press instead of waiting
-// #define CLEAR_CONSOLE_WHEN_NOPING // clear the console when the can nope function is called
+#define CLEAR_CONSOLE_WHEN_NOPING // clear the console when the can nope function is called
 #endif
 
 #define CURRENT_DATE_LEN 19 // +1; current data format length
