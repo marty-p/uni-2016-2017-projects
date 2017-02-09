@@ -236,6 +236,10 @@ _Bool core_game_ai_draw_card(Player pPlayers[], int players_count, CardDeck * pD
 	if (pStatus->player_turn >= players_count)
 		return false;
 
+	// check if already drawn
+	if (pEnv->has_drawn==true)
+		return true;
+
 	if (core_game_card_draw(pPlayers, players_count, pDeck, pStatus, pEnv)==false) // draw a card
 		return false;
 

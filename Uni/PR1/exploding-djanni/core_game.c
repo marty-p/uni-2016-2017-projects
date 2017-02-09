@@ -301,6 +301,7 @@ _Bool core_game_card_draw(Player pPlayers[], int players_count, CardDeck * pDeck
 		{
 			core_remove_deck_head(pDeck); // remove the exploding djanni from the deck
 			pPlayers[pStatus->player_turn].is_alive=false; // set the player as dead
+			pStatus->is_attacked=false; // already dead
 			printf("You exploded into smithereens and died.\n");
 			log_write("player #%d (%s) is out of the game...", pStatus->player_turn+1, pPlayers[pStatus->player_turn].name);
 			return true;
