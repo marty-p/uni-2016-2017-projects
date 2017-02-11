@@ -603,11 +603,11 @@ _Bool core_game_card_use_djanni_cards(Player pPlayers[], int players_count, int 
 			switch (pEnv->selected_djanni_mode) // specified elsewhere
 			{
 				case DM_COUPLE:
-					if (can_couple)
+					if (can_couple==true)
 						chosen_mode = DM_COUPLE;
 					break;
 				case DM_TRIPLE:
-					if (can_triple)
+					if (can_triple==true)
 						chosen_mode = DM_TRIPLE;
 					break;
 				case DM_SINGLE:
@@ -908,7 +908,7 @@ _Bool core_game_card_can_use_djanni_cards_triple(const Player pPlayers[], int pl
 
 	for (i=0; i<pPlayers[player_index].card_count && match_count<DJANNI_TRIPLE_MATCH_NUM; i++)
 	{
-		if (selected_card!=i && pPlayers[player_index].type==DJANNI_CARDS) // skip itself
+		if (selected_card!=i && pPlayers[player_index].cards[i].type==DJANNI_CARDS) // skip itself
 		{
 			if (strcmp(used_card->title, pPlayers[player_index].cards[i].title) == 0) // increase if they have same titles
 				match_count++;
