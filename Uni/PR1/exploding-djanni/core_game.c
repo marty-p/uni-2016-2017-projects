@@ -130,6 +130,7 @@ _Bool core_game_process(Player pPlayers[], int players_count, CardDeck * pDeck, 
 	// log exploding djanni pct draw
 	if (pPlayers[pStatus->player_turn].type==REAL)
 		printf("There are still %d %s in the deck! (%.2f%% to draw one in the remaining %d cards)\n", core_deck_count_of_type_n(pDeck, EXPLODING_DJANNI), get_card_type_name(EXPLODING_DJANNI), core_deck_get_pct_of_type_n(pDeck, EXPLODING_DJANNI), pDeck->count);
+	log_write("there are still %d %s in the deck! (%.2f%% to draw one in the remaining %d cards)", core_deck_count_of_type_n(pDeck, EXPLODING_DJANNI), get_card_type_name(EXPLODING_DJANNI), core_deck_get_pct_of_type_n(pDeck, EXPLODING_DJANNI), pDeck->count);
 
 	// check if attacked
 	if (pStatus->is_attacked==true)
