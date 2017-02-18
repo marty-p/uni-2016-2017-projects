@@ -137,6 +137,8 @@ _Bool core_game_process(Player pPlayers[], int players_count, CardDeck * pDeck, 
 	{
 		if (pPlayers[pStatus->player_turn].type==REAL)
 			printf("You are under attack! Use an attack card or repeat the turn twice!\n");
+		else if (pPlayers[pStatus->player_turn].type==AI)
+			printf("Player #%d (%s) under attack!\n", pStatus->player_turn+1, pPlayers[pStatus->player_turn].name);
 		log_write("player #%d (%s) is under attack...", pStatus->player_turn+1, pPlayers[pStatus->player_turn].name);
 	}
 
@@ -515,10 +517,13 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 	}
 
 	log_write("switching interaction to player #%d (%s)...", selected_player_index+1, pPlayers[selected_player_index].name);
-	clear_all_delayed(); // clear the console
-	// double warning to give enough time
-	printf("We're going to switch to Player #%d (%s)!\n", selected_player_index+1, pPlayers[selected_player_index].name);
-	clear_all();
+	if (pPlayers[selected_player_index].type==REAL)
+	{
+		clear_all_delayed(); // clear the console
+		// double warning to give enough time
+		printf("We're going to switch to Player #%d (%s)!\n", selected_player_index+1, pPlayers[selected_player_index].name);
+		clear_all();
+	}
 
 	if (pPlayers[selected_player_index].type==REAL)
 	{
@@ -541,16 +546,17 @@ _Bool core_game_card_use_favor(Player pPlayers[], int players_count, int player_
 			selected_player_index+1, pPlayers[selected_player_index].name,
 			used_card->type, get_card_type_name(used_card->type), used_card->title
 	);
-	printf("You gave the following card to Player #%d (%s): [%d]%s (%s)\n",
-			player_index+1, pPlayers[player_index].name,
-			used_card->type, get_card_type_name(used_card->type), used_card->title
-	);
+	if (pPlayers[selected_player_index].type==REAL)
+		printf("You gave the following card to Player #%d (%s): [%d]%s (%s)\n", player_index+1, pPlayers[player_index].name, used_card->type, get_card_type_name(used_card->type), used_card->title);
 
 	log_write("switching interaction to player #%d (%s)...", player_index+1, pPlayers[player_index].name);
-	clear_all_delayed(); // clear the console
-	// double warning to give enough time
-	printf("We're going to switch to Player #%d (%s)!\n", player_index+1, pPlayers[player_index].name);
-	clear_all();
+	if (pPlayers[selected_player_index].type==REAL)
+	{
+		clear_all_delayed(); // clear the console
+		// double warning to give enough time
+		printf("We're going to switch to Player #%d (%s)!\n", player_index+1, pPlayers[player_index].name);
+		clear_all();
+	}
 
 	core_remove_player_n_card(&pPlayers[player_index], selected_card); // internal delete
 	printf("You received the following card from Player #%d (%s): [%d]%s (%s)\n",
