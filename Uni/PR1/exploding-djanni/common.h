@@ -10,6 +10,7 @@
 // #define _DEBUG // debug flag
 #endif
 // #define SHOW_AI_DEBUG_INFO // print extra ai info (cards and count each turn)
+#define AI_USE_NORMAL_CARDS_IN_PANIC // ai will use normal cards when in panic
 
 #define CLEAR_CONSOLE_EACH_TURN // clear the console each turn
 #ifdef CLEAR_CONSOLE_EACH_TURN

@@ -45,7 +45,10 @@ _Bool core_game_ai_is_in_panic(const Player pPlayers[], int players_count, int p
 
 	// check if there are usable cards
 	if (core_game_ai_select_first_save_life_card(pPlayers, players_count, pDeck, pStatus, pEnv, NULL)==false
-		&& core_game_ai_select_first_normal_card(pPlayers, players_count, pDeck, pStatus, pEnv, NULL)==false)
+#ifdef AI_USE_NORMAL_CARDS_IN_PANIC
+		&& core_game_ai_select_first_normal_card(pPlayers, players_count, pDeck, pStatus, pEnv, NULL)==false
+#endif
+	)
 		return false;
 
 	return core_game_ai_next_draw_means_death(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv);
@@ -175,6 +178,14 @@ _Bool core_game_ai_continue(Player pPlayers[], int players_count, CardDeck * pDe
 				if (core_game_process_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
 					return false;
 			}
+#ifdef AI_USE_NORMAL_CARDS_IN_PANIC
+			else if (core_game_ai_select_first_normal_card(pPlayers, players_count, pDeck, pStatus, pEnv, &selected_card)==true) // play a normal card
+			{
+				pEnv->saw_terrible_future = false;
+				if (core_game_process_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
+					return false;
+			}
+#endif
 			else // nothing can erase that terrible future (ai is going to die pretty bad)
 				pEnv->saw_terrible_future = false;
 		}
@@ -268,6 +279,11 @@ _Bool core_game_ai_select_first_save_life_card(const Player pPlayers[], int play
 	static const int save_len = sizeof(save_list)/sizeof(CardType);
 	_Bool chosen_card = false;
 	int i, j;
+	double expdjanni_pct;
+	_Bool no_need_to_shuffle;
+
+	expdjanni_pct = core_deck_get_pct_of_type_n(pDeck, EXPLODING_DJANNI); // get remaining exploding djanni pct in the deck
+	no_need_to_shuffle = expdjanni_pct >= AI_PANIC_PCT; // skip the shuffle card if the pct is 100% or higher
 
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
@@ -281,6 +297,9 @@ _Bool core_game_ai_select_first_save_life_card(const Player pPlayers[], int play
 
 	for (i=0; i<save_len && chosen_card==false; i++)
 	{
+		if (i==SHUFFLE && no_need_to_shuffle==true) // skip the SHUFFLE card if there's only death incoming
+			continue;
+
 		for (j=0; j<pPlayers[pStatus->player_turn].card_count && chosen_card==false; j++)
 		{
 			if (save_list[i]==pPlayers[pStatus->player_turn].cards[j].type)
@@ -354,6 +373,11 @@ _Bool core_game_ai_select_first_normal_card(const Player pPlayers[], int players
 	static const int normal_len = sizeof(normal_list)/sizeof(CardType);
 	_Bool chosen_card = false;
 	int i, j;
+	double expdjanni_pct;
+	_Bool no_need_to_shuffle;
+
+	expdjanni_pct = core_deck_get_pct_of_type_n(pDeck, EXPLODING_DJANNI); // get remaining exploding djanni pct in the deck
+	no_need_to_shuffle = expdjanni_pct >= AI_PANIC_PCT; // skip the shuffle card if the pct is 100% or higher
 
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
@@ -367,6 +391,9 @@ _Bool core_game_ai_select_first_normal_card(const Player pPlayers[], int players
 
 	for (i=0; i<normal_len && chosen_card==false; i++) // iter all the types and then all the player's cards
 	{
+		if (i==SHUFFLE && no_need_to_shuffle==true) // skip the SHUFFLE card if there's only death incoming
+			continue;
+
 		for (j=0; j<pPlayers[pStatus->player_turn].card_count && chosen_card==false; j++)
 		{
 			if (normal_list[i]==pPlayers[pStatus->player_turn].cards[j].type)
