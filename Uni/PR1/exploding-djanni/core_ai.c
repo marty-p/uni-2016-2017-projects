@@ -279,11 +279,13 @@ _Bool core_game_ai_select_first_save_life_card(const Player pPlayers[], int play
 	static const int save_len = sizeof(save_list)/sizeof(CardType);
 	_Bool chosen_card = false;
 	int i, j;
+#ifndef AI_USE_SHUFFLE_IF_NO_HOPE
 	double expdjanni_pct;
 	_Bool no_need_to_shuffle;
 
 	expdjanni_pct = core_deck_get_pct_of_type_n(pDeck, EXPLODING_DJANNI); // get remaining exploding djanni pct in the deck
 	no_need_to_shuffle = expdjanni_pct >= AI_PANIC_PCT; // skip the shuffle card if the pct is 100% or higher
+#endif
 
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
@@ -297,8 +299,10 @@ _Bool core_game_ai_select_first_save_life_card(const Player pPlayers[], int play
 
 	for (i=0; i<save_len && chosen_card==false; i++)
 	{
+#ifndef AI_USE_SHUFFLE_IF_NO_HOPE
 		if (i==SHUFFLE && no_need_to_shuffle==true) // skip the SHUFFLE card if there's only death incoming
 			continue;
+#endif
 
 		for (j=0; j<pPlayers[pStatus->player_turn].card_count && chosen_card==false; j++)
 		{
@@ -373,11 +377,13 @@ _Bool core_game_ai_select_first_normal_card(const Player pPlayers[], int players
 	static const int normal_len = sizeof(normal_list)/sizeof(CardType);
 	_Bool chosen_card = false;
 	int i, j;
+#ifndef AI_USE_SHUFFLE_IF_NO_HOPE
 	double expdjanni_pct;
 	_Bool no_need_to_shuffle;
 
 	expdjanni_pct = core_deck_get_pct_of_type_n(pDeck, EXPLODING_DJANNI); // get remaining exploding djanni pct in the deck
 	no_need_to_shuffle = expdjanni_pct >= AI_PANIC_PCT; // skip the shuffle card if the pct is 100% or higher
+#endif
 
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
@@ -391,8 +397,10 @@ _Bool core_game_ai_select_first_normal_card(const Player pPlayers[], int players
 
 	for (i=0; i<normal_len && chosen_card==false; i++) // iter all the types and then all the player's cards
 	{
+#ifndef AI_USE_SHUFFLE_IF_NO_HOPE
 		if (i==SHUFFLE && no_need_to_shuffle==true) // skip the SHUFFLE card if there's only death incoming
 			continue;
+#endif
 
 		for (j=0; j<pPlayers[pStatus->player_turn].card_count && chosen_card==false; j++)
 		{
