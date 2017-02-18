@@ -27,7 +27,7 @@ _Bool core_game_ai_next_draw_means_death(const Player pPlayers[], int players_co
 	return false;
 }
 
-_Bool core_game_ai_is_in_panic(const Player pPlayers[], int players_count, int player_index, const CardDeck * pDeck, const GameStatus * pStatus, const GameEnv * pEnv)
+_Bool core_game_ai_is_in_panic(const Player pPlayers[], int players_count, int player_index, const CardDeck * pDeck, const GameStatus * pStatus, GameEnv * pEnv)
 {
 	if (pPlayers==NULL || pDeck==NULL || pStatus==NULL || pEnv==NULL) // skip null ptr
 		return false;
@@ -40,7 +40,15 @@ _Bool core_game_ai_is_in_panic(const Player pPlayers[], int players_count, int p
 	if (player_index >= players_count)
 		return false;
 
-	return pEnv->saw_terrible_future;
+	if (pPlayers[player_index].card_count<=0) // if no cards are available
+		return false;
+
+	// check if there are usable cards
+	if (core_game_ai_select_first_save_life_card(pPlayers, players_count, pDeck, pStatus, pEnv, NULL)==false
+		&& core_game_ai_select_first_normal_card(pPlayers, players_count, pDeck, pStatus, pEnv, NULL)==false)
+		return false;
+
+	return core_game_ai_next_draw_means_death(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv);
 }
 
 _Bool core_game_ai_is_worried(const Player pPlayers[], int players_count, int player_index, const CardDeck * pDeck, const GameStatus * pStatus, const GameEnv * pEnv)
@@ -76,7 +84,7 @@ _Bool core_game_ai_is_worried(const Player pPlayers[], int players_count, int pl
 	return false;
 }
 
-_Bool core_game_ai_getting_lazy(const Player pPlayers[], int players_count, int player_index, const CardDeck * pDeck, const GameStatus * pStatus, const GameEnv * pEnv)
+_Bool core_game_ai_getting_lazy(const Player pPlayers[], int players_count, int player_index, const CardDeck * pDeck, const GameStatus * pStatus, GameEnv * pEnv)
 {
 	double lazy_pct;
 
@@ -123,7 +131,7 @@ _Bool core_game_ai_continue(Player pPlayers[], int players_count, CardDeck * pDe
 	if (pStatus->player_turn >= players_count)
 		return false;
 
-	// set a death flag (it will set to false after some operations)
+	// set a death flag (it will be set to false after some operations)
 	pEnv->saw_terrible_future = core_game_ai_next_draw_means_death(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv);
 
 	do // repeat until draw
@@ -180,7 +188,7 @@ _Bool core_game_ai_continue(Player pPlayers[], int players_count, CardDeck * pDe
 				if (core_game_process_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
 					return false;
 				// if nothing is wrong... draw a card
-				if (pEnv->saw_terrible_future==false && get_random_number(PCT_MIN, PCT_MAX) <= AI_WORRIED_BUT_DRAW_ANYWAY_PCT) // if unknown future and 30%
+				if (pEnv->saw_terrible_future==false && get_random_number(PCT_MIN, PCT_MAX) <= AI_WORRIED_BUT_DRAW_ANYWAY_PCT) // if unknown future and 3%
 					if (core_game_ai_draw_card(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
 						return false;
 			}
@@ -190,7 +198,7 @@ _Bool core_game_ai_continue(Player pPlayers[], int players_count, CardDeck * pDe
 				{
 					if (core_game_process_player_card(pPlayers, players_count, pStatus->player_turn, pDeck, pStatus, pEnv, selected_card)==false)
 						return false;
-					if (pEnv->saw_terrible_future==false && get_random_number(PCT_MIN, PCT_MAX) <= AI_WORRIED_BUT_DRAW_ANYWAY_PCT) // if unknown future and 30%
+					if (pEnv->saw_terrible_future==false && get_random_number(PCT_MIN, PCT_MAX) <= AI_WORRIED_BUT_DRAW_ANYWAY_PCT) // if unknown future and 3%
 						if (core_game_ai_draw_card(pPlayers, players_count, pDeck, pStatus, pEnv)==false)
 							return false;
 				}
@@ -247,7 +255,7 @@ _Bool core_game_ai_draw_card(Player pPlayers[], int players_count, CardDeck * pD
 	return true;
 }
 
-_Bool core_game_ai_select_first_save_life_card(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int * selected_card)
+_Bool core_game_ai_select_first_save_life_card(const Player pPlayers[], int players_count, const CardDeck * pDeck, const GameStatus * pStatus, GameEnv * pEnv, int * selected_card)
 {
 	static const CardType save_list[] = {
 		ATTACK, //5
@@ -278,7 +286,8 @@ _Bool core_game_ai_select_first_save_life_card(Player pPlayers[], int players_co
 			if (save_list[i]==pPlayers[pStatus->player_turn].cards[j].type)
 			{
 				chosen_card = true;
-				*selected_card = j;
+				if (selected_card!=NULL)
+					*selected_card = j;
 			}
 		}
 	}
@@ -300,7 +309,7 @@ _Bool core_game_ai_select_first_save_life_card(Player pPlayers[], int players_co
 	return chosen_card;
 }
 
-_Bool core_game_ai_select_first_trivial_card(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int * selected_card)
+_Bool core_game_ai_select_first_trivial_card(const Player pPlayers[], int players_count, const CardDeck * pDeck, const GameStatus * pStatus, GameEnv * pEnv, int * selected_card)
 {
 	static const CardType trivial_list[] = {
 		SEE_THE_FUTURE, //4
@@ -327,14 +336,15 @@ _Bool core_game_ai_select_first_trivial_card(Player pPlayers[], int players_coun
 			if (trivial_list[i]==pPlayers[pStatus->player_turn].cards[j].type)
 			{
 				chosen_card = true;
-				*selected_card = j;
+				if (selected_card!=NULL)
+					*selected_card = j;
 			}
 		}
 	}
 	return chosen_card;
 }
 
-_Bool core_game_ai_select_first_normal_card(Player pPlayers[], int players_count, CardDeck * pDeck, GameStatus * pStatus, GameEnv * pEnv, int * selected_card)
+_Bool core_game_ai_select_first_normal_card(const Player pPlayers[], int players_count, const CardDeck * pDeck, const GameStatus * pStatus, GameEnv * pEnv, int * selected_card)
 {
 	static const CardType normal_list[] = {
 		SHUFFLE, //2
@@ -362,7 +372,8 @@ _Bool core_game_ai_select_first_normal_card(Player pPlayers[], int players_count
 			if (normal_list[i]==pPlayers[pStatus->player_turn].cards[j].type)
 			{
 				chosen_card = true;
-				*selected_card = j;
+				if (selected_card!=NULL)
+					*selected_card = j;
 			}
 		}
 	}
@@ -413,7 +424,8 @@ _Bool core_game_ai_pickup_best_card(const Player * pPlayer, int * selected_card)
 			if (wish_list[i]==pPlayer->cards[j].type)
 			{
 				chosen_card = true;
-				*selected_card = j;
+				if (selected_card!=NULL)
+					*selected_card = j;
 			}
 		}
 	}
@@ -449,7 +461,8 @@ _Bool core_game_ai_pickup_worst_card(const Player * pPlayer, int * selected_card
 			if (trash_list[i]==pPlayer->cards[j].type)
 			{
 				chosen_card = true;
-				*selected_card = j;
+				if (selected_card!=NULL)
+					*selected_card = j;
 			}
 		}
 	}
