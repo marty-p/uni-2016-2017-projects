@@ -1,5 +1,8 @@
 #Set Esercizi 1 - scadenza 9 marzo Quiz
 
+_Scadenza 9/3/2017, h23:59. Le risposte numeriche approssimate entro il 5% sono considerate corrette._
+
+
 ##Tip 1
 Enrico Fermi osservò una volta che la durata normale di una lezione (50 minuti) è molto vicina a un microsecolo.
 
@@ -27,11 +30,12 @@ Quanto dura un microsecolo in minuti?
 
 Un microsecolo equivale a 1 milionesimo di un secolo.
 
-Basta quindi fare $100*365*24*60/1000000.$ per sapere i minuti di un secolo. (52.56)
+Basta quindi fare $100*365*24*60/1000000.0$ per sapere i minuti di un secolo. ($52.56m \approx 53m$)
 
-È altresi vero per i secondi $100*365*24*60*60/1000000./60$ (52.559999999999995)
+Dopodiché si arrotonda 52.56 in 53.
 
-Dopodiché si arrotonda 52.5 in 53.
+Extra:
+Per avere il valore in secondi si farà quindi $100*365*24*60*60/1000000.0$ ($3153.6s \approx 3154s$)
 
 
 ##Domanda 4
