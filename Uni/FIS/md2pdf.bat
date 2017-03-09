@@ -1,7 +1,7 @@
 @echo off
 set main_dir=%~dp0
 set md_dir="%1"
-set md_list=
+set md_list=../author.md
 set pandoc_dir=
 
 SETLOCAL EnableDelayedExpansion
