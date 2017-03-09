@@ -15,7 +15,7 @@ Nelle unità anglosassoni invece per la pressione si usa il PSI (Pound per squar
 Sapendo che la forza peso di 1 pound equivale a circa 4.45 N e che $1in = 2.54 cm$, calcolare a quanti PSI corrisponde la pressione di $6*10^5Pa$.
 
 ###Soluzione 1
-87
+87 o 87,0226426
 
 
 ##Domanda 2
@@ -29,7 +29,7 @@ Per ottenere tale risultato basta:
 
 1. Convertire 1m5s in secondi ($1*60+5=65$) e dividere 400m per il risultato ($400/65.=6.15$) per ottenere i m/s
 2. Moltiplicare il risultato per il numero di secondi in un'ora ($60*60=3600$) così facendo si otterranno i m/h ($6.15*3600=22140$)
-3. Dividere il risultato per il numero di km in un metro ($1000/1=1000$) così facendo si otterranno i km/h ($22140/1000=22.14$)
+3. Dividere il risultato per il numero di km in un metro ($1km=1000m$) così facendo si otterranno i km/h ($22140/1000=22.14$)
 
 
 ##Domanda 3
