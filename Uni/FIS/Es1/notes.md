@@ -89,3 +89,5 @@ _Nota: Nella sottrazione bisogna prendere il valore assoluto, quindi se fosse st
 _Nota2: Se si fosse preso 53 come valore vero, avrebbe dato 6, quindi errato; Se non si fosse approssimato 4.87 in 4.9, sarebbe stato considerato quasi sbagliato._
 
 _Nota3: $abs(52.56 - 50) = |52.56 - 50|$_
+
+_Nota4: Il risultato potrebbe esser stato anche 4.94296578 se si fosse usato 52.6 (non testato)_
