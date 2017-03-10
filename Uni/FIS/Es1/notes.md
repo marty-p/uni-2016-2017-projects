@@ -78,7 +78,7 @@ $$\text{approx. percentuale} = \left(\frac{\text{valore vero - valore approx.}}{
 ###Soluzione 4
 4,9
 
-Basta prendere il risultato della soluzione 3, sottrargli 50 del suggerimento 1, dividere per la soluzione e moltiplicare per 100.
+Basta prendere il risultato della soluzione 3, sottrargli 50 del suggerimento 1, dividere per il risultato della soluzione 3 e moltiplicare per 100.
 $$\text{4,9} = \left(\frac{\text{52,56 - 50}}{\text{52,56}}\right) \times 100$$
 
 quindi:
