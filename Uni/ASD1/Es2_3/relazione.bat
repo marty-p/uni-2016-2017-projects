@@ -20,7 +20,7 @@ echo processing %md_list% into a book...
 %pandoc_dir%pandoc.exe %md_list% ^
 	-t latex --latex-engine=xelatex ^
 	-V lang=it ^
-	-V geometry=a4paper ^
+	-V geometry="top=2cm, bottom=1.5cm, left=1cm, right=1cm" ^
 	--dpi=300 ^
 	--variable documentclass=report ^
 	-o "relazione.pdf"
