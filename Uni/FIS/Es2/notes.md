@@ -12,6 +12,10 @@ Un'automobile sportiva raggiunge i 100 km/h  in 3,2 secondi. Qual'è la sua acce
 
 ###Soluzione 1
 
+\begin{align}
+\overline{v} & = \frac{\Delta x}{\Delta t}
+\end{align}
+
 
 ##Domanda 2
 Una palla è lanciata verso l’alto e ricade sulla mano che l’ha lanciata dopo 9 s. Calcolare l’altezza massima raggiunta (in m).
@@ -34,7 +38,7 @@ Scegli un'alternativa:
 4. 15 Km
 
 ###Soluzione 3
-4
+15 Km (i radio button cambiano di posizione)
 
 Indipendentemente da quante volte l'uccello torni avanti/indietro, il suo moto sarà sempre il doppio di quello del maratoneta.
 
@@ -43,6 +47,7 @@ Indipendentemente da quante volte l'uccello torni avanti/indietro, il suo moto s
 Un aereo sta per compiere la manovra di atterraggio, se arriva al suolo con una velocità di 272 Km/h e si ferma dopo 20 s, quale sarà la sua accelerazione espressa in $m/s^2$?
 
 ###Soluzione 4
+_Non hai fornito l'unità corretta._
 
 
 ##Domanda 5
@@ -50,6 +55,8 @@ Un aereo sta compiendo una manovra di atterraggio, se la sua velocità appena to
 
 ###Soluzione 5
 Un treno sta partendo da una stazione con un'accelerazione di 33 $mm/s^2$, quale sarà la sua velocità, espressa in m/s, dopo un intervallo di tempo t= 10 minuti?
+_Non hai fornito l'unità corretta._
+
 
 ##Domanda 6
 
