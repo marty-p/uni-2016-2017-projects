@@ -1,4 +1,4 @@
-#Set Esercizi 1 - scadenza 9 marzo Quiz
+#Set Esercizi 1 - Quiz
 
 _Scadenza 9/3/2017, h23:59. Le risposte numeriche approssimate entro il 5% sono considerate corrette._
 
@@ -17,7 +17,7 @@ Nelle unità anglosassoni invece per la pressione si usa il PSI (Pound per squar
 Sapendo che la forza peso di 1 pound equivale a circa 4.45 N e che $1in = 2.54 cm$, calcolare a quanti PSI corrisponde la pressione di $6*10^5Pa$.
 
 ###Soluzione 1
-87 o 87,0226426 o 87,02264267811522 o (se si usano i pound per N arrotondati) 86,98786516853933
+87 o 87,02 o 87,0226426 o 87,02264267811522 o (se si usano i pound per N arrotondati) 86,98786516853933
 
 La formula del PSI:
 $$1\,\text{PSI} = \frac{4.4482216152605\,\mathrm N}{(0.0254\,\mathrm m)^2} \approx 6894.75729\,\mathrm{Pa}$$
@@ -47,7 +47,7 @@ Un corridore percorre un giro della pista di atletica (400 m di lunghezza) in 1 
 Calcolare la sua velocità media in Km/h.
 
 ###Soluzione 2
-22 (2 cifre significative) o 22,14 (4 cifre significative) o 22,153846153846157 (17 cifre significative)
+22 (2 cifre significative) o 22,14 (4 cifre significative) o 22,15 o 22,153846153846157 (17 cifre significative)
 
 Per ottenere tale risultato basta:
 
@@ -60,7 +60,7 @@ Per ottenere tale risultato basta:
 Quanto dura un microsecolo in minuti?
 
 ###Soluzione 3
-52,56
+52,56 o 52,594877
 
 Un microsecolo equivale a 1 milionesimo di un secolo.
 
@@ -76,7 +76,7 @@ Si usi la formula:
 $$\text{approx. percentuale} = \left(\frac{\text{valore vero - valore approx.}}{\text{valore vero}}\right) \times 100$$
 
 ###Soluzione 4
-4,9
+4,9 o 4,93
 
 Basta prendere il risultato della soluzione 3, sottrargli 50 del suggerimento 1, dividere per il risultato della soluzione 3 e moltiplicare per 100.
 $$\text{4,9} = \left(\frac{\text{52,56 - 50}}{\text{52,56}}\right) \times 100$$

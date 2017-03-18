@@ -25,10 +25,10 @@ $x_0$ equivale al punto d'origine nell'asse cartesiano (0m se non specificato), 
 
 
 ##Domanda 1
-Un'automobile sportiva raggiunge i 100 km/h  in 3,2 secondi. Qual'è la sua accelerazione media espressa in $m/s^2$?
+Un'automobile sportiva raggiunge i 100 km/h  in 3,2 secondi. Qual è la sua accelerazione media espressa in $m/s^2$?
 
 ###Soluzione 1
-8,6875
+8,6875 o 8,68
 
 Per ottenere la velocità in metri al secondo di 100 km/h, si fa:
 
@@ -43,7 +43,7 @@ $$a=(v_1-v_0)/(t_1-t_0)=(27.8-0)/(3.2-0)=8.6875$$
 Una palla è lanciata verso l’alto e ricade sulla mano che l’ha lanciata dopo 9 s. Calcolare l’altezza massima raggiunta (in m).
 
 ###Soluzione 2
-99,22500000000001
+99,22500000000001 o 99,33
 
 Per la simmetria del moto uniformemente accelerato il tempo impiegato dalla palla per raggiungere la massima altezza H è uguale
 a quello necessario per ricadere dall'altezza H sulla mano.
@@ -51,7 +51,8 @@ a quello necessario per ricadere dall'altezza H sulla mano.
 Essendo dunque il tempo totale di 9s (salita + discesa), il tempo impiegato per la sola salita sarà $\frac12 t = 9/2 = 4.5 s$.
 
 Scriviamo adesso le leggi orarie di questo moto:
-$y = y_0 + v_0t - \frac12 gt^2$
+
+$y = y_0 + v_0t - \frac12(gt^2)$
 
 $v = v_0 - gt$
 
@@ -67,7 +68,7 @@ $v_0 = gt = 9.8*4.5=44.1 m/s$
 
 Adesso che conosciamo la velocità iniziale $v_0$ possiamo calcolare l'altezza massima dalla prima equazione:
 
-$y = y_0 + v_0t - \frac12 gt^2 = 0 + 44.1*4.5 - 0.5* (9.8*pow(4.5, 2)) = 99.22500000000001 \approx 99.2 m$
+$y = y_0 + v_0t - \frac12(gt^2) = 0 + 44.1*4.5 - 0.5* (9.8*pow(4.5, 2)) = 99.22500000000001 \approx 99.2 m$
 
 
 ##Domanda 3
@@ -94,13 +95,13 @@ Indipendentemente da quante volte l'uccello torni avanti/indietro, il suo moto s
 Un aereo sta per compiere la manovra di atterraggio, se arriva al suolo con una velocità di 272 Km/h e si ferma dopo 20 s, quale sarà la sua accelerazione espressa in $m/s^2$?
 
 ###Soluzione 4
-? m/s^2
+-3,78 m/s^2 (corretto, ma segnato sbagliato) o -3,8 m/s^2 o -3,5 m/s^2 (soluzione errata fornita dalla tutor)
 
 Si calcola la velocità in m/s facendo
 
 $v = 272km/h = 272/3600.*1000=75.55555555555556 \approx 75.6 m/s$
 
-$a=(0 - 75.6) / (20. - 0)=-3.78$
+$a=(0 - 75.6) / (20. - 0)= -3.78 m/s^2$
 
 
 ##Domanda 5
@@ -109,24 +110,26 @@ Un aereo sta compiendo una manovra di atterraggio, se la sua velocità appena to
 ###Soluzione 5
 850 m
 
-$v= 306/3600.*1000=85 m/s$
+$v_0= 306 km/h = 306/3600.*1000=85 m/s$
 
-$a=(0 - 85) / (20. - 0)=-4.25$
+$a= \frac{\Delta v}{\Delta t}= (0 - 85) / (20. - 0)=-4.25$
 
-$s = 0.5*(at^2) + v_0t+s_0 = 0.5*(-4.25*pow(20, 2)) + 85*20 = 850 m$
+$s = \frac12(at^2) + v_0t+s_0 = 0.5*(-4.25*pow(20, 2)) + 85*20 = 850 m$
 
 
 ##Domanda 6
-Un treno sta partendo da una stazione con un'accelerazione di 33 mm/s2, quale sarà la sua velocità, espressa in m/s, dopo un intervallo di tempo t= 10 minuti?
+Un treno sta partendo da una stazione con un'accelerazione di 33 $mm/s^2$, quale sarà la sua velocità, espressa in m/s, dopo un intervallo di tempo t= 10 minuti?
 
 ###Soluzione 6
 19,8
+
+$v_0 = 0$ (parte da un punto fermo, quindi implica 0)
 
 $t = 10 min = 10*60 = 600 s$
 
 $a = 33 mm = 33/1000. = 0.033 m$
 
-$v=v_0+at = 0+0.033*600=19.8$
+$v=v_0+at = 0+0.033*600=19.8 m/s$
 
 
 ##Domanda 7
@@ -135,9 +138,11 @@ Una treno sta partendo da una stazione, se la sua accelerazione è 33 $mm/s^2$, 
 ###Soluzione 7
 5940
 
+$v_0 = 0$ (parte da un punto fermo, quindi implica 0)
+
 $t = 10 min = 10*60 = 600 s$
 
 $a = 33 mm = 33/1000. = 0.033 m$
 
-$x - x_0 = v_0t + \frac12 (at^2)=0*600 + 0.5*(0.033*pow(600, 2))=5940$
+$x - x_0 = v_0t + \frac12(at^2) = 0*600 + 0.5*(0.033*pow(600, 2))=5940 m$
 
