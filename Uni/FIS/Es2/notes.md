@@ -6,6 +6,7 @@ _La precisione nei risultati è indicata con la virgola mobile (,) invece che co
 
 _abs(num) e pow(num, esp) sono funzioni della console di python relativamente per trovare l'assoluto e la potenza di un numero._
 
+
 ## Info 1
 \begin{align}
 \overline{v} & = \frac{\Delta x}{\Delta t} = \frac{x_1 - x_0}{t_1 - t_0}
