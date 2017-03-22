@@ -119,6 +119,15 @@ void fill_classic_matrix(int matrix[][NUMC], int numr, int numc)
     matrix[6][14] = 39;
     matrix[8][1] = 27;
     matrix[9][14] = 14;
+    // matrix[0][0] = 11;
+    // matrix[1][1] = 22;
+    // matrix[2][6] = 33;
+    // matrix[3][3] = 44;
+    // matrix[4][14] = 55;
+    // matrix[6][12] = 66;
+    // matrix[7][7] = 77;
+    // matrix[8][10] = 88;
+    // matrix[9][11] = 99;
 }
 
 void print_classic_matrix(int matrix[][NUMC], int numr, int numc)
@@ -177,7 +186,7 @@ void print_sparse_matrix(const MatriceSparsaT * matrice_sparsa)
 		return;
 	// for (i=1; i<=matrice_sparsa[0].valore; i++)
 	for (i=0; i<=matrice_sparsa[0].valore; i++)
-		printf("%d %d %d\n", matrice_sparsa[i].riga, matrice_sparsa[i].col, matrice_sparsa[i].valore);
+		printf("%3d %3d %3d\n", matrice_sparsa[i].riga, matrice_sparsa[i].col, matrice_sparsa[i].valore);
 }
 
 void print_sparse_matrix_as_classic(const MatriceSparsaT * matrice_sparsa)
@@ -237,25 +246,24 @@ MatriceSparsaT * crea_matrice_sparsa(int numr, int numc, int matrix[][numc])
 MatriceSparsaT * inserisci_matrice_sparsa(MatriceSparsaT * matrice_sparsa, MatriceSparsaT tmp, int maxlen)
 {
 	int i, j;
-	if (matrice_sparsa==NULL)
-		return;
-	if (matrice_sparsa[0].valore >= maxlen)
-		return;
-	for (i=1; i<=matrice_sparsa[0].valore; i++)
+	if (matrice_sparsa!=NULL && matrice_sparsa[0].valore < maxlen)
 	{
-		if (matrice_sparsa[i].riga >= tmp.riga && matrice_sparsa[i].col >= tmp.col)
-			break;
+		for (i=1; i<=matrice_sparsa[0].valore; i++)
+		{
+			if (matrice_sparsa[i].riga >= tmp.riga && matrice_sparsa[i].col >= tmp.col)
+				break;
+		}
+		for (j=matrice_sparsa[0].valore; j>=i; j--)
+			matrice_sparsa[j+1] = matrice_sparsa[j];
+		matrice_sparsa[i] = tmp;
+		matrice_sparsa[0].valore++;
 	}
-	for (j=matrice_sparsa[0].valore; j>=i; j--)
-		matrice_sparsa[j+1] = matrice_sparsa[j];
-	matrice_sparsa[i] = tmp;
-	matrice_sparsa[0].valore++;
+	return matrice_sparsa;
 }
 
 MatriceSparsaT * crea_matrice_sparsa_input(void)
 {
-	int i;
-	int c, nc;
+	int c;
 	MatriceSparsaT * matrice_sparsa = NULL;
 	MatriceSparsaT indice = {0};
 	MatriceSparsaT tmp = {0};
