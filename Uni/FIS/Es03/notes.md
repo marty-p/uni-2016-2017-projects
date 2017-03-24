@@ -92,7 +92,7 @@ c=math.cos(math.radians(45))
 t=d/(v*c)
 ```
 
-$$t = \frac{d}{v_0 \times cos 45}$$
+$$t = \frac{d}{v_0 \times cos(45)}$$
 
 
 ##Domanda 6
@@ -139,9 +139,17 @@ Un cannone, posto a protezione del porto, puo' sparare la palla per colpire la n
 Qual è la velocità, in m/ s, con cui la palla viene sparata dal cannone?
 
 ###Soluzione 8
-83
+83.03604608463861
 
+```
+import math
+R=569.2
+theta0=27
+g=9.8
+v0=math.sqrt(R*g/(math.sin(math.radians(theta0*2))))
+```
 
+$$\sqrt{\frac{Rg}{sin(2\theta _0)}}$$
 
 
 
