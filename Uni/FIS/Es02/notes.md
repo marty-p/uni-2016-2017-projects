@@ -78,7 +78,7 @@ Quando il maratoneta si trova a 7.5 Km dall’arrivo, un uccello inizia a volare
 Giunto all’arrivo, l’uccello torna indietro fino a raggiungere il corridore, poi torna nuovamente indietro e ripete i suoi viaggi avanti e indietro fino a che il maratoneta finisce la sua corsa.
 Quanti km percorre l’uccello?
 
-![pic](http://i.imgur.com/ORrzCo8.png "pic")
+![](birdrace.gif)
 
 Scegli un'alternativa:
 1. 30 Km
