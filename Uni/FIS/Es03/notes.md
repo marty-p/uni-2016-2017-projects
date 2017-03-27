@@ -8,7 +8,7 @@ _abs(num) e pow(num, esp) sono funzioni della console di python relativamente pe
 
 
 ##Domanda 1
-Un punto materiale si muove di moto circolare uniforme. Per compiere un giro completo impiega $t$ secondi. Qual è la sua velocità angolare?
+Un punto materiale si muove di moto circolare uniforme. Per compiere un giro completo impiega 0,33 secondi. Qual è la sua velocità angolare?
 
 ###Soluzione 1
 17,4 rad/s (t cambia ogni volta)
@@ -39,7 +39,7 @@ d. h=32.3 m
 
 ##Domanda 3
 Una freccetta è tirata orizzontalmente in direzione del centro del bersaglio P con velocità iniziale 30 m/s.
-Dopo un tempo  di 5,0 s essa colpisce il punto Q sul bordo del bersaglio, posto verticalmente sotto il punto P.
+Dopo un tempo  di 2,9 s essa colpisce il punto Q sul bordo del bersaglio, posto verticalmente sotto il punto P.
 Qual è la distanza PQ espressa in m?
 
 ###Soluzione 3
@@ -57,9 +57,9 @@ $$h=\frac12g \times t^2$$
 
 
 ##Domanda 4
-Un treno affrontando una curva rallenta passando da 92,1 Km/h a 47,9 Km/h nei 6,5s impiegati a completare la curva.
+Un treno affrontando una curva rallenta passando da 94,1 Km/h a 47,5 Km/h nei 7,8s impiegati a completare la curva.
 Il raggio della curva è 150 m.
-Calcolare l'accelerazione trasversale, espressa in $m/s^2$, nel momento in cui v=47,9 Km/h, assumendo che in questo momento continui a decelerare.
+Calcolare l'accelerazione trasversale, espressa in $m/s^2$, nel momento in cui v=47,5 Km/h, assumendo che in questo momento continui a decelerare.
 
 ###Soluzione 4
 -0,92 (v1 v2 t cambiano ogni volta)
@@ -96,7 +96,7 @@ $$t = \frac{d}{v_0 \times cos(45)}$$
 
 
 ##Domanda 6
-Si consideri un sasso lanciato in una certa direzione, sia vy = 6,4 m/s la componente verticale e vx = 5,0 m/s
+Si consideri un sasso lanciato in una certa direzione, sia vy = 4,9 m/s la componente verticale e vx = 7,5 m/s
 la componente orizzontale della velocità.
 Quanto vale la gittata del lancio (espressa in metri)?
 
@@ -114,8 +114,8 @@ $$L = 2\frac{v_x*v_y}{g}$$
 
 
 ##Domanda 7
-Un treno affrontando una curva rallenta passando da 90 Km/h a 47,9 Km/h nei 15 s impiegati a completare la curva.
-Il raggio della curva è 166,4 m. Calcolare l'accelerazione centripeta, espressa in $m/s^2$, nel momento in cui v=47,9 Km/h, assumendo che in questo momento continui a decelerare.
+Un treno affrontando una curva rallenta passando da 90 Km/h a 47,5 Km/h nei 15 s impiegati a completare la curva.
+Il raggio della curva è 154,1 m. Calcolare l'accelerazione centripeta, espressa in $m/s^2$, nel momento in cui v=47,5 Km/h, assumendo che in questo momento continui a decelerare.
 
 ###Soluzione 7
 1,9554689991344358 (v2 e r variano)
