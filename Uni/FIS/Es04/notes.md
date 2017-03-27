@@ -37,29 +37,53 @@ viene fermato entro 42,3 m con decelerazione costante.
 
 ##Domanda 5
 Tre astronauti, muniti di zaino a reazione, spingono e guidano un asteroide di massa 19kg verso un banco di trattamento,
-esercitando le forze indicate in figura F1=29N, F2=53N, F3=45N, θ1=30°,e θ3=60°.
-Qual è il modulo dell’accelerazione dell’asteroide lungo l'asse x (in m/s2)?
+esercitando le forze indicate in figura $F_1$=29N, $F_2$=53N, $F_3$=45N, $\theta_1$=30°, e $\theta_3$=60°.
+Qual è il modulo dell’accelerazione dell’asteroide lungo l'asse x (in $m/s^2$)?
 ![](asteroide.gif)
 
 ###Soluzione 5
 
 
 ##Domanda 6
+Una locomotiva traina tre vagoni su dei binari idealmente privi di attrito esercitando una forza T=4kN.
+Le masse dei vagoni sono rispettivamente 13938 kg, 16258 kg e 14491 kg (partendo dal vagone agganciato alla locomotiva).
+Calcolare la tensione $T_1$ (in kN) sul gancio che collega il primo al secondo vagone.
+![](vagoni.gif)
 
 ###Soluzione 6
 
 
 ##Domanda 7
+Spingete una pesante cassa di legno che striscia per terra.
+Ad un certo punto rovesciate la cassa facendola poggiare su una faccia la cui superficie è metà della superficie iniziale.
+Rispetto alla forza che esercitavate inizialmente,
+la forza che dovrete esercitare per muovere la cassa alla stessa velocità che aveva prima di essere rovesciata è:
+
+Scegli un'alternativa:
+
+1. metà
+2. quattro volte maggiore
+3. un quarto
+4. doppia
+5. uguale
 
 ###Soluzione 7
 
 
 ##Domanda 8
+Un blocco di massa $m_1$= 27,9 Kg sta su un piano inclinato di 30°, rispetto all'orizzontale.
+Esso è collegato a un blocco di massa $m_2$= 12,8 Kg tramite una fune priva di massa che può scorrere su una carrucola priva di attrito.
+Si determini l'accelerazione del blocco $m_1$ (espressa in $m/s^2$).
+![](pesi.gif)
 
 ###Soluzione 8
 
 
 ##Domanda 9
+Un blocco di massa 18,7 Kg sta su un piano inclinato di 30°, rispetto all'orizzontale.
+Esso è collegato a un blocco di massa 45,3 Kg tramite una fune priva di massa che può scorrere su una carrucola priva di attrito.
+Si determini la tensione della fune (espressa in N).
+![](pesi.gif)
 
 ###Soluzione 9
 
