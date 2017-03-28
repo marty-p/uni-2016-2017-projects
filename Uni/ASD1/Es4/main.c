@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 
 int * insuccesso(const char * pat)
 {
@@ -63,13 +62,13 @@ int * insuccesso_ciclico(const char * pat)
 	return insuccesso;
 }
 
-_Bool KMP_cyclic_match(const char * stringa, const char * pat)
+int KMP_cyclic_match(const char * stringa, const char * pat)
 {
 	int j, i;
 	int lenS=strlen(stringa), lenP=strlen(pat);
 	int * insucc = NULL;
 	if(lenS!=lenP)
-		return false;
+		return -1;
 	insucc = insuccesso_ciclico(pat);
 
 	for (i=0, j=0; i<lenP; i++)
@@ -92,14 +91,15 @@ _Bool KMP_cyclic_match(const char * stringa, const char * pat)
 	free(insucc);
 
 	if (j>=lenS)
-		return true;
-	return false;
+		return i;
+	return -1;
 }
 
 int main(void)
 {
 	printf("ACACACACACAGT has ACACAGT %d\n", KMP_match("ACACACACACAGT", "ACACAGT"));
-	printf("ACACACACACAGT has ACACAGT %d\n", KMP_match("ACACACACACAGT", "ACACAJT"));
+	printf("ACACACACACAGT has ACACAJT %d\n", KMP_match("ACACACACACAGT", "ACACAJT"));
+	printf("asd==das %d\n", KMP_cyclic_match("asd", "asd"));
 	printf("asd==das %d\n", KMP_cyclic_match("asd", "das"));
 	printf("asd==das %d\n", KMP_cyclic_match("asd", "das"));
 	printf("asd==sda %d\n", KMP_cyclic_match("asd", "sda"));
