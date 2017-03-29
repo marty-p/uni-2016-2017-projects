@@ -39,7 +39,8 @@ int KMP_match(const char * stringa, const char * pat)
 	int j = 0;
 	int lenS = strlen(stringa);
 	int lenP = strlen(pat);
-	stampa_insuccesso(insucc, lenP);
+	// stampa_insuccesso(insucc, lenP);
+
 	while (i < lenS && j < lenP)
 	{
 		if (stringa[i] == pat[j])
@@ -59,15 +60,44 @@ int KMP_match(const char * stringa, const char * pat)
 	return -1;
 }
 
-int KMP_cyclic_match_alternative(const char * stringa, const char * pat)
+int KMP_cyclic_match(const char * stringa, const char * pat)
 {
-	int i=0, j=0, c=0;
+	int i=0, j=0;
 	int lenS=strlen(stringa), lenP=strlen(pat);
 	int * insucc = NULL;
 	if (lenS!=lenP)
 		return -1;
 	insucc = insuccesso(pat);
-	stampa_insuccesso(insucc, lenP);
+	// stampa_insuccesso(insucc, lenP);
+
+	while (i < lenS*2 && j < lenP)
+	{
+		if (stringa[i%lenP] == pat[j])
+		{
+			i = i+1;
+			j = j+1;
+		}
+		else if (j == 0)
+			i = i+1;
+		else
+			j = insucc[j-1]+1;
+	}
+	free(insucc);
+
+	if (j == lenP)
+		return (lenP-i%lenP)%lenP;
+	return -1;
+}
+
+int KMP_cyclic_match_alternative(const char * stringa, const char * pat)
+{
+	int i=0, j=0;
+	int lenS=strlen(stringa), lenP=strlen(pat);
+	int * insucc = NULL;
+	if (lenS!=lenP)
+		return -1;
+	insucc = insuccesso(pat);
+	// stampa_insuccesso(insucc, lenP);
 
 	for (i=0; i<lenP; i++)
 	{
@@ -90,40 +120,6 @@ int KMP_cyclic_match_alternative(const char * stringa, const char * pat)
 
 	if (j>=lenS)
 		return i;
-
-	return -1;
-}
-
-int KMP_cyclic_match(const char * stringa, const char * pat)
-{
-	int i=0, j=0, c=0;
-	int lenS=strlen(stringa), lenP=strlen(pat);
-	int * insucc = NULL;
-	if (lenS!=lenP)
-		return -1;
-	insucc = insuccesso(pat);
-	// stampa_insuccesso(insucc, lenP);
-
-	while (i < lenS*2 && j < lenP)
-	{
-		// printf("i=%d, j=%d\n", i, j);
-		// printf("stringa[i]=%c, pat[j]=%c\n", stringa[i%lenP], pat[j]);
-		if (stringa[i%lenP] == pat[j])
-		{
-			i = i+1;
-			j = j+1;
-		}
-		else if (j == 0)
-			i = i+1;
-		else
-			j = insucc[j-1]+1;
-	}
-	free(insucc);
-
-	// printf("XXi=%d, j=%d\n", i, j);
-	if (j == lenP)
-		return (lenP-i%lenP)%lenP;
-
 	return -1;
 }
 
