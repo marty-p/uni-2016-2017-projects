@@ -9,19 +9,19 @@ CND_DISTDIR=dist
 # Debug configuration
 CND_PLATFORM_Debug=MinGW-Windows
 CND_ARTIFACT_DIR_Debug=dist/Debug/MinGW-Windows
-CND_ARTIFACT_NAME_Debug=es3_student_version
-CND_ARTIFACT_PATH_Debug=dist/Debug/MinGW-Windows/es3_student_version
+CND_ARTIFACT_NAME_Debug=es04
+CND_ARTIFACT_PATH_Debug=dist/Debug/MinGW-Windows/es04
 CND_PACKAGE_DIR_Debug=dist/Debug/MinGW-Windows/package
-CND_PACKAGE_NAME_Debug=es3studentversion.tar
-CND_PACKAGE_PATH_Debug=dist/Debug/MinGW-Windows/package/es3studentversion.tar
+CND_PACKAGE_NAME_Debug=es04.tar
+CND_PACKAGE_PATH_Debug=dist/Debug/MinGW-Windows/package/es04.tar
 # Release configuration
 CND_PLATFORM_Release=MinGW-Windows
 CND_ARTIFACT_DIR_Release=dist/Release/MinGW-Windows
-CND_ARTIFACT_NAME_Release=es3_student_version
-CND_ARTIFACT_PATH_Release=dist/Release/MinGW-Windows/es3_student_version
+CND_ARTIFACT_NAME_Release=es04
+CND_ARTIFACT_PATH_Release=dist/Release/MinGW-Windows/es04
 CND_PACKAGE_DIR_Release=dist/Release/MinGW-Windows/package
-CND_PACKAGE_NAME_Release=es3studentversion.tar
-CND_PACKAGE_PATH_Release=dist/Release/MinGW-Windows/package/es3studentversion.tar
+CND_PACKAGE_NAME_Release=es04.tar
+CND_PACKAGE_PATH_Release=dist/Release/MinGW-Windows/package/es04.tar
 #
 # include compiler specific variables
 #

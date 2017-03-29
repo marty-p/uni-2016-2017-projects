@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=es3_student_version
+PROJECTNAME=es04
 
 # Active Configuration
 DEFAULTCONF=Debug
