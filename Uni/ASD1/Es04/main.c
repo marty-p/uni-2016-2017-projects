@@ -133,8 +133,9 @@ int main(void)
 	printf("asd==das %d\n", KMP_cyclic_match("asd", "das"));
 	printf("asd==sda %d\n", KMP_cyclic_match("asd", "sda"));
 	printf("asd==daz %d\n", KMP_cyclic_match("asd", "daz"));
-	printf("ciaone==neciao %d\n", KMP_cyclic_match("ciaone", "neciao"));
-	printf("ciaone==leciao %d\n", KMP_cyclic_match("ciaone", "leciao"));
+	printf("buongiornissimo==buongiornissimo %d\n", KMP_cyclic_match("buongiornissimo", "buongiornissimo"));
+	printf("buongiornissimo==nissimobuongior %d\n", KMP_cyclic_match("buongiornissimo", "nissimobuongior"));
+	printf("buongiornissimo==nixximobuongior %d\n", KMP_cyclic_match("buongiornissimo", "nixximobuongior"));
 	return 0;
 }
 
