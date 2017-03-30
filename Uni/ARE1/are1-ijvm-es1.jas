@@ -1,0 +1,38 @@
+// r=k+k-j-j-j
+// k=3
+// j=5
+
+// Istruzioni conosciute finora:
+// BIPUSH <constante> // prende la costante (decimale/esadecimale) e la mette in stack
+// ISTORE <var> // prende (e poi scarta) l'ultimo valore dallo stack e lo mette in <var>
+// ILOAD <var> // prende il valore di <var> e lo mette in stack
+// IADD // prende (e poi scarta) gli ultimi 2 valori dallo stack e li somma mettendo il valore in stack
+// ISUB // prende (e poi scarta) gli ultimi 2 valori dallo stack e li sottrae mettendo il valore in stack
+
+// nota: gli elementi scartati dallo stack non vengono resettati a 0, ma solo ignorati
+
+.main
+	.var
+	r
+	k
+	j
+	.end-var
+
+	BIPUSH 0x3 // stack[0]=3
+	ISTORE k // k=3; stack[0]=viene scartato
+	BIPUSH 0x5 // stack[0]=5
+	ISTORE j // j=5; stack[0]=viene scartato
+
+	ILOAD k // stack[0] = 3
+	ILOAD k // stack[1] = 3
+	IADD // stack[0] = 3+3 =6; stack[1]=viene scartato
+	ILOAD j // stack[1] = 5
+	ISUB // stack[0] = 6-5 =1; stack[1]=viene scartato
+	ILOAD j // stack[1] = 5
+	ISUB // stack[0] = 1-5 =-4 (0xfffffffc); stack[1]=viene scartato
+	ILOAD j // stack[1] = 5
+	ISUB // stack[0] = -4-5 =-9 (0xfffffff7); stack[1]=viene scartato
+
+	ISTORE r // r=-9 (0xfffffff7); stack[0]=viene scartato
+	HALT // fine
+.end-main
