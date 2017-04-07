@@ -71,13 +71,15 @@ fine:
 	ILOAD a
 	IRETURN
 
-// if (a > b)
+// if (a > b) // ci limitiamo a fare if (b < a) in quanto sappiamo che (a != b)
 corpo:
 	ILOAD b
 	ILOAD a
 	ISUB
 	IFLT somma_a
+	GOTO somma_b
 
+somma_b:
 // b = b - a;
 	ILOAD b
 	ILOAD a

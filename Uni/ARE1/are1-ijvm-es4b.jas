@@ -107,6 +107,10 @@ corpo:
 	BIPUSH 0
 	ISTORE r
 
+// if (a==0) goto fine;
+	ILOAD a
+	IFEQ fine
+
 // if (b <= 0) goto fine;
 ciclo:
 	ILOAD b
