@@ -45,14 +45,22 @@
 
 .main
 	.var
+		q
 		r
 	.end-var
 
-	// r = div(20, 4);
+	// q = div(20, 4);
 	LDC_W OBJREF
 	BIPUSH 20
 	BIPUSH 4
 	INVOKEVIRTUAL div
+	ISTORE q
+
+	// r = mod(22, 4);
+	LDC_W OBJREF
+	BIPUSH 22
+	BIPUSH 4
+	INVOKEVIRTUAL mod
 	ISTORE r
 
 	HALT
