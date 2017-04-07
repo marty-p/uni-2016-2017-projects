@@ -1,0 +1,98 @@
+
+// Help: http://www.ontko.com/mic1/jas.html#ijvm
+
+// Mnemonic			Operands				Description
+// BIPUSH			byte					Push a byte onto stack
+// DUP				N/A						Copy top word on stack and push onto stack
+// ERR				N/A						Print an error message and halt the simulator
+// GOTO				label name				Unconditional jump
+// HALT				N/A						Halt the simulator
+// IADD				N/A						Pop two words from stack; push their sum
+// IAND				N/A						Pop two words from stack; push Boolean AND
+// IFEQ				label name				Pop word from stack and branch if it is zero
+// IFLT				label name				Pop word from stack and branch if it is less than zero
+// IF_ICMPEQ		label name				Pop two words from stack and branch if they are equal
+// IINC				variable name, byte		Add a constant value to a local variable
+// ILOAD			variable name			Push local variable onto stack
+// IN				N/A						Reads a character from the keyboard buffer and pushes it onto the stack. If no character is available, 0 is pushed
+// INVOKEVIRTUAL	method name				Invoke a method
+// IOR				N/A						Pop two words from stack; push Boolean OR
+// IRETURN			N/A						Return from method with integer value
+// ISTORE			variable name			Pop word from stack and store in local variable
+// ISUB				N/A						Pop two words from stack; push their difference
+// LDC_W			constant name			Push constant from constant pool onto stack
+// NOP				N/A						Do nothing
+// OUT				N/A						Pop word off stack and print it to standard out
+// POP				N/A						Delete word from top of stack
+// SWAP				N/A						Swap the two top words on the stack
+// WIDE				N/A						Prefix instruction; next instruction has a 16-bit index
+
+// Operand descriptions:
+// byte: A numeric literal, in octal (032 - leading zero), decimal (26 - no leading digits), or hexadecimal (0x1A - leading zero-x) format. Character literals ('M - leading single quote) are also allowed. Compiled to a 1-byte constant
+// label name: The string name of a label (see Label). Compiled to a 2-byte offset
+// variable name: The string name of a local variable. Compiled to a 1-byte value, indicating an offset into the local variable frame.
+// method name: The string name of a method. When compiled, the address of the method is calculated and put into the constant pool. This operand is then replaced with the 2-byte index (in the constant pool) of the address.
+// constant name: The string name of a constant. Compiled to a 2-byte index.
+// N/A: This instruction takes no operands.
+
+// Note:
+// I valori scartati non risettano i campi in memoria a 0
+// "Poppare" un valore significa semplicemente farci un get&delete
+
+.constant
+	OBJREF 0x40
+.end-constant
+
+.main
+	.var
+		r
+	.end-var
+
+	// r = sum_first_n(5);
+	LDC_W OBJREF
+	BIPUSH 5
+	INVOKEVIRTUAL sum_first_n
+	ISTORE r
+
+	HALT
+.end-main
+
+.method sum_first_n(n)
+	.var
+		i
+		r
+	.end-var
+
+	// r = 0
+	BIPUSH 0
+	ISTORE r
+
+	// i = 1
+	BIPUSH 1
+	ISTORE i
+
+ciclo:
+// while (i<=n) // ovvero if (i>n) goto fine;
+	ILOAD n
+	ILOAD i
+	ISUB
+	IFLT fine
+	GOTO corpo
+
+fine:
+// return r;
+	ILOAD r
+	IRETURN
+
+corpo:
+// r = r + i;
+	ILOAD r
+	ILOAD i
+	IADD
+	ISTORE r
+
+// i++;
+	IINC i 1
+	GOTO ciclo
+
+.end-method
