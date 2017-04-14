@@ -216,33 +216,26 @@ void modifySong(PlayList* pl, Song* s)
 //findSong) e dealloca l’elemento
 void deleteSong(PlayList* pl, Song* s)
 {
-	Song * tmp = NULL;
 	if (pl==NULL || s==NULL)
 		return;
-	tmp=pl->top;
-	while (tmp!=NULL && s!=tmp)
-		tmp = tmp->next;
-	if (tmp==s)
+	if (s->next==NULL && s->prev!=NULL) // coda
 	{
-		if (tmp->next==NULL && tmp->prev!=NULL) // coda
-		{
-			tmp->prev->next = NULL;
-		}
-		else if (tmp->prev==NULL) // testa
-		{
-			pl->top = tmp->next;
-			if (pl->top!=NULL)
-				pl->top->prev = NULL;
-		}
-		else // mezzo
-		{
-			if (tmp->prev)
-				tmp->prev->next = tmp->next;
-			if (tmp->next)
-				tmp->next->prev = tmp->prev;
-		}
-		free(tmp);
+		s->prev->next = NULL;
 	}
+	else if (s->prev==NULL) // testa
+	{
+		pl->top = s->next;
+		if (pl->top!=NULL)
+			pl->top->prev = NULL;
+	}
+	else // mezzo
+	{
+		if (s->prev)
+			s->prev->next = s->next;
+		if (s->next)
+			s->next->prev = s->prev;
+	}
+	free(s);
 }
 
 //stampa l’intera playlist di canzoni
