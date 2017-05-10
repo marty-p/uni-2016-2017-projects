@@ -31,8 +31,6 @@ City cities[MAX_VERTEX] = {};
 lpNode graph[MAX_VERTEX] = {};
 int visited[MAX_VERTEX] = {};
 
-void visita(const Node * nodo);
-
 #define DEFAULT_N 11
 enum eCities
 {
@@ -47,6 +45,7 @@ void visita_nodo(const Node * node);
 void visita(int id);
 
 void visita_in_profondita(int id);
+void visita_in_ampiezza(int id);
 
 int main()
 {
@@ -166,11 +165,27 @@ void visita_in_profondita(int id)
 
 void visita_in_ampiezza(int id)
 {
+	lpNode tmp = NULL;
+	int i;
 	visita(id);
 	visited[id] = 1;
-	Coda C[]
-	inizializza la coda C
-	pushQueue(C, id)
-	while ( not isEmptyQueue(C) ) do
+	Queue C = {};
+	queue_push(&C, id);
+	while (!queue_isEmpty(&C))
+	{
+		i = queue_pop(&C);
+		tmp = graph[i];
+		while (tmp != NULL)
+		{
+			if (visited[tmp->data]==0)
+			{
+				queue_push(&C, tmp->data);
+				printf(", ");
+				visita_nodo(tmp);
+				visited[tmp->data]=1;
+			}
+			tmp = tmp->link;
+		}
+	}
 }
 
