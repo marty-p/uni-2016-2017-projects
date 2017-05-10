@@ -47,12 +47,27 @@ void visita(int id);
 void visita_in_profondita(int id);
 void visita_in_ampiezza(int id);
 
+lpNode cancellazione_lato_doppio(int lato_a, int lato_b);
+lpNode cancellazione_lato(int lato_a, int lato_b);
+
+void test();
+
 int main()
 {
 	// printf("Lavorate in silenzio!");
 	// printf("Non c'e' nulla da consegnare");
 	// printf("Visitare un nodo vuol dire stamparne le informazioni");
 	default_set();
+	test();
+	printf("\n\n\n\n");
+	graph[Lione] = cancellazione_lato(Lione, Genova);
+	test();
+
+	return 0;
+}
+
+void test()
+{
 	printf("lista_adiacenza:\n");
 	print_lista_adiacenza();
 
@@ -75,8 +90,6 @@ int main()
 	memset(visited, 0, sizeof(visited));
 	visita_in_ampiezza(Roma);
 	printf("\n");
-
-	return 0;
 }
 
 void default_set()
@@ -187,5 +200,40 @@ void visita_in_ampiezza(int id)
 			tmp = tmp->link;
 		}
 	}
+}
+
+lpNode cancellazione_lato_doppio(int lato_a, int lato_b)
+{
+	graph[lato_a] = cancellazione_lato(lato_a, lato_b);
+	graph[lato_b] = cancellazione_lato(lato_b, lato_a);
+}
+
+lpNode cancellazione_lato(int lato_a, int lato_b)
+{
+	lpNode prev_tmp = NULL;
+	lpNode tmp = graph[lato_a];
+	while (tmp!=NULL)
+	{
+		if (tmp->data==lato_b)
+		{
+			// testa
+			if (prev_tmp==NULL)
+			{
+				prev_tmp = tmp;
+				tmp = tmp->link;
+				free(prev_tmp);
+				return tmp;
+			}
+			else
+			{
+				prev_tmp->link = (tmp!=NULL) ? tmp->link : NULL;
+				free(tmp);
+				break;
+			}
+		}
+		prev_tmp = tmp;
+		tmp = tmp->link;
+	}
+	return graph[lato_a];
 }
 
