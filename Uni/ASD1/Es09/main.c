@@ -39,22 +39,48 @@ enum eCities
 	Cagliari, Zurigo, Lione, Genova, Roma, NewYork, Bilbao, Berlino, Londra, Miami, Tokyo
 };
 
-void default_set(City * cities, lpNode graph[]);
-void visita_profondita(const lpNode graph[], int * visited, int id);
+void default_set();
+
+void print_lista_adiacenza();
+void visita_rec(int id);
+void visita_nodo(const Node * node);
+void visita(int id);
+
+void visita_in_profondita(int id);
 
 int main()
 {
 	// printf("Lavorate in silenzio!");
 	// printf("Non c'e' nulla da consegnare");
 	// printf("Visitare un nodo vuol dire stamparne le informazioni");
-	default_set(cities, graph);
+	default_set();
+	printf("lista_adiacenza:\n");
+	print_lista_adiacenza();
+
+	printf("visita_in_profondita: (Cagliari)\n");
 	memset(visited, 0, sizeof(visited));
-	visita_profondita(graph, visited, 0);
+	visita_in_profondita(Cagliari);
+	printf("\n");
+
+	printf("visita_in_profondita: (Roma)\n");
+	memset(visited, 0, sizeof(visited));
+	visita_in_profondita(Roma);
+	printf("\n");
+
+	printf("visita_in_ampiezza: (Cagliari)\n");
+	memset(visited, 0, sizeof(visited));
+	visita_in_ampiezza(Cagliari);
+	printf("\n");
+
+	printf("visita_in_ampiezza: (Roma)\n");
+	memset(visited, 0, sizeof(visited));
+	visita_in_ampiezza(Roma);
+	printf("\n");
 
 	return 0;
 }
 
-void default_set(City * cities, lpNode graph[])
+void default_set()
 {
 	const char * city_names[DEFAULT_N] = {"Cagliari", "Zurigo", "Lione", "Genova", "Roma", "New York", "Bilbao", "Berlino", "Londra", "Miami", "Tokyo"};
 	int i;
@@ -89,15 +115,40 @@ void default_set(City * cities, lpNode graph[])
 	// Tokyo
 }
 
-void visita(const Node * node)
+void print_lista_adiacenza()
 {
-	if (node!=NULL)
-		printf("[%d] %s\n", node->data, cities[node->data].name);
+	int i;
+	for (i=0; i<MAX_VERTEX && cities[i].name[0]!='\0'; i++)
+		visita_rec(i);
 }
 
-void visita_profondita(const lpNode graph[], int * visited, int id)
+void visita_rec(int id)
 {
-	visita(graph[id]);
+	lpNode tmp = graph[id];
+	visita(id);
+	while (tmp!=NULL)
+	{
+		printf(" -> ");
+		visita_nodo(tmp);
+		tmp = tmp->link;
+	}
+	printf("\n");
+}
+
+void visita_nodo(const Node * node)
+{
+	if (node!=NULL)
+		visita(node->data);
+}
+
+void visita(int id)
+{
+	printf("%s", cities[id].name);
+}
+
+void visita_in_profondita(int id)
+{
+	visita(id);
 	visited[id] = 1;
 	const Node * tmp = graph[id];
 	int id_next = 0;
@@ -105,8 +156,21 @@ void visita_profondita(const lpNode graph[], int * visited, int id)
 	{
 		id_next = tmp->data;
 		if (visited[id_next]==0)
-			visita_profondita(graph, visited, id_next);
+		{
+			printf(", ");
+			visita_in_profondita(id_next);
+		}
 		tmp = tmp->link;
 	}
+}
+
+void visita_in_ampiezza(int id)
+{
+	visita(id);
+	visited[id] = 1;
+	Coda C[]
+	inizializza la coda C
+	pushQueue(C, id)
+	while ( not isEmptyQueue(C) ) do
 }
 
