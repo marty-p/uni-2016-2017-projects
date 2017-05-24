@@ -45,8 +45,9 @@ int get_random_number(int min, int max);
 void print_array(int * a, int n);
 void swap_numbers(int * a, int n);
 int * genera_array(int dimensione, inputType tipo_schema);
-int selectionSortWithTime(int * A, int n, inputType tipo_schema);
-int selectionSortRec(int * A, int n, int start);
+void selectionSortWithTime(int * A, int n, inputType tipo_schema);
+void selectionSortRec(int * A, int n, int start);
+int findmin(int * A, int minpos, int start, int dim);
 const char * getTipoSchemaName(inputType tipo_schema);
 
 int main(int argc, char** argv)
@@ -85,7 +86,7 @@ void processAll(int n)
     int * A = NULL;
     int i;
     inputType schema_list[SCHEMA_N] = {ORDINATO, QUASI_ORDINATO, INV_ORDINATO, CASUALE};
-    
+
     printf("n=%d\n", n);
     for (i=0; i<SCHEMA_N; i++)
     {
@@ -127,7 +128,7 @@ int * genera_array(int dimensione, inputType tipo_schema)
                 prev_n = tmp_a[i];
                 break;
             case INV_ORDINATO:
-                tmp_a[i] = N-i-1;
+                tmp_a[i] = dimensione-i-1;
                 break;
             case CASUALE:
                 tmp_a[i] = get_random_number(MIN, MAX);
@@ -137,7 +138,7 @@ int * genera_array(int dimensione, inputType tipo_schema)
     return tmp_a;
 }
 
-int selectionSortWithTime(int * a, int n, inputType tipo_schema)
+void selectionSortWithTime(int * a, int n, inputType tipo_schema)
 {
     clock_t start, end;
     double tempo;
@@ -150,17 +151,17 @@ int selectionSortWithTime(int * a, int n, inputType tipo_schema)
     printf("TIPO: %s, N: %d, SECS: %f\n", getTipoSchemaName(tipo_schema), n, tempo);
 }
 
-int selectionSortRec(int * A, int dimA, int start)
+void selectionSortRec(int * A, int dimA, int start)
 {
     int tmp_min, minIndex;
     if (start >= dimA-1)
         return;
     minIndex = findmin(A, start, start, dimA);
-    
+
     tmp_min = A[minIndex];
     A[minIndex] = A[start];
     A[start] = tmp_min;
-    
+
     selectionSortRec(A, dimA, start+1);
 }
 
@@ -180,3 +181,4 @@ const char * getTipoSchemaName(inputType tipo_schema)
         return "";
     return schema_name[tipo_schema];
 }
+
