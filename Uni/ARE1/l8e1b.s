@@ -3,10 +3,6 @@
 !memoria. Il vettore al termine dovra' essere stampato sullo standard
 !output dal main.
 
-! pseudo-code:
-! a=10
-! printf("%d", square(a))
-
 
 _EXIT = 1
 _PRINTF = 127

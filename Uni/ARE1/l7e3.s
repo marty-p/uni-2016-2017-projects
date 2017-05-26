@@ -2,8 +2,9 @@
 !vettori di interi memorizzati in memoria principale sono identici.
 
 ! pseudo-code:
-! a=10
-! printf("%d", square(a))
+! a="kek"
+! b="rekt"
+! puts(compare(a, b) ? "yes" : "no")
 
 
 _EXIT = 1

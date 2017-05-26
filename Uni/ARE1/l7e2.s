@@ -4,7 +4,7 @@
 
 ! pseudo-code:
 ! a=10
-! printf("%d", square(a))
+! printf("%d", fac(a))
 
 
 _EXIT = 1

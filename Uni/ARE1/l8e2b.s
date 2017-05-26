@@ -37,23 +37,31 @@ pal:
 	PUSH BP !obbligatorio
 	MOV BP, SP !obbligatorio
 	!begin
-	MOVB DL, 1		!dl=1 (match flag)
-	MOV DI, 4(BP)	!1arg lunghezza
+	MOVB DL, 1		!dl=1 (match flag, 1 y 0 n)
+	MOV CX, 4(BP)	!1arg lunghezza
 	MOV BX, 6(BP)	!2arg array1
-	SUB DI, 2		!decrement EOS and n-1
+	DEC CX			!decrement due to EOS
+	MOV SI, 0		!si=0
+	MOV DI, CX		!di=cx
+	DEC DI			!decrement due to n-1
+	!begin ottimizzare n/2 (fixa anche le lunghezze dispari)
+	MOVB AL, CL		!al=cl
+	MOVB DH, 2		!dh=2
+	DIVB DH			!al/=dh
+	MOVB CL, AL		!cl=al
+	!end ottimizzare n/2
 	ciclo:
-		CMP BX, DI		!if (bx>=di)
-		JGE fine		!then goto fine
-		MOVB AL, (BX)	!al=*bx
-		MOVB AH, (DI)	!ah=*di
-		ADD BX, 1		!bx++
-		SUB DI, 1		!di--
+		MOVB AL, (BX)(SI)	!al=*bx
+		MOVB AH, (BX)(DI)	!ah=*di
 		CMPB AL, AH		!if (al!=ah)
-		JNE no			!then goto no
-		JMP ciclo		!goto ciclo
+		JNE no			!then goto fine
+		ADD SI, 1		!si++
+		SUB DI, 1		!di--
+		LOOP ciclo		!goto ciclo
+		JMP fine
 		no:
 			MOVB DL, 0
-			JMP ciclo
+			JMP fine
 	!end
 	fine:
 	POP BP !obbligatorio

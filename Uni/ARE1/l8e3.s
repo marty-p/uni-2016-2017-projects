@@ -3,10 +3,6 @@
 !Usare una funzione per fare la somma dei vettori e il main per stampare a
 !video il terzo dopo l'elaborazione.
 
-! pseudo-code:
-! a=10
-! printf("%d", square(a))
-
 
 _EXIT = 1
 _PRINTF = 127
