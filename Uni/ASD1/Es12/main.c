@@ -177,15 +177,15 @@ void processAll()
 	int i, j, k, n;
 
 	#ifdef TEST_ALL_N
-	for (i=0; i<SCHEMA_N; i++)
+	for (k=0; k<N_LIST; k++)
 	#else
-	i = get_schema_input();
+	k = get_n_input();
 	#endif
 	{
 		#ifdef TEST_ALL_N
-		for (k=0; k<N_LIST; k++)
+		for (i=0; i<SCHEMA_N; i++)
 		#else
-		k = get_n_input();
+		i = get_schema_input();
 		#endif
 		{
 			#ifdef TEST_ALL_N
