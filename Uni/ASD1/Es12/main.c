@@ -8,10 +8,14 @@
 #define MAX 100
 #define PCT_SORT_NEXT 80
 // #define ENABLE_PRINT_ARRAY
-// #define TEST_ALL_N
+#define TEST_ALL_N
 
 typedef int elem;
 typedef elem * array;
+
+int confronti = 0;
+int scambi = 0;
+double tempo = 0.0;
 
 #define SCHEMA_N 4
 typedef enum {ORDINATO, QUASI_ORDINATO, INV_ORDINATO, CASUALE} inputType;
@@ -70,8 +74,13 @@ void selectionSort(array a, int n);
 int main(int argc, char** argv)
 {
 	srand(time(NULL));
+
+	clock_t start = clock();
+	// <chiamata all'algoritmo di ordinamento>
 	processAll();
-	return (EXIT_SUCCESS);
+	// <fine chiamata all'algoritmo di ordinamento>
+	printf("Processed everything in %f seconds\n", ((double)(clock()-start))/CLOCKS_PER_SEC);
+	return EXIT_SUCCESS;
 }
 
 int get_random_number(int min, int max)
@@ -193,6 +202,10 @@ void processAll()
 
 				algList[j](algs[j], n, schema_list[i]);
 
+				scores[i][k][j].tempo = tempo;
+				scores[i][k][j].confronti = confronti;
+				scores[i][k][j].scambi = scambi;
+
 				#ifdef ENABLE_PRINT_ARRAY
 				printf("%s END:\n", get_alg_name(j));
 				print_array(algs[j], n);
@@ -244,17 +257,56 @@ array genera_array(int dimensione, inputType tipo_schema)
 	return tmp_a;
 }
 
+void selectionSortWithTime(array a, int n, inputType tipo_schema)
+{
+	clock_t start = clock();
+	// <chiamata all'algoritmo di ordinamento>
+	selectionSort(a, n);
+	// <fine chiamata all'algoritmo di ordinamento>
+	tempo = ((double)(clock()-start))/CLOCKS_PER_SEC;
+	printf("SELECT_SORT TIPO: %s, N: %d, SECS: %f\n", get_schema_name(tipo_schema), n, tempo);
+}
+
+void quickSortWithTime(array a, int n, inputType tipo_schema)
+{
+	clock_t start = clock();
+	// <chiamata all'algoritmo di ordinamento>
+	quickSort(a, 0, n-1);
+	// <fine chiamata all'algoritmo di ordinamento>
+	tempo = ((double)(clock()-start))/CLOCKS_PER_SEC;
+	printf("QUICK_SORT TIPO: %s, N: %d, SECS: %f\n", get_schema_name(tipo_schema), n, tempo);
+}
+
 void insertionSortWithTime(array a, int n, inputType tipo_schema)
 {
-	clock_t start, end;
-	double tempo;
-	start = clock();
-	// <chiamata all’algoritmo di ordinamento>
+	clock_t start = clock();
+	// <chiamata all'algoritmo di ordinamento>
 	insertionSort(a, n);
-	// <fine chiamata all’algoritmo di ordinamento>
-	end = clock();
-	tempo = ((double) (end - start)) / CLOCKS_PER_SEC;
+	// <fine chiamata all'algoritmo di ordinamento>
+	tempo = ((double)(clock()-start))/CLOCKS_PER_SEC;
 	printf("INSERT_SORT TIPO: %s, N: %d, SECS: %f\n", get_schema_name(tipo_schema), n, tempo);
+}
+
+void mergeSortWithTime(array a, int n, inputType tipo_schema)
+{
+	array ordinata = calloc(n, sizeof(elem));
+	clock_t start = clock();
+	// <chiamata all'algoritmo di ordinamento>
+	mergeSort(a, ordinata, 0, n-1);
+	// <fine chiamata all'algoritmo di ordinamento>
+	tempo = ((double)(clock()-start))/CLOCKS_PER_SEC;
+	printf("MERGE_SORT TIPO: %s, N: %d, SECS: %f\n", get_schema_name(tipo_schema), n, tempo);
+	free(ordinata);
+}
+
+void heapSortWithTime(array a, int n, inputType tipo_schema)
+{
+	clock_t start = clock();
+	// <chiamata all'algoritmo di ordinamento>
+	heapSort(a-1, n);
+	// <fine chiamata all'algoritmo di ordinamento>
+	tempo = ((double)(clock()-start))/CLOCKS_PER_SEC;
+	printf("HEAP_SORT TIPO: %s, N: %d, SECS: %f\n", get_schema_name(tipo_schema), n, tempo);
 }
 
 void insertionSort(array lista, int dim)
@@ -273,19 +325,6 @@ void insertionSort(array lista, int dim)
 		}
 		lista[j+1] = prossimo;
 	}
-}
-
-void quickSortWithTime(array a, int n, inputType tipo_schema)
-{
-	clock_t start, end;
-	double tempo;
-	start = clock();
-	// <chiamata all’algoritmo di ordinamento>
-	quickSort(a, 0, n-1);
-	// <fine chiamata all’algoritmo di ordinamento>
-	end = clock();
-	tempo = ((double) (end - start)) / CLOCKS_PER_SEC;
-	printf("QUICK_SORT TIPO: %s, N: %d, SECS: %f\n", get_schema_name(tipo_schema), n, tempo);
 }
 
 void quickSort(array lista, int u, int v)
@@ -390,21 +429,6 @@ void mergeSort(array lista, array ordinata, int lower, int upper)
 	merge(lista, ordinata, lower, medium, upper);
 }
 
-void mergeSortWithTime(array a, int n, inputType tipo_schema)
-{
-	array ordinata = calloc(n, sizeof(elem));
-	clock_t start, end;
-	double tempo;
-	start = clock();
-	// <chiamata all’algoritmo di ordinamento>
-	mergeSort(a, ordinata, 0, n-1);
-	// <fine chiamata all’algoritmo di ordinamento>
-	end = clock();
-	tempo = ((double) (end - start)) / CLOCKS_PER_SEC;
-	printf("MERGE_SORT TIPO: %s, N: %d, SECS: %f\n", get_schema_name(tipo_schema), n, tempo);
-	free(ordinata);
-}
-
 void adatta(array lista, int radice, int n)
 {
 	elem temp = lista[radice];
@@ -440,41 +464,6 @@ void heapSort(array lista, int n)
 		// si opera nuovamente sullo heap ridotto di un elemento
 		adatta(lista, 1, i);
 	}
-}
-
-void heapSortWithTime(array a, int n, inputType tipo_schema)
-{
-	array heap = calloc(n+1, sizeof(elem));
-//	int i;
-//	for (i=0; i<n; i++)
-//		heap[i+1]=a[i];
-	memcpy(heap+1, a, n*sizeof(elem));
-	clock_t start, end;
-	double tempo;
-	start = clock();
-	// <chiamata all’algoritmo di ordinamento>
-	heapSort(heap, n);
-	// <fine chiamata all’algoritmo di ordinamento>
-	end = clock();
-	tempo = ((double) (end - start)) / CLOCKS_PER_SEC;
-	printf("HEAP_SORT TIPO: %s, N: %d, SECS: %f\n", get_schema_name(tipo_schema), n, tempo);
-//	for (i=0; i<n; i++)
-//		a[i]=heap[i+1];
-	memcpy(a, heap+1, n*sizeof(elem));
-	free(heap);
-}
-
-void selectionSortWithTime(array a, int n, inputType tipo_schema)
-{
-	clock_t start, end;
-	double tempo;
-	start = clock();
-	// <chiamata all’algoritmo di ordinamento>
-	selectionSort(a, n);
-	// <fine chiamata all’algoritmo di ordinamento>
-	end = clock();
-	tempo = ((double) (end - start)) / CLOCKS_PER_SEC;
-	printf("SELECT_SORT TIPO: %s, N: %d, SECS: %f\n", get_schema_name(tipo_schema), n, tempo);
 }
 
 void selectionSort(array a, int n)
