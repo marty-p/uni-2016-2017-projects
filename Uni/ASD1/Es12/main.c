@@ -8,24 +8,45 @@
 #define MAX 100
 #define N 100
 //#define N 20000
-#define N_LIST 7
 #define PCT_SORT_NEXT 80
 #define ENABLE_PRINT_ARRAY
 //#define TEST_ALL_N
-#define SCHEMA_N 4
 
 typedef int elem;
 typedef elem * array;
+
+#define SCHEMA_N 4
 typedef enum {ORDINATO, QUASI_ORDINATO, INV_ORDINATO, CASUALE} inputType;
+inputType schema_list[SCHEMA_N] = {ORDINATO, QUASI_ORDINATO, INV_ORDINATO, CASUALE};
+
+#define N_LIST 7
+int nList[N_LIST] = {500, 1000, 2000, 5000, 10000, 20000, 50000};
+
+#define ALG_LIST 5
+typedef void (*algFunc)(array a, int n, inputType tipo_schema);
+void selectionSortWithTime(array a, int n, inputType tipo_schema);
+void insertionSortWithTime(array a, int n, inputType tipo_schema);
+void quickSortWithTime(array a, int n, inputType tipo_schema);
+void mergeSortWithTime(array a, int n, inputType tipo_schema);
+void heapSortWithTime(array a, int n, inputType tipo_schema);
+algFunc algList[ALG_LIST] = {selectionSortWithTime, insertionSortWithTime, quickSortWithTime, mergeSortWithTime, heapSortWithTime};
+
+typedef struct
+{
+	int confronti;
+	int scambi;
+	double tempo;
+} Benchmark;
+
+Benchmark score[SCHEMA_N][N_LIST][ALG_LIST] = {};
 
 void processAll(int n);
 int get_random_number(int min, int max);
 void print_array(array a, int n);
 void swap_numbers(array a, int n);
 array genera_array(int dimensione, inputType tipo_schema);
-void insertionSortWithTime(array lista, int dim, inputType tipo_schema);
+
 void insertionSort(array lista, int dim);
-void quickSortWithTime(array a, int n, inputType tipo_schema);
 void quickSort(array lista, int u, int v);
 int perno(array lista, int primo, int ultimo);
 void swap(array a, array b);
@@ -34,14 +55,11 @@ const char * getTipoSchemaName(inputType tipo_schema);
 _Bool check_sort(array A, int n);
 
 void merge(array lista, array ordinata, int i, int m, int n);
-void mergesort(array lista, array ordinata, int lower, int upper);
-void mergeSortWithTime(array a, int n, inputType tipo_schema);
+void mergeSort(array lista, array ordinata, int lower, int upper);
 
 void adatta(array lista, int radice, int n);
-void heapsort(array lista, int n);
-void heapSortWithTime(array a, int n, inputType tipo_schema);
+void heapSort(array lista, int n);
 
-void selectionSortWithTime(array A, int n, inputType tipo_schema);
 void selectionSort(array a, int n);
 
 int main(int argc, char** argv)
@@ -50,7 +68,6 @@ int main(int argc, char** argv)
 	int n = N;
 #else
 	int i;
-	int nList[N_LIST] = {500, 1000, 2000, 5000, 10000, 20000, 50000};
 #endif
 	srand(time(NULL));
 #ifndef TEST_ALL_N
@@ -84,7 +101,6 @@ void processAll(int n)
 	array heapArray = NULL;
 	array selectArray = NULL;
 	int i;
-	inputType schema_list[SCHEMA_N] = {ORDINATO, QUASI_ORDINATO, INV_ORDINATO, CASUALE};
 
 	printf("n=%d\n", n);
 	for (i=0; i<SCHEMA_N; i++)
@@ -358,13 +374,13 @@ void merge(array lista, array ordinata, int i, int m, int n)
 		lista[i]=ordinata[i];
 }
 
-void mergesort(array lista, array ordinata, int lower, int upper)
+void mergeSort(array lista, array ordinata, int lower, int upper)
 {
 	if (lower >= upper)
 		return;
 	int medium = (lower + upper)/2;
-	mergesort(lista, ordinata, lower, medium);
-	mergesort(lista, ordinata, medium+1, upper);
+	mergeSort(lista, ordinata, lower, medium);
+	mergeSort(lista, ordinata, medium+1, upper);
 	merge(lista, ordinata, lower, medium, upper);
 }
 
@@ -375,7 +391,7 @@ void mergeSortWithTime(array a, int n, inputType tipo_schema)
 	double tempo;
 	start = clock();
 	// <chiamata all’algoritmo di ordinamento>
-	mergesort(a, ordinata, 0, n-1);
+	mergeSort(a, ordinata, 0, n-1);
 	// <fine chiamata all’algoritmo di ordinamento>
 	end = clock();
 	tempo = ((double) (end - start)) / CLOCKS_PER_SEC;
@@ -405,7 +421,7 @@ void adatta(array lista, int radice, int n)
 	lista[figlio/2] = temp; // copia la radice nella posizione corretta
 }
 
-void heapsort(array lista, int n)
+void heapSort(array lista, int n)
 {
 	int i;
 	// Si costruisce lo heap associato all'insieme da ordinare lista
@@ -431,7 +447,7 @@ void heapSortWithTime(array a, int n, inputType tipo_schema)
 	double tempo;
 	start = clock();
 	// <chiamata all’algoritmo di ordinamento>
-	heapsort(heap, n);
+	heapSort(heap, n);
 	// <fine chiamata all’algoritmo di ordinamento>
 	end = clock();
 	tempo = ((double) (end - start)) / CLOCKS_PER_SEC;
