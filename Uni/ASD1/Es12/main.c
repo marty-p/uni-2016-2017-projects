@@ -8,7 +8,7 @@
 #define MAX 100
 #define PCT_SORT_NEXT 80
 // #define ENABLE_PRINT_ARRAY
-#define TEST_ALL_N
+// #define TEST_ALL_N
 
 typedef int elem;
 typedef elem * array;
@@ -20,7 +20,7 @@ inputType schema_list[SCHEMA_N] = {ORDINATO, QUASI_ORDINATO, INV_ORDINATO, CASUA
 #define N_LIST 7
 int nList[N_LIST] = {500, 1000, 2000, 5000, 10000, 20000, 50000};
 
-#define ALG_LIST 5
+#define ALG_N 5
 typedef void (*algFunc)(array a, int n, inputType tipo_schema);
 void selectionSortWithTime(array a, int n, inputType tipo_schema);
 void insertionSortWithTime(array a, int n, inputType tipo_schema);
@@ -28,7 +28,7 @@ void quickSortWithTime(array a, int n, inputType tipo_schema);
 void mergeSortWithTime(array a, int n, inputType tipo_schema);
 void heapSortWithTime(array a, int n, inputType tipo_schema);
 typedef enum {SELECTSORT, INSERTSORT, QUICKSORT, MERGESORT, HEAPSORT} algType;
-algFunc algList[ALG_LIST] = {selectionSortWithTime, insertionSortWithTime, quickSortWithTime, mergeSortWithTime, heapSortWithTime};
+algFunc algList[ALG_N] = {selectionSortWithTime, insertionSortWithTime, quickSortWithTime, mergeSortWithTime, heapSortWithTime};
 
 typedef struct
 {
@@ -36,10 +36,15 @@ typedef struct
 	int scambi;
 	double tempo;
 } Benchmark;
-Benchmark score[SCHEMA_N][N_LIST][ALG_LIST] = {};
+Benchmark score[SCHEMA_N][N_LIST][ALG_N] = {};
 
-const char * getTipoSchemaName(inputType tipo_schema);
-const char * getTipoAlgName(algType tipo_alg);
+const char * get_schema_name(inputType tipo_schema);
+const char * get_alg_name(algType tipo_alg);
+const char * get_n_name(int n);
+
+int get_schema_input();
+int get_alg_input();
+int get_n_input();
 
 void processAll();
 int get_random_number(int min, int max);
@@ -82,7 +87,7 @@ void print_array(array a, int n)
 	printf("\n");
 }
 
-const char * getTipoSchemaName(inputType tipo_schema)
+const char * get_schema_name(inputType tipo_schema)
 {
 	static const char * schema_name[SCHEMA_N] = {"ORDINATO", "QUASI_ORDINATO", "INV_ORDINATO", "CASUALE"};
 	if (tipo_schema >= SCHEMA_N)
@@ -90,18 +95,71 @@ const char * getTipoSchemaName(inputType tipo_schema)
 	return schema_name[tipo_schema];
 }
 
-const char * getTipoAlgName(algType tipo_alg)
+const char * get_alg_name(algType tipo_alg)
 {
-	static const char * alg_name[ALG_LIST] = {"SELECTSORT", "INSERTSORT", "QUICKSORT", "MERGESORT", "HEAPSORT"};
-	if (tipo_alg >= ALG_LIST)
+	static const char * alg_name[ALG_N] = {"SELECTSORT", "INSERTSORT", "QUICKSORT", "MERGESORT", "HEAPSORT"};
+	if (tipo_alg >= ALG_N)
 		return "";
 	return alg_name[tipo_alg];
+}
+
+const char * get_n_name(int n)
+{
+	static const char * n_name[N_LIST] = {"500", "1000", "2000", "5000", "10000", "20000", "50000"};
+	if (n >= N_LIST)
+		return "";
+	return n_name[n];
+}
+
+int get_schema_input()
+{
+	int i;
+	do
+	{
+		printf("Schema Input:\n");
+		for (i=0; i<SCHEMA_N; i++)
+			printf("%d: %s\n", i, get_schema_name(i));
+		scanf("%d", &i);
+		getchar();
+	}
+	while (i<0 || i>=SCHEMA_N);
+	return i;
+}
+
+int get_alg_input()
+{
+	int i;
+	do
+	{
+		printf("Alg Input:\n");
+		for (i=0; i<ALG_N; i++)
+			printf("%d: %s\n", i, get_alg_name(i));
+		scanf("%d", &i);
+		getchar();
+	}
+	while (i<0 || i>=ALG_N);
+	return i;
+}
+
+int get_n_input()
+{
+	int i;
+	do
+	{
+		printf("N Input:\n");
+		for (i=0; i<N_LIST; i++)
+			printf("%d: %s\n", i, get_n_name(i));
+		scanf("%d", &i);
+		getchar();
+	}
+	while (i<0 || i>=N_LIST);
+	return i;
 }
 
 void processAll()
 {
 	array base = NULL;
-	array algs[ALG_LIST] = {};
+	array algs[ALG_N] = {};
 	int i, j, k, n;
 
 	#ifdef TEST_ALL_N
@@ -120,7 +178,7 @@ void processAll()
 			base = genera_array(n, schema_list[i]);
 
 			#ifdef TEST_ALL_N
-			for (j=0; j<ALG_LIST; j++)
+			for (j=0; j<ALG_N; j++)
 			#else
 			j = get_alg_input();
 			#endif
@@ -129,19 +187,19 @@ void processAll()
 				memcpy(algs[j], base, n*sizeof(elem));
 
 				#ifdef ENABLE_PRINT_ARRAY
-				printf("%s BEGIN:\n", getTipoAlgName(j));
+				printf("%s BEGIN:\n", get_alg_name(j));
 				print_array(algs[j], n);
 				#endif
 
 				algList[j](algs[j], n, schema_list[i]);
 
 				#ifdef ENABLE_PRINT_ARRAY
-				printf("%s END:\n", getTipoAlgName(j));
+				printf("%s END:\n", get_alg_name(j));
 				print_array(algs[j], n);
 				#endif
 
 				if (check_sort(algs[j], n)==false)
-					printf("%s wrong sort\n", getTipoAlgName(j));
+					printf("%s wrong sort\n", get_alg_name(j));
 
 				free(algs[j]);
 				algs[j] = NULL;
@@ -196,7 +254,7 @@ void insertionSortWithTime(array a, int n, inputType tipo_schema)
 	// <fine chiamata all’algoritmo di ordinamento>
 	end = clock();
 	tempo = ((double) (end - start)) / CLOCKS_PER_SEC;
-	printf("INSERT_SORT TIPO: %s, N: %d, SECS: %f\n", getTipoSchemaName(tipo_schema), n, tempo);
+	printf("INSERT_SORT TIPO: %s, N: %d, SECS: %f\n", get_schema_name(tipo_schema), n, tempo);
 }
 
 void insertionSort(array lista, int dim)
@@ -227,7 +285,7 @@ void quickSortWithTime(array a, int n, inputType tipo_schema)
 	// <fine chiamata all’algoritmo di ordinamento>
 	end = clock();
 	tempo = ((double) (end - start)) / CLOCKS_PER_SEC;
-	printf("QUICK_SORT TIPO: %s, N: %d, SECS: %f\n", getTipoSchemaName(tipo_schema), n, tempo);
+	printf("QUICK_SORT TIPO: %s, N: %d, SECS: %f\n", get_schema_name(tipo_schema), n, tempo);
 }
 
 void quickSort(array lista, int u, int v)
@@ -343,7 +401,7 @@ void mergeSortWithTime(array a, int n, inputType tipo_schema)
 	// <fine chiamata all’algoritmo di ordinamento>
 	end = clock();
 	tempo = ((double) (end - start)) / CLOCKS_PER_SEC;
-	printf("MERGE_SORT TIPO: %s, N: %d, SECS: %f\n", getTipoSchemaName(tipo_schema), n, tempo);
+	printf("MERGE_SORT TIPO: %s, N: %d, SECS: %f\n", get_schema_name(tipo_schema), n, tempo);
 	free(ordinata);
 }
 
@@ -399,7 +457,7 @@ void heapSortWithTime(array a, int n, inputType tipo_schema)
 	// <fine chiamata all’algoritmo di ordinamento>
 	end = clock();
 	tempo = ((double) (end - start)) / CLOCKS_PER_SEC;
-	printf("HEAP_SORT TIPO: %s, N: %d, SECS: %f\n", getTipoSchemaName(tipo_schema), n, tempo);
+	printf("HEAP_SORT TIPO: %s, N: %d, SECS: %f\n", get_schema_name(tipo_schema), n, tempo);
 //	for (i=0; i<n; i++)
 //		a[i]=heap[i+1];
 	memcpy(a, heap+1, n*sizeof(elem));
@@ -416,7 +474,7 @@ void selectionSortWithTime(array a, int n, inputType tipo_schema)
     // <fine chiamata all’algoritmo di ordinamento>
     end = clock();
     tempo = ((double) (end - start)) / CLOCKS_PER_SEC;
-	printf("SELECT_SORT TIPO: %s, N: %d, SECS: %f\n", getTipoSchemaName(tipo_schema), n, tempo);
+	printf("SELECT_SORT TIPO: %s, N: %d, SECS: %f\n", get_schema_name(tipo_schema), n, tempo);
 }
 
 void selectionSort(array a, int n)
