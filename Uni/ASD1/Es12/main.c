@@ -36,7 +36,7 @@ typedef struct
 	int scambi;
 	double tempo;
 } Benchmark;
-Benchmark score[SCHEMA_N][N_LIST][ALG_N] = {};
+Benchmark scores[SCHEMA_N][N_LIST][ALG_N] = {};
 
 const char * get_schema_name(inputType tipo_schema);
 const char * get_alg_name(algType tipo_alg);
@@ -223,22 +223,22 @@ array genera_array(int dimensione, inputType tipo_schema)
 	{
 		switch (tipo_schema)
 		{
-		case ORDINATO:
-			tmp_a[i] = i;
-			break;
-		case QUASI_ORDINATO:
-			if (get_random_number(MIN, MAX) <= PCT_SORT_NEXT)
-				tmp_a[i] = prev_n + 1;
-			else
+			case ORDINATO:
+				tmp_a[i] = i;
+				break;
+			case QUASI_ORDINATO:
+				if (get_random_number(MIN, MAX) <= PCT_SORT_NEXT)
+					tmp_a[i] = prev_n + 1;
+				else
+					tmp_a[i] = get_random_number(MIN, MAX);
+				prev_n = tmp_a[i];
+				break;
+			case INV_ORDINATO:
+				tmp_a[i] = dimensione-i-1;
+				break;
+			case CASUALE:
 				tmp_a[i] = get_random_number(MIN, MAX);
-			prev_n = tmp_a[i];
-			break;
-		case INV_ORDINATO:
-			tmp_a[i] = dimensione-i-1;
-			break;
-		case CASUALE:
-			tmp_a[i] = get_random_number(MIN, MAX);
-			break;
+				break;
 		}
 	}
 	return tmp_a;
@@ -466,29 +466,29 @@ void heapSortWithTime(array a, int n, inputType tipo_schema)
 
 void selectionSortWithTime(array a, int n, inputType tipo_schema)
 {
-    clock_t start, end;
-    double tempo;
-    start = clock();
-    // <chiamata all’algoritmo di ordinamento>
-    selectionSort(a, n);
-    // <fine chiamata all’algoritmo di ordinamento>
-    end = clock();
-    tempo = ((double) (end - start)) / CLOCKS_PER_SEC;
+	clock_t start, end;
+	double tempo;
+	start = clock();
+	// <chiamata all’algoritmo di ordinamento>
+	selectionSort(a, n);
+	// <fine chiamata all’algoritmo di ordinamento>
+	end = clock();
+	tempo = ((double) (end - start)) / CLOCKS_PER_SEC;
 	printf("SELECT_SORT TIPO: %s, N: %d, SECS: %f\n", get_schema_name(tipo_schema), n, tempo);
 }
 
 void selectionSort(array a, int n)
 {
-    int i, j, min;
-    for (i = 0; i < n-1; i++)
-    {
-        min = i;
-        for (j = i+1; j < n; j++)
-        {
-            if (a[j] < a[min])
-                min = j;
-        }
+	int i, j, min;
+	for (i = 0; i < n-1; i++)
+	{
+		min = i;
+		for (j = i+1; j < n; j++)
+		{
+			if (a[j] < a[min])
+				min = j;
+		}
 		swap(&a[min], &a[i]);
-    }
+	}
 }
 
