@@ -6,8 +6,6 @@
 #include <stdbool.h>
 #define MIN 0
 #define MAX 100
-#define N 100
-//#define N 20000
 #define PCT_SORT_NEXT 80
 // #define ENABLE_PRINT_ARRAY
 #define TEST_ALL_N
@@ -43,7 +41,7 @@ Benchmark score[SCHEMA_N][N_LIST][ALG_LIST] = {};
 const char * getTipoSchemaName(inputType tipo_schema);
 const char * getTipoAlgName(algType tipo_alg);
 
-void processAll(int n);
+void processAll();
 int get_random_number(int min, int max);
 void print_array(array a, int n);
 void swap_numbers(array a, int n);
@@ -66,18 +64,8 @@ void selectionSort(array a, int n);
 
 int main(int argc, char** argv)
 {
-#ifndef TEST_ALL_N
-	int n = N;
-#else
-	int i;
-#endif
 	srand(time(NULL));
-#ifndef TEST_ALL_N
-	processAll(n);
-#else
-	for (i=0; i<N_LIST; i++)
-		processAll(nList[i]);
-#endif
+	processAll();
 	return (EXIT_SUCCESS);
 }
 
@@ -110,51 +98,54 @@ const char * getTipoAlgName(algType tipo_alg)
 	return alg_name[tipo_alg];
 }
 
-void processAll(int n)
+void processAll()
 {
 	array base = NULL;
 	array algs[ALG_LIST] = {};
-	int i, j;
+	int i, j, k, n;
 
-	printf("n=%d\n", n);
+	#ifdef TEST_ALL_N
 	for (i=0; i<SCHEMA_N; i++)
+	#else
+	i = get_schema_input();
+	#endif
 	{
-		base = genera_array(n, schema_list[i]);
-
-		for (j=0; j<ALG_LIST; j++)
+		#ifdef TEST_ALL_N
+		for (k=0; k<N_LIST; k++)
+		#else
+		k = get_n_input();
+		#endif
 		{
-			algs[SELECTSORT] = calloc(n, sizeof(elem));
-			memcpy(algs[SELECTSORT], base, n*sizeof(elem));
+			n = nList[k];
+			base = genera_array(n, schema_list[i]);
 
-			algs[INSERTSORT] = calloc(n, sizeof(elem));
-			memcpy(algs[INSERTSORT], base, n*sizeof(elem));
-
-			algs[QUICKSORT] = calloc(n, sizeof(elem));
-			memcpy(algs[QUICKSORT], base, n*sizeof(elem));
-
-			algs[MERGESORT] = calloc(n, sizeof(elem));
-			memcpy(algs[MERGESORT], base, n*sizeof(elem));
-
-			algs[HEAPSORT] = calloc(n, sizeof(elem));
-			memcpy(algs[HEAPSORT], base, n*sizeof(elem));
-
-			#ifdef ENABLE_PRINT_ARRAY
-			printf("%s BEGIN:\n", getTipoAlgName(j));
-			print_array(algs[j], n);
+			#ifdef TEST_ALL_N
+			for (j=0; j<ALG_LIST; j++)
+			#else
+			j = get_alg_input();
 			#endif
+			{
+				algs[j] = calloc(n, sizeof(elem));
+				memcpy(algs[j], base, n*sizeof(elem));
 
-			algList[j](algs[j], n, schema_list[i]);
+				#ifdef ENABLE_PRINT_ARRAY
+				printf("%s BEGIN:\n", getTipoAlgName(j));
+				print_array(algs[j], n);
+				#endif
 
-			#ifdef ENABLE_PRINT_ARRAY
-			printf("%s END:\n", getTipoAlgName(j));
-			print_array(algs[j], n);
-			#endif
+				algList[j](algs[j], n, schema_list[i]);
 
-			if (check_sort(algs[j], n)==false)
-				printf("%s wrong sort\n", getTipoAlgName(j));
+				#ifdef ENABLE_PRINT_ARRAY
+				printf("%s END:\n", getTipoAlgName(j));
+				print_array(algs[j], n);
+				#endif
 
-			free(algs[j]);
-			algs[j] = NULL;
+				if (check_sort(algs[j], n)==false)
+					printf("%s wrong sort\n", getTipoAlgName(j));
+
+				free(algs[j]);
+				algs[j] = NULL;
+			}
 		}
 	}
 }
