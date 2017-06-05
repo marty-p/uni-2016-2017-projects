@@ -217,7 +217,13 @@ void processAll()
 				free(algs[j]);
 				algs[j] = NULL;
 			}
+			#ifdef TEST_ALL_N
+			puts("------------------------------");
+			#endif
 		}
+		#ifdef TEST_ALL_N
+		puts("------------------------------------------------------------");
+		#endif
 	}
 }
 
