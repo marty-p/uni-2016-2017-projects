@@ -9,8 +9,8 @@
 #define N 100
 //#define N 20000
 #define PCT_SORT_NEXT 80
-#define ENABLE_PRINT_ARRAY
-//#define TEST_ALL_N
+// #define ENABLE_PRINT_ARRAY
+#define TEST_ALL_N
 
 typedef int elem;
 typedef elem * array;
@@ -29,6 +29,7 @@ void insertionSortWithTime(array a, int n, inputType tipo_schema);
 void quickSortWithTime(array a, int n, inputType tipo_schema);
 void mergeSortWithTime(array a, int n, inputType tipo_schema);
 void heapSortWithTime(array a, int n, inputType tipo_schema);
+typedef enum {SELECTSORT, INSERTSORT, QUICKSORT, MERGESORT, HEAPSORT} algType;
 algFunc algList[ALG_LIST] = {selectionSortWithTime, insertionSortWithTime, quickSortWithTime, mergeSortWithTime, heapSortWithTime};
 
 typedef struct
@@ -37,8 +38,10 @@ typedef struct
 	int scambi;
 	double tempo;
 } Benchmark;
-
 Benchmark score[SCHEMA_N][N_LIST][ALG_LIST] = {};
+
+const char * getTipoSchemaName(inputType tipo_schema);
+const char * getTipoAlgName(algType tipo_alg);
 
 void processAll(int n);
 int get_random_number(int min, int max);
@@ -51,7 +54,6 @@ void quickSort(array lista, int u, int v);
 int perno(array lista, int primo, int ultimo);
 void swap(array a, array b);
 int findmin(array A, int minpos, int start, int dim);
-const char * getTipoSchemaName(inputType tipo_schema);
 _Bool check_sort(array A, int n);
 
 void merge(array lista, array ordinata, int i, int m, int n);
@@ -92,105 +94,68 @@ void print_array(array a, int n)
 	printf("\n");
 }
 
+const char * getTipoSchemaName(inputType tipo_schema)
+{
+	static const char * schema_name[SCHEMA_N] = {"ORDINATO", "QUASI_ORDINATO", "INV_ORDINATO", "CASUALE"};
+	if (tipo_schema >= SCHEMA_N)
+		return "";
+	return schema_name[tipo_schema];
+}
+
+const char * getTipoAlgName(algType tipo_alg)
+{
+	static const char * alg_name[ALG_LIST] = {"SELECTSORT", "INSERTSORT", "QUICKSORT", "MERGESORT", "HEAPSORT"};
+	if (tipo_alg >= ALG_LIST)
+		return "";
+	return alg_name[tipo_alg];
+}
+
 void processAll(int n)
 {
 	array base = NULL;
-	array insertArray = NULL;
-	array quickArray = NULL;
-	array mergeArray = NULL;
-	array heapArray = NULL;
-	array selectArray = NULL;
-	int i;
+	array algs[ALG_LIST] = {};
+	int i, j;
 
 	printf("n=%d\n", n);
 	for (i=0; i<SCHEMA_N; i++)
 	{
 		base = genera_array(n, schema_list[i]);
 
-		insertArray = calloc(n, sizeof(elem));
-		memcpy(insertArray, base, n*sizeof(elem));
+		for (j=0; j<ALG_LIST; j++)
+		{
+			algs[SELECTSORT] = calloc(n, sizeof(elem));
+			memcpy(algs[SELECTSORT], base, n*sizeof(elem));
 
-		quickArray = calloc(n, sizeof(elem));
-		memcpy(quickArray, base, n*sizeof(elem));
+			algs[INSERTSORT] = calloc(n, sizeof(elem));
+			memcpy(algs[INSERTSORT], base, n*sizeof(elem));
 
-		mergeArray = calloc(n, sizeof(elem));
-		memcpy(mergeArray, base, n*sizeof(elem));
+			algs[QUICKSORT] = calloc(n, sizeof(elem));
+			memcpy(algs[QUICKSORT], base, n*sizeof(elem));
 
-		heapArray = calloc(n, sizeof(elem));
-		memcpy(heapArray, base, n*sizeof(elem));
+			algs[MERGESORT] = calloc(n, sizeof(elem));
+			memcpy(algs[MERGESORT], base, n*sizeof(elem));
 
-		selectArray = calloc(n, sizeof(elem));
-		memcpy(selectArray, base, n*sizeof(elem));
+			algs[HEAPSORT] = calloc(n, sizeof(elem));
+			memcpy(algs[HEAPSORT], base, n*sizeof(elem));
 
-#ifdef ENABLE_PRINT_ARRAY
-		puts("insertArray BEGIN:");
-		print_array(insertArray, n);
+			#ifdef ENABLE_PRINT_ARRAY
+			printf("%s BEGIN:\n", getTipoAlgName(j));
+			print_array(algs[j], n);
+			#endif
 
-		puts("quickArray BEGIN:");
-		print_array(quickArray, n);
+			algList[j](algs[j], n, schema_list[i]);
 
-		puts("mergeArray BEGIN:");
-		print_array(mergeArray, n);
+			#ifdef ENABLE_PRINT_ARRAY
+			printf("%s END:\n", getTipoAlgName(j));
+			print_array(algs[j], n);
+			#endif
 
-		puts("heapArray BEGIN:");
-		print_array(heapArray, n);
+			if (check_sort(algs[j], n)==false)
+				printf("%s wrong sort\n", getTipoAlgName(j));
 
-		puts("selectArray BEGIN:");
-		print_array(selectArray, n);
-#endif
-
-		insertionSortWithTime(insertArray, n, schema_list[i]);
-		quickSortWithTime(quickArray, n, schema_list[i]);
-		mergeSortWithTime(mergeArray, n, schema_list[i]);
-		heapSortWithTime(heapArray, n, schema_list[i]);
-		selectionSortWithTime(selectArray, n, schema_list[i]);
-
-#ifdef ENABLE_PRINT_ARRAY
-		puts("insertArray END:");
-		print_array(insertArray, n);
-
-		puts("quickArray END:");
-		print_array(quickArray, n);
-
-		puts("mergeArray END:");
-		print_array(mergeArray, n);
-
-		puts("heapArray END:");
-		print_array(heapArray, n);
-
-		puts("selectArray END:");
-		print_array(selectArray, n);
-#endif
-
-		if (check_sort(insertArray, n)==false)
-			puts("insertArray wrong sort");
-
-		if (check_sort(quickArray, n)==false)
-			puts("quickArray wrong sort");
-
-		if (check_sort(mergeArray, n)==false)
-			puts("mergeArray wrong sort");
-
-		if (check_sort(heapArray, n)==false)
-			puts("heapArray wrong sort");
-
-		if (check_sort(selectArray, n)==false)
-			puts("selectArray wrong sort");
-
-		free(insertArray);
-		insertArray = NULL;
-
-		free(quickArray);
-		quickArray = NULL;
-
-		free(mergeArray);
-		mergeArray = NULL;
-
-		free(heapArray);
-		heapArray = NULL;
-
-		free(selectArray);
-		selectArray = NULL;
+			free(algs[j]);
+			algs[j] = NULL;
+		}
 	}
 }
 
@@ -292,8 +257,8 @@ int perno(array lista, int primo, int ultimo)
 	pivot = lista[primo];
 	while (i < j)
 	{
-		do {i = i+1;} while (lista[i] <= pivot);
-		do {j = j-1;} while (lista[j] > pivot);
+		do {i = i+1;} while (lista[i] <= pivot && i <= ultimo);
+		do {j = j-1;} while (lista[j] > pivot && j >= primo);
 		if (i < j)
 			swap(&lista[i], &lista[j]);
 	}
@@ -318,14 +283,6 @@ int findmin(array A, int minpos, int start, int dim)
 	if (A[start] < A[minpos])
 		minpos = start;
 	return findmin(A, minpos, start+1, dim);
-}
-
-const char * getTipoSchemaName(inputType tipo_schema)
-{
-	static const char * schema_name[SCHEMA_N] = {"ORDINATO", "QUASI_ORDINATO", "INV_ORDINATO", "CASUALE"};
-	if (tipo_schema >= SCHEMA_N)
-		return "";
-	return schema_name[tipo_schema];
 }
 
 _Bool check_sort(array A, int n)
