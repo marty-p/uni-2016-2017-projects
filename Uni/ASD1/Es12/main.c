@@ -26,13 +26,13 @@ int nList[N_LIST] = {500, 1000, 2000, 5000, 10000, 20000, 50000};
 
 #define ALG_N 5
 typedef void (*algFunc)(array a, int n, inputType tipo_schema);
-void selectionSortWithTime(array a, int n, inputType tipo_schema);
-void insertionSortWithTime(array a, int n, inputType tipo_schema);
+void selectSortWithTime(array a, int n, inputType tipo_schema);
+void insertSortWithTime(array a, int n, inputType tipo_schema);
 void quickSortWithTime(array a, int n, inputType tipo_schema);
 void mergeSortWithTime(array a, int n, inputType tipo_schema);
 void heapSortWithTime(array a, int n, inputType tipo_schema);
 typedef enum {SELECTSORT, INSERTSORT, QUICKSORT, MERGESORT, HEAPSORT} algType;
-algFunc algList[ALG_N] = {selectionSortWithTime, insertionSortWithTime, quickSortWithTime, mergeSortWithTime, heapSortWithTime};
+algFunc algList[ALG_N] = {selectSortWithTime, insertSortWithTime, quickSortWithTime, mergeSortWithTime, heapSortWithTime};
 
 typedef struct
 {
@@ -257,56 +257,61 @@ array genera_array(int dimensione, inputType tipo_schema)
 	return tmp_a;
 }
 
-void selectionSortWithTime(array a, int n, inputType tipo_schema)
+void selectSortWithTime(array a, int n, inputType tipo_schema)
 {
+	confronti=0, scambi=0;
 	clock_t start = clock();
 	// <chiamata all'algoritmo di ordinamento>
 	selectionSort(a, n);
 	// <fine chiamata all'algoritmo di ordinamento>
 	tempo = ((double)(clock()-start))/CLOCKS_PER_SEC;
-	printf("SELECT_SORT TIPO: %s, N: %d, SECS: %f\n", get_schema_name(tipo_schema), n, tempo);
+	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %d, SCAMBI: %d, TEMPO: %f\n", get_alg_name(SELECTSORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
 }
 
-void quickSortWithTime(array a, int n, inputType tipo_schema)
+void insertSortWithTime(array a, int n, inputType tipo_schema)
 {
-	clock_t start = clock();
-	// <chiamata all'algoritmo di ordinamento>
-	quickSort(a, 0, n-1);
-	// <fine chiamata all'algoritmo di ordinamento>
-	tempo = ((double)(clock()-start))/CLOCKS_PER_SEC;
-	printf("QUICK_SORT TIPO: %s, N: %d, SECS: %f\n", get_schema_name(tipo_schema), n, tempo);
-}
-
-void insertionSortWithTime(array a, int n, inputType tipo_schema)
-{
+	confronti=0, scambi=0;
 	clock_t start = clock();
 	// <chiamata all'algoritmo di ordinamento>
 	insertionSort(a, n);
 	// <fine chiamata all'algoritmo di ordinamento>
 	tempo = ((double)(clock()-start))/CLOCKS_PER_SEC;
-	printf("INSERT_SORT TIPO: %s, N: %d, SECS: %f\n", get_schema_name(tipo_schema), n, tempo);
+	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %d, SCAMBI: %d, TEMPO: %f\n", get_alg_name(INSERTSORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
+}
+
+void quickSortWithTime(array a, int n, inputType tipo_schema)
+{
+	confronti=0, scambi=0;
+	clock_t start = clock();
+	// <chiamata all'algoritmo di ordinamento>
+	quickSort(a, 0, n-1);
+	// <fine chiamata all'algoritmo di ordinamento>
+	tempo = ((double)(clock()-start))/CLOCKS_PER_SEC;
+	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %d, SCAMBI: %d, TEMPO: %f\n", get_alg_name(QUICKSORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
 }
 
 void mergeSortWithTime(array a, int n, inputType tipo_schema)
 {
+	confronti=0, scambi=0;
 	array ordinata = calloc(n, sizeof(elem));
 	clock_t start = clock();
 	// <chiamata all'algoritmo di ordinamento>
 	mergeSort(a, ordinata, 0, n-1);
 	// <fine chiamata all'algoritmo di ordinamento>
 	tempo = ((double)(clock()-start))/CLOCKS_PER_SEC;
-	printf("MERGE_SORT TIPO: %s, N: %d, SECS: %f\n", get_schema_name(tipo_schema), n, tempo);
+	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %d, SCAMBI: %d, TEMPO: %f\n", get_alg_name(MERGESORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
 	free(ordinata);
 }
 
 void heapSortWithTime(array a, int n, inputType tipo_schema)
 {
+	confronti=0, scambi=0;
 	clock_t start = clock();
 	// <chiamata all'algoritmo di ordinamento>
 	heapSort(a-1, n);
 	// <fine chiamata all'algoritmo di ordinamento>
 	tempo = ((double)(clock()-start))/CLOCKS_PER_SEC;
-	printf("HEAP_SORT TIPO: %s, N: %d, SECS: %f\n", get_schema_name(tipo_schema), n, tempo);
+	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %d, SCAMBI: %d, TEMPO: %f\n", get_alg_name(HEAPSORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
 }
 
 void insertionSort(array lista, int dim)
