@@ -42,6 +42,7 @@ typedef struct
 } Benchmark;
 Benchmark scores[SCHEMA_N][N_LIST][ALG_N] = {};
 
+// TYPES
 const char * get_schema_name(inputType tipo_schema);
 const char * get_alg_name(algType tipo_alg);
 const char * get_n_name(int n);
@@ -50,26 +51,30 @@ int get_schema_input();
 int get_alg_input();
 int get_n_input();
 
+// MAIN
 void processAll();
+
+// GENERAL
 int get_random_number(int min, int max);
 void print_array(array a, int n);
-void swap_numbers(array a, int n);
 array genera_array(int dimensione, inputType tipo_schema);
-
-void insertionSort(array lista, int dim);
-void quickSort(array lista, int u, int v);
-int perno(array lista, int primo, int ultimo);
 void swap(array a, array b);
 int findmin(array A, int minpos, int start, int dim);
 _Bool check_sort(array A, int n);
+
+// ALGORITHMS
+void selectionSort(array a, int n);
+
+void insertionSort(array lista, int dim);
+
+void quickSort(array lista, int u, int v);
+int perno(array lista, int primo, int ultimo);
 
 void merge(array lista, array ordinata, int i, int m, int n);
 void mergeSort(array lista, array ordinata, int lower, int upper);
 
 void adatta(array lista, int radice, int n);
 void heapSort(array lista, int n);
-
-void selectionSort(array a, int n);
 
 int main(int argc, char** argv)
 {
@@ -183,6 +188,9 @@ void processAll()
 		k = get_n_input();
 		#endif
 		{
+			#ifdef TEST_ALL_N
+			puts("------------------------------");
+			#endif
 			n = nList[k];
 			base = genera_array(n, schema_list[i]);
 
@@ -217,9 +225,6 @@ void processAll()
 				free(algs[j]);
 				algs[j] = NULL;
 			}
-			#ifdef TEST_ALL_N
-			puts("------------------------------");
-			#endif
 		}
 		#ifdef TEST_ALL_N
 		puts("------------------------------------------------------------");
@@ -320,6 +325,50 @@ void heapSortWithTime(array a, int n, inputType tipo_schema)
 	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %d, SCAMBI: %d, TEMPO: %f\n", get_alg_name(HEAPSORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
 }
 
+void swap(array a, array b)
+{
+	int c;
+	if (a==NULL || b==NULL)
+		return;
+	c = *a;
+	*a = *b;
+	*b = c;
+}
+
+int findmin(array A, int minpos, int start, int dim)
+{
+	if (start == dim)
+		return minpos;
+	if (A[start] < A[minpos])
+		minpos = start;
+	return findmin(A, minpos, start+1, dim);
+}
+
+_Bool check_sort(array A, int n)
+{
+	int i;
+	_Bool isSorted = true;
+	for (i=1; i<n && isSorted==true; i++)
+		if (A[i-1]>A[i])
+			isSorted = false;
+	return isSorted;
+}
+
+void selectionSort(array a, int n)
+{
+	int i, j, min;
+	for (i = 0; i < n-1; i++)
+	{
+		min = i;
+		for (j = i+1; j < n; j++)
+		{
+			if (a[j] < a[min])
+				min = j;
+		}
+		swap(&a[min], &a[i]);
+	}
+}
+
 void insertionSort(array lista, int dim)
 {
 	int i,j;
@@ -363,35 +412,6 @@ int perno(array lista, int primo, int ultimo)
 	}
 	swap(&lista[primo], &lista[j]);
 	return j;
-}
-
-void swap(array a, array b)
-{
-	int c;
-	if (a==NULL || b==NULL)
-		return;
-	c = *a;
-	*a = *b;
-	*b = c;
-}
-
-int findmin(array A, int minpos, int start, int dim)
-{
-	if (start == dim)
-		return minpos;
-	if (A[start] < A[minpos])
-		minpos = start;
-	return findmin(A, minpos, start+1, dim);
-}
-
-_Bool check_sort(array A, int n)
-{
-	int i;
-	_Bool isSorted = true;
-	for (i=1; i<n && isSorted==true; i++)
-		if (A[i-1]>A[i])
-			isSorted = false;
-	return isSorted;
 }
 
 void merge(array lista, array ordinata, int i, int m, int n)
@@ -474,21 +494,6 @@ void heapSort(array lista, int n)
 		swap(&lista[1], &lista[i+1]);
 		// si opera nuovamente sullo heap ridotto di un elemento
 		adatta(lista, 1, i);
-	}
-}
-
-void selectionSort(array a, int n)
-{
-	int i, j, min;
-	for (i = 0; i < n-1; i++)
-	{
-		min = i;
-		for (j = i+1; j < n; j++)
-		{
-			if (a[j] < a[min])
-				min = j;
-		}
-		swap(&a[min], &a[i]);
 	}
 }
 
