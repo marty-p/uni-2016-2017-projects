@@ -13,8 +13,9 @@
 typedef int elem;
 typedef elem * array;
 
-int confronti = 0;
-int scambi = 0;
+typedef unsigned long long ullong;
+ullong confronti = 0;
+ullong scambi = 0;
 double tempo = 0.0;
 
 #define SCHEMA_N 4
@@ -36,8 +37,8 @@ algFunc algList[ALG_N] = {selectSortWithTime, insertSortWithTime, quickSortWithT
 
 typedef struct
 {
-	int confronti;
-	int scambi;
+	ullong confronti;
+	ullong scambi;
 	double tempo;
 } Benchmark;
 Benchmark scores[SCHEMA_N][N_LIST][ALG_N] = {};
@@ -58,7 +59,7 @@ void processAll();
 int get_random_number(int min, int max);
 void print_array(array a, int n);
 array genera_array(int dimensione, inputType tipo_schema);
-void swap(array a, array b);
+inline void swap(array a, array b);
 int findmin(array A, int minpos, int start, int dim);
 _Bool check_sort(array A, int n);
 
@@ -276,7 +277,7 @@ void selectSortWithTime(array a, int n, inputType tipo_schema)
 	selectionSort(a, n);
 	// <fine chiamata all'algoritmo di ordinamento>
 	tempo = ((double)(clock()-start))/CLOCKS_PER_SEC;
-	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %d, SCAMBI: %d, TEMPO: %f\n", get_alg_name(SELECTSORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
+	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %llu, SCAMBI: %llu, TEMPO: %f\n", get_alg_name(SELECTSORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
 }
 
 void insertSortWithTime(array a, int n, inputType tipo_schema)
@@ -287,7 +288,7 @@ void insertSortWithTime(array a, int n, inputType tipo_schema)
 	insertionSort(a, n);
 	// <fine chiamata all'algoritmo di ordinamento>
 	tempo = ((double)(clock()-start))/CLOCKS_PER_SEC;
-	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %d, SCAMBI: %d, TEMPO: %f\n", get_alg_name(INSERTSORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
+	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %llu, SCAMBI: %llu, TEMPO: %f\n", get_alg_name(INSERTSORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
 }
 
 void quickSortWithTime(array a, int n, inputType tipo_schema)
@@ -298,7 +299,7 @@ void quickSortWithTime(array a, int n, inputType tipo_schema)
 	quickSort(a, 0, n-1);
 	// <fine chiamata all'algoritmo di ordinamento>
 	tempo = ((double)(clock()-start))/CLOCKS_PER_SEC;
-	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %d, SCAMBI: %d, TEMPO: %f\n", get_alg_name(QUICKSORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
+	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %llu, SCAMBI: %llu, TEMPO: %f\n", get_alg_name(QUICKSORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
 }
 
 void mergeSortWithTime(array a, int n, inputType tipo_schema)
@@ -310,7 +311,7 @@ void mergeSortWithTime(array a, int n, inputType tipo_schema)
 	mergeSort(a, ordinata, 0, n-1);
 	// <fine chiamata all'algoritmo di ordinamento>
 	tempo = ((double)(clock()-start))/CLOCKS_PER_SEC;
-	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %d, SCAMBI: %d, TEMPO: %f\n", get_alg_name(MERGESORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
+	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %llu, SCAMBI: %llu, TEMPO: %f\n", get_alg_name(MERGESORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
 	free(ordinata);
 }
 
@@ -322,7 +323,7 @@ void heapSortWithTime(array a, int n, inputType tipo_schema)
 	heapSort(a-1, n);
 	// <fine chiamata all'algoritmo di ordinamento>
 	tempo = ((double)(clock()-start))/CLOCKS_PER_SEC;
-	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %d, SCAMBI: %d, TEMPO: %f\n", get_alg_name(HEAPSORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
+	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %llu, SCAMBI: %llu, TEMPO: %f\n", get_alg_name(HEAPSORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
 }
 
 void swap(array a, array b)
@@ -362,10 +363,11 @@ void selectionSort(array a, int n)
 		min = i;
 		for (j = i+1; j < n; j++)
 		{
+			confronti++;
 			if (a[j] < a[min])
 				min = j;
 		}
-		swap(&a[min], &a[i]);
+		swap(&a[min], &a[i]), scambi++;
 	}
 }
 
@@ -378,12 +380,13 @@ void insertionSort(array lista, int dim)
 		prossimo = lista[i];
 		for (j = i-1; j>=0; j--)
 		{
+			confronti++;
 			if (prossimo < lista[j])
-				lista[j+1] = lista[j];
+				lista[j+1] = lista[j], scambi++;
 			else
 				break;
 		}
-		lista[j+1] = prossimo;
+		lista[j+1] = prossimo, scambi++;
 	}
 }
 
@@ -405,12 +408,12 @@ int perno(array lista, int primo, int ultimo)
 	pivot = lista[primo];
 	while (i < j)
 	{
-		do {i = i+1;} while (lista[i] <= pivot && i <= ultimo);
-		do {j = j-1;} while (lista[j] > pivot && j >= primo);
+		do {i = i+1; confronti++;} while (lista[i] <= pivot && i <= ultimo);
+		do {j = j-1; confronti++;} while (lista[j] > pivot && j >= primo);
 		if (i < j)
-			swap(&lista[i], &lista[j]);
+			swap(&lista[i], &lista[j]), scambi++;
 	}
-	swap(&lista[primo], &lista[j]);
+	swap(&lista[primo], &lista[j]), scambi++;
 	return j;
 }
 
@@ -422,6 +425,7 @@ void merge(array lista, array ordinata, int i, int m, int n)
 	int t;
 	while (i <= m && j <= n)
 	{
+		confronti++, scambi++;
 		if (lista[i] <= lista[j])
 		{
 			ordinata[k] = lista[i];
@@ -437,17 +441,17 @@ void merge(array lista, array ordinata, int i, int m, int n)
 	{
 		// ordinata[k],..., ordinata[n] = lista[j],..., lista[n]
 		for (t = j; t <= n; t++)
-			ordinata[k + t - j] = lista[t];
+			ordinata[k + t - j] = lista[t], scambi++;
 	}
 	else
 	{
 		// ordinata[k],..., ordinata[n] = lista[i],..., lista[m]
 		for (t = i; t <= m; t++)
-			ordinata[k + t - i] = lista[t];
+			ordinata[k + t - i] = lista[t], scambi++;
 	}
 	// copia ordinata[pos_iniziale : n] in lista[pos_iniziale : n]
 	for (i=pos_iniziale; i<=n; i++)
-		lista[i]=ordinata[i];
+		lista[i]=ordinata[i]; //no scambi++;
 }
 
 void mergeSort(array lista, array ordinata, int lower, int upper)
@@ -467,19 +471,21 @@ void adatta(array lista, int radice, int n)
 	while (figlio <= n)
 	{
 		// trova il maggiore tra il figlio sx e figlio dx
+		confronti++;
 		if (figlio < n && lista[figlio] < lista[figlio+1])
 			figlio = figlio + 1;
 		// confronta la radice e figlio max
+		confronti++;
 		if (temp > lista[figlio])
 			break; // il padre di figlio sarà la posizione corretta
 		else
 		{
-			lista[figlio/2] = lista[figlio]; // il figlio si sposta verso il padre
+			lista[figlio/2] = lista[figlio], scambi++; // il figlio si sposta verso il padre
 			// ripeti sul sottoalbero selezionato
 			figlio = 2 * figlio;
 		}
 	}
-	lista[figlio/2] = temp; // copia la radice nella posizione corretta
+	lista[figlio/2] = temp, scambi++; // copia la radice nella posizione corretta
 }
 
 void heapSort(array lista, int n)
@@ -491,7 +497,7 @@ void heapSort(array lista, int n)
 	for (i = n-1; i>=1; i--)
 	{
 		//si estrae, di volta in volta, il massimo lista[1] e lo si posiziona in fondo alla sequenza
-		swap(&lista[1], &lista[i+1]);
+		swap(&lista[1], &lista[i+1]), scambi++;
 		// si opera nuovamente sullo heap ridotto di un elemento
 		adatta(lista, 1, i);
 	}
