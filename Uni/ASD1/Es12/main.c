@@ -3,7 +3,12 @@
 
 #include <string.h>
 #include <time.h>
-#include <stdbool.h>
+
+// #include <stdbool.h>
+#define true 1
+#define false 0
+#define _Bool char
+
 #define MIN 0
 #define MAX 100
 #define PCT_SORT_NEXT 80
@@ -44,7 +49,7 @@ typedef struct
 	ullong scambi;
 	double tempo;
 } Benchmark;
-Benchmark scores[SCHEMA_N][N_LIST][ALG_N] = {};
+Benchmark scores[SCHEMA_N][N_LIST][ALG_N] = {0};
 
 // TYPES
 const char * get_schema_name(inputType tipo_schema);
@@ -63,7 +68,7 @@ void generaTable();
 int get_random_number(int min, int max);
 void print_array(array a, int n);
 array genera_array(int dimensione, inputType tipo_schema);
-inline void swap(array a, array b);
+void swap(array a, array b);
 int findmin(array A, int minpos, int start, int dim);
 _Bool check_sort(array A, int n);
 
@@ -83,9 +88,10 @@ void heapSort(array lista, int n);
 
 int main(int argc, char** argv)
 {
+	clock_t start;
 	srand(time(NULL));
 
-	clock_t start = clock();
+	start = clock();
 	// <chiamata all'algoritmo di ordinamento>
 	processAll();
 	// <fine chiamata all'algoritmo di ordinamento>
@@ -179,7 +185,7 @@ int get_n_input()
 void processAll()
 {
 	array base = NULL;
-	array algs[ALG_N] = {};
+	array algs[ALG_N] = {0};
 	int i, j, k, n;
 
 	#ifdef TEST_ALL_N
@@ -304,8 +310,9 @@ array genera_array(int dimensione, inputType tipo_schema)
 
 void selectSortWithTime(array a, int n, inputType tipo_schema)
 {
+	clock_t start;
 	confronti=0, scambi=0;
-	clock_t start = clock();
+	start = clock();
 	// <chiamata all'algoritmo di ordinamento>
 	selectionSort(a, n);
 	// <fine chiamata all'algoritmo di ordinamento>
@@ -315,8 +322,9 @@ void selectSortWithTime(array a, int n, inputType tipo_schema)
 
 void insertSortWithTime(array a, int n, inputType tipo_schema)
 {
+	clock_t start;
 	confronti=0, scambi=0;
-	clock_t start = clock();
+	start = clock();
 	// <chiamata all'algoritmo di ordinamento>
 	insertionSort(a, n);
 	// <fine chiamata all'algoritmo di ordinamento>
@@ -326,8 +334,9 @@ void insertSortWithTime(array a, int n, inputType tipo_schema)
 
 void quickSortWithTime(array a, int n, inputType tipo_schema)
 {
+	clock_t start;
 	confronti=0, scambi=0;
-	clock_t start = clock();
+	start = clock();
 	// <chiamata all'algoritmo di ordinamento>
 	quickSort(a, 0, n-1);
 	// <fine chiamata all'algoritmo di ordinamento>
@@ -337,9 +346,11 @@ void quickSortWithTime(array a, int n, inputType tipo_schema)
 
 void mergeSortWithTime(array a, int n, inputType tipo_schema)
 {
+	clock_t start;
+	array ordinata;
 	confronti=0, scambi=0;
-	array ordinata = calloc(n, sizeof(elem));
-	clock_t start = clock();
+	ordinata = calloc(n, sizeof(elem));
+	start = clock();
 	// <chiamata all'algoritmo di ordinamento>
 	mergeSort(a, ordinata, 0, n-1);
 	// <fine chiamata all'algoritmo di ordinamento>
@@ -350,8 +361,9 @@ void mergeSortWithTime(array a, int n, inputType tipo_schema)
 
 void heapSortWithTime(array a, int n, inputType tipo_schema)
 {
+	clock_t start;
 	confronti=0, scambi=0;
-	clock_t start = clock();
+	start = clock();
 	// <chiamata all'algoritmo di ordinamento>
 	heapSort(a-1, n);
 	// <fine chiamata all'algoritmo di ordinamento>
@@ -489,9 +501,10 @@ void merge(array lista, array ordinata, int i, int m, int n)
 
 void mergeSort(array lista, array ordinata, int lower, int upper)
 {
+	int medium;
 	if (lower >= upper)
 		return;
-	int medium = (lower + upper)/2;
+	medium = (lower + upper)/2;
 	mergeSort(lista, ordinata, lower, medium);
 	mergeSort(lista, ordinata, medium+1, upper);
 	merge(lista, ordinata, lower, medium, upper);
