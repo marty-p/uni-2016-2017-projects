@@ -10,6 +10,9 @@
 // #define ENABLE_PRINT_ARRAY
 #define TEST_ALL_N
 
+#define TAB "\t"
+#define LN "\n"
+
 typedef int elem;
 typedef elem * array;
 
@@ -54,6 +57,7 @@ int get_n_input();
 
 // MAIN
 void processAll();
+void generaTable();
 
 // GENERAL
 int get_random_number(int min, int max);
@@ -85,7 +89,8 @@ int main(int argc, char** argv)
 	// <chiamata all'algoritmo di ordinamento>
 	processAll();
 	// <fine chiamata all'algoritmo di ordinamento>
-	printf("Processed everything in %f seconds\n", ((double)(clock()-start))/CLOCKS_PER_SEC);
+	printf("Processed everything in %.4fs seconds\n", ((double)(clock()-start))/CLOCKS_PER_SEC);
+	generaTable();
 	return EXIT_SUCCESS;
 }
 
@@ -233,6 +238,34 @@ void processAll()
 	}
 }
 
+void generaTable()
+{
+	int i, j, k, n;
+	FILE * fp = fopen("output.txt", "w");
+	if (fp==NULL)
+		return;
+	for (i=0; i<SCHEMA_N; i++)
+	{
+		fprintf(fp, "INSIEME %s"LN, get_schema_name(i));
+		for (k=0; k<N_LIST; k++)
+		{
+			fprintf(fp, "------------------------------"LN);
+			fprintf(fp, "%s elementi"LN, get_n_name(k));
+			n = nList[k];
+			for (j=0; j<ALG_N; j++)
+			{
+				fprintf(fp, "%llu"TAB"%llu"TAB"%.4fs"LN,
+					scores[i][k][j].confronti,
+					scores[i][k][j].scambi,
+					scores[i][k][j].tempo
+				);
+			}
+		}
+		fprintf(fp, "------------------------------------------------------------"LN);
+	}
+	fclose(fp);
+}
+
 array genera_array(int dimensione, inputType tipo_schema)
 {
 	int i;
@@ -277,7 +310,7 @@ void selectSortWithTime(array a, int n, inputType tipo_schema)
 	selectionSort(a, n);
 	// <fine chiamata all'algoritmo di ordinamento>
 	tempo = ((double)(clock()-start))/CLOCKS_PER_SEC;
-	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %llu, SCAMBI: %llu, TEMPO: %f\n", get_alg_name(SELECTSORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
+	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %llu, SCAMBI: %llu, TEMPO: %.4fs\n", get_alg_name(SELECTSORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
 }
 
 void insertSortWithTime(array a, int n, inputType tipo_schema)
@@ -288,7 +321,7 @@ void insertSortWithTime(array a, int n, inputType tipo_schema)
 	insertionSort(a, n);
 	// <fine chiamata all'algoritmo di ordinamento>
 	tempo = ((double)(clock()-start))/CLOCKS_PER_SEC;
-	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %llu, SCAMBI: %llu, TEMPO: %f\n", get_alg_name(INSERTSORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
+	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %llu, SCAMBI: %llu, TEMPO: %.4fs\n", get_alg_name(INSERTSORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
 }
 
 void quickSortWithTime(array a, int n, inputType tipo_schema)
@@ -299,7 +332,7 @@ void quickSortWithTime(array a, int n, inputType tipo_schema)
 	quickSort(a, 0, n-1);
 	// <fine chiamata all'algoritmo di ordinamento>
 	tempo = ((double)(clock()-start))/CLOCKS_PER_SEC;
-	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %llu, SCAMBI: %llu, TEMPO: %f\n", get_alg_name(QUICKSORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
+	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %llu, SCAMBI: %llu, TEMPO: %.4fs\n", get_alg_name(QUICKSORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
 }
 
 void mergeSortWithTime(array a, int n, inputType tipo_schema)
@@ -311,7 +344,7 @@ void mergeSortWithTime(array a, int n, inputType tipo_schema)
 	mergeSort(a, ordinata, 0, n-1);
 	// <fine chiamata all'algoritmo di ordinamento>
 	tempo = ((double)(clock()-start))/CLOCKS_PER_SEC;
-	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %llu, SCAMBI: %llu, TEMPO: %f\n", get_alg_name(MERGESORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
+	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %llu, SCAMBI: %llu, TEMPO: %.4fs\n", get_alg_name(MERGESORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
 	free(ordinata);
 }
 
@@ -323,7 +356,7 @@ void heapSortWithTime(array a, int n, inputType tipo_schema)
 	heapSort(a-1, n);
 	// <fine chiamata all'algoritmo di ordinamento>
 	tempo = ((double)(clock()-start))/CLOCKS_PER_SEC;
-	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %llu, SCAMBI: %llu, TEMPO: %f\n", get_alg_name(HEAPSORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
+	printf("ALG: %s, SCHEMA: %s, N: %d, CONFRONTI: %llu, SCAMBI: %llu, TEMPO: %.4fs\n", get_alg_name(HEAPSORT), get_schema_name(tipo_schema), n, confronti, scambi, tempo);
 }
 
 void swap(array a, array b)
