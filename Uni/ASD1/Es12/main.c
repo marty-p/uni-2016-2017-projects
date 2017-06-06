@@ -40,8 +40,8 @@ void insertSortWithTime(array a, int n, inputType tipo_schema);
 void quickSortWithTime(array a, int n, inputType tipo_schema);
 void mergeSortWithTime(array a, int n, inputType tipo_schema);
 void heapSortWithTime(array a, int n, inputType tipo_schema);
-typedef enum {SELECTSORT, INSERTSORT, QUICKSORT, MERGESORT, HEAPSORT} algType;
-algFunc algList[ALG_N] = {selectSortWithTime, insertSortWithTime, quickSortWithTime, mergeSortWithTime, heapSortWithTime};
+typedef enum {SELECTSORT, INSERTSORT, MERGESORT, HEAPSORT, QUICKSORT} algType;
+algFunc algList[ALG_N] = {selectSortWithTime, insertSortWithTime, mergeSortWithTime, heapSortWithTime, quickSortWithTime};
 
 typedef struct
 {
@@ -123,7 +123,7 @@ const char * get_schema_name(inputType tipo_schema)
 
 const char * get_alg_name(algType tipo_alg)
 {
-	static const char * alg_name[ALG_N] = {"SELECTSORT", "INSERTSORT", "QUICKSORT", "MERGESORT", "HEAPSORT"};
+	static const char * alg_name[ALG_N] = {"SELECTSORT", "INSERTSORT", "MERGESORT", "HEAPSORT", "QUICKSORT"};
 	if (tipo_alg >= ALG_N)
 		return "";
 	return alg_name[tipo_alg];
