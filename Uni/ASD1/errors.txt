@@ -1,0 +1,2 @@
+Process terminated with status -1073741571 (0xC00000FD)
+STACK OVERFLOW (quicksort reversed array > 100000 elements kinda)
