@@ -1,4 +1,7 @@
 /.project
+bin
+obj
+*.layout
 
 *.pdf
 tex2pdf.*
