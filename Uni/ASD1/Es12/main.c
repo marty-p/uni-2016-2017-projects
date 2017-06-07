@@ -10,7 +10,7 @@
 #define MAX 100
 #define PCT_SORT_NEXT 80
 // #define ENABLE_PRINT_ARRAY
-#define TEST_ALL_N
+// #define TEST_ALL_N
 
 #define TAB "\t"
 #define LN "\n"
