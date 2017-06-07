@@ -1,7 +1,10 @@
 /.project
 bin
 obj
+*.depend
 *.layout
 
 *.pdf
 tex2pdf.*
+
+output.txt
