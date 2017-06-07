@@ -4,10 +4,7 @@
 #include <string.h>
 #include <time.h>
 
-// #include <stdbool.h>
-#define true 1
-#define false 0
-#define _Bool char
+#include <stdbool.h>
 
 #define MIN 0
 #define MAX 100
@@ -49,7 +46,7 @@ typedef struct
 	ullong scambi;
 	double tempo;
 } Benchmark;
-Benchmark scores[SCHEMA_N][N_LIST][ALG_N] = {0};
+Benchmark scores[SCHEMA_N][N_LIST][ALG_N] = {};
 
 // TYPES
 const char * get_schema_name(inputType tipo_schema);
@@ -246,7 +243,7 @@ void processAll()
 
 void generaTable()
 {
-	int i, j, k, n;
+	int i, j, k;
 	FILE * fp = fopen("output.txt", "w");
 	if (fp==NULL)
 		return;
@@ -257,7 +254,6 @@ void generaTable()
 		{
 			fprintf(fp, "------------------------------"LN);
 			fprintf(fp, "%s elementi"LN, get_n_name(k));
-			n = nList[k];
 			for (j=0; j<ALG_N; j++)
 			{
 				fprintf(fp, "%llu"TAB"%llu"TAB"%.4fs"LN,
