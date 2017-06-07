@@ -32,16 +32,17 @@ Car * insert_car_coda(Car * node, char* plate_number);
 
 void default_set();
 
-#define IM_NUM 5
-typedef enum {IM_INSERT, IM_SEARCH, IM_DELETE, IM_PRINT, IM_EXIT} ImType;
+#define IM_NUM 6
+typedef enum {IM_INSERT, IM_SEARCH, IM_DELETE, IM_PRINT_ONE, IM_PRINT_ALL, IM_EXIT} ImType;
 const char * get_input_name(ImType i);
 void input_mode();
 void input_insert(void);
 void input_search(void);
 void input_delete(void);
-void input_print(void);
+void input_print_one(void);
+void input_print_all(void);
 typedef void (*ImFnc)(void);
-ImFnc inputFunc[IM_NUM] = {input_insert, input_search, input_delete, input_print, NULL};
+ImFnc inputFunc[IM_NUM] = {input_insert, input_search, input_delete, input_print_one, input_print_all, NULL};
 
 int main()
 {
@@ -72,7 +73,7 @@ int main()
 
 const char * get_input_name(ImType i)
 {
-	static const char * names[IM_NUM] = {"Inserisci", "Ricerca", "Cancella", "Stampa", "ESCI"};
+	static const char * names[IM_NUM] = {"Inserisci", "Ricerca", "Cancella", "Stampa Singolo", "Stampa Tutto", "ESCI"};
 	if (i>=IM_NUM)
 		return "";
 	return names[i];
@@ -123,7 +124,19 @@ void input_delete()
 	delete_car(buf);
 }
 
-void input_print()
+void input_print_one()
+{
+	int i;
+	do
+	{
+		printf("Inserisci il piano da stampare: (max len: %d)\n", MAX_FLOORS);
+		scanf("%d", &i);
+		getchar();
+	} while (i<0 || i>MAX_FLOORS);
+	print_car_rec(i);
+}
+
+void input_print_all()
 {
 	printf("\n\n\n\n");
 	print_car_list();
