@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-/* 
+/*
  * File:   main.c
  * Author: Studente
  *
@@ -25,46 +25,126 @@
 • Misurare i tempi di esecuzione per ogni dimensione N e per ogni tipologia di
 array indicata.
  */
+#include <stdbool.h>
+#include <string.h>
 #include <time.h>
 #define MIN 0
 #define MAX 100
 #define N 20000
-#define N_LIST 6
 #define PCT_SORT_NEXT 80
 //#define ENABLE_PRINT_ARRAY
-#define TEST_ALL_N
+#define ENABLE_INPUT_MODE
+
+#define TAB "\t"
+#define LN "\n"
+
+typedef int elem;
+typedef elem * array;
+
 #define SCHEMA_N 4
+typedef enum {ORDINATO, QUASI_ORDINATO, INV_ORDINATO, CASUALE} inputType;
+inputType schema_list[SCHEMA_N] = {ORDINATO, QUASI_ORDINATO, INV_ORDINATO, CASUALE};
 
-typedef enum{ORDINATO, QUASI_ORDINATO, INV_ORDINATO, CASUALE} inputType;
+#define N_LIST 6
+int nList[N_LIST] = {100, 1000, 10000, 100000, 200000, 500000};
 
-void processAll(int n);
+#define ALG_N 2
+typedef void (*algFunc)(array a, int n, inputType tipo_schema);
+void selectionSortWithTime(array A, int n, inputType tipo_schema);
+void selectionSortRecWithTime(array A, int n, inputType tipo_schema);
+typedef enum {SELECTSORT_ITER, SELECTSORT_REC} algType;
+algFunc algList[ALG_N] = {selectionSortWithTime, selectionSortRecWithTime};
+
+void processAll();
 int get_random_number(int min, int max);
-void print_array(int * a, int n);
-void swap_numbers(int * a, int n);
-int * genera_array(int dimensione, inputType tipo_schema);
-void selectionSort(int * a, int n);
-void selectionSortWithTime(int * A, int n, inputType tipo_schema);
-void selectionSortRecWithTime(int * A, int n, inputType tipo_schema);
-void selectionSortRec(int * A, int n, int start);
-int findmin(int * A, int minpos, int start, int dim);
-const char * getTipoSchemaName(inputType tipo_schema);
+void print_array(array a, int n);
+void swap_numbers(array a, int n);
+array genera_array(int dimensione, inputType tipo_schema);
+void selectionSort(array a, int n);
+void selectionSortRec(array A, int n, int start);
+int findmin(array A, int minpos, int start, int dim);
+_Bool check_sort(array A, int n);
+
+const char * get_schema_name(inputType tipo_schema)
+{
+	static const char * schema_name[SCHEMA_N] = {"ORDINATO", "QUASI_ORDINATO", "INV_ORDINATO", "CASUALE"};
+	if (tipo_schema >= SCHEMA_N)
+		return "";
+	return schema_name[tipo_schema];
+}
+
+const char * get_alg_name(algType tipo_alg)
+{
+	static const char * alg_name[ALG_N] = {"SELECTSORT_ITER", "SELECT_SORT_REC"};
+	if (tipo_alg >= ALG_N)
+		return "";
+	return alg_name[tipo_alg];
+}
+
+const char * get_n_name(int n)
+{
+	static const char * n_name[N_LIST] = {"100", "1000", "10000", "100000", "200000", "500000"};
+	if (n >= N_LIST)
+		return "";
+	return n_name[n];
+}
+
+int get_schema_input()
+{
+	int i;
+	do
+	{
+		printf("Schema Input:\n");
+		for (i=0; i<SCHEMA_N; i++)
+			printf("%d: %s\n", i, get_schema_name(i));
+		scanf("%d", &i);
+		getchar();
+	}
+	while (i<0 || i>=SCHEMA_N);
+	return i;
+}
+
+int get_alg_input()
+{
+	int i;
+	do
+	{
+		printf("Alg Input:\n");
+		for (i=0; i<ALG_N; i++)
+			printf("%d: %s\n", i, get_alg_name(i));
+		scanf("%d", &i);
+		getchar();
+	}
+	while (i<0 || i>=ALG_N);
+	return i;
+}
+
+int get_n_input()
+{
+	int i;
+	do
+	{
+		printf("N Input:\n");
+		for (i=0; i<N_LIST; i++)
+			printf("%d: %s\n", i, get_n_name(i));
+		scanf("%d", &i);
+		getchar();
+	}
+	while (i<0 || i>=N_LIST);
+	return i;
+}
 
 int main(int argc, char** argv)
 {
-#ifndef TEST_ALL_N
-    int n = N;
-#else
-    int i;
-    int nList[N_LIST] = {100, 1000, 10000, 100000, 200000, 500000};
-#endif
-    srand(time(NULL));
-#ifndef TEST_ALL_N
-    processAll(n);
-#else
-    for (i=0; i<N_LIST; i++)
-        processAll(nList[i]);
-#endif
-    return (EXIT_SUCCESS);
+	clock_t start;
+	srand(time(NULL));
+
+	start = clock();
+	// <chiamata all'algoritmo di ordinamento>
+	processAll();
+	// <fine chiamata all'algoritmo di ordinamento>
+	printf("Processed everything in %.4fs seconds\n", ((double)(clock()-start))/CLOCKS_PER_SEC);
+	return EXIT_SUCCESS;
 }
 
 int get_random_number(int min, int max)
@@ -72,7 +152,7 @@ int get_random_number(int min, int max)
     return min + rand() % (max - min +1);
 }
 
-void print_array(int * a, int n)
+void print_array(array a, int n)
 {
     int i;
     for (i=0; i<n; i++)
@@ -80,33 +160,69 @@ void print_array(int * a, int n)
     printf("\n");
 }
 
-void processAll(int n)
+void processAll()
 {
-    int * A = NULL;
-    int i;
-    inputType schema_list[SCHEMA_N] = {ORDINATO, QUASI_ORDINATO, INV_ORDINATO, CASUALE};
+	array base = NULL;
+	array algs[ALG_N] = {0};
+	int i, j, k, n;
 
-    printf("n=%d\n", n);
-    for (i=0; i<SCHEMA_N; i++)
-    {
-        A = genera_array(n, schema_list[i]);
-#ifdef ENABLE_PRINT_ARRAY
-        print_array(A, n);
-#endif
-        selectionSortWithTime(A, n, schema_list[i]);
-        // selectionSortRecWithTime(A, n, schema_list[i]);
-#ifdef ENABLE_PRINT_ARRAY
-        print_array(A, n);
-#endif
-        free(A);
-    }
+	#ifndef ENABLE_INPUT_MODE
+	for (k=0; k<N_LIST; k++)
+	#else
+	k = get_n_input();
+	#endif
+	{
+		#ifndef ENABLE_INPUT_MODE
+		for (i=0; i<SCHEMA_N; i++)
+		#else
+		i = get_schema_input();
+		#endif
+		{
+			#ifndef ENABLE_INPUT_MODE
+			puts("------------------------------");
+			#endif
+			n = nList[k];
+			base = genera_array(n, schema_list[i]);
+
+			#ifndef ENABLE_INPUT_MODE
+			for (j=0; j<ALG_N; j++)
+			#else
+			j = get_alg_input();
+			#endif
+			{
+				algs[j] = calloc(n, sizeof(elem));
+				memcpy(algs[j], base, n*sizeof(elem));
+
+				#ifdef ENABLE_PRINT_ARRAY
+				printf("%s BEGIN:\n", get_alg_name(j));
+				print_array(algs[j], n);
+				#endif
+
+				algList[j](algs[j], n, schema_list[i]);
+
+				#ifdef ENABLE_PRINT_ARRAY
+				printf("%s END:\n", get_alg_name(j));
+				print_array(algs[j], n);
+				#endif
+
+				if (check_sort(algs[j], n)==false)
+					printf("%s wrong sort\n", get_alg_name(j));
+
+				free(algs[j]);
+				algs[j] = NULL;
+			}
+		}
+		#ifndef ENABLE_INPUT_MODE
+		puts("------------------------------------------------------------");
+		#endif
+	}
 }
 
-int * genera_array(int dimensione, inputType tipo_schema)
+array genera_array(int dimensione, inputType tipo_schema)
 {
     int i;
     int prev_n = 0;
-    int * tmp_a = calloc(dimensione, sizeof(int));
+    array tmp_a = calloc(dimensione, sizeof(int));
     if (tmp_a==NULL)
     {
         printf("memoria insufficiente per %d", dimensione);
@@ -138,7 +254,7 @@ int * genera_array(int dimensione, inputType tipo_schema)
     return tmp_a;
 }
 
-void selectionSortWithTime(int * a, int n, inputType tipo_schema)
+void selectionSortWithTime(array a, int n, inputType tipo_schema)
 {
     clock_t start, end;
     double tempo;
@@ -148,10 +264,10 @@ void selectionSortWithTime(int * a, int n, inputType tipo_schema)
     // <fine chiamata all’algoritmo di ordinamento>
     end = clock();
     tempo = ((double) (end - start)) / CLOCKS_PER_SEC;
-    printf("TIPO: %s, N: %d, SECS: %f\n", getTipoSchemaName(tipo_schema), n, tempo);
+    printf("TIPO: %s, N: %d, SECS: %f\n", get_schema_name(tipo_schema), n, tempo);
 }
 
-void selectionSortRecWithTime(int * a, int n, inputType tipo_schema)
+void selectionSortRecWithTime(array a, int n, inputType tipo_schema)
 {
     clock_t start, end;
     double tempo;
@@ -161,10 +277,10 @@ void selectionSortRecWithTime(int * a, int n, inputType tipo_schema)
     // <fine chiamata all’algoritmo di ordinamento>
     end = clock();
     tempo = ((double) (end - start)) / CLOCKS_PER_SEC;
-    printf("TIPO: %s, N: %d, SECS: %f\n", getTipoSchemaName(tipo_schema), n, tempo);
+    printf("TIPO: %s, N: %d, SECS: %f\n", get_schema_name(tipo_schema), n, tempo);
 }
 
-void selectionSort(int * a, int n)
+void selectionSort(array a, int n)
 {
     int i, j, min, tmp_min;
     for (i = 0; i < n-1; i++)
@@ -181,7 +297,7 @@ void selectionSort(int * a, int n)
     }
 }
 
-void selectionSortRec(int * A, int dimA, int start)
+void selectionSortRec(array A, int dimA, int start)
 {
     int tmp_min, minIndex;
     if (start >= dimA-1)
@@ -195,7 +311,7 @@ void selectionSortRec(int * A, int dimA, int start)
     selectionSortRec(A, dimA, start+1);
 }
 
-int findmin(int * A, int minpos, int start, int dim)
+int findmin(array A, int minpos, int start, int dim)
 {
     if (start == dim)
         return minpos;
@@ -204,11 +320,13 @@ int findmin(int * A, int minpos, int start, int dim)
     return findmin(A, minpos, start+1, dim);
 }
 
-const char * getTipoSchemaName(inputType tipo_schema)
+_Bool check_sort(array A, int n)
 {
-    static const char * schema_name[SCHEMA_N] = {"ORDINATO", "QUASI_ORDINATO", "INV_ORDINATO", "CASUALE"};
-    if (tipo_schema >= SCHEMA_N)
-        return "";
-    return schema_name[tipo_schema];
+	int i;
+	_Bool isSorted = true;
+	for (i=1; i<n && isSorted==true; i++)
+		if (A[i-1]>A[i])
+			isSorted = false;
+	return isSorted;
 }
 
