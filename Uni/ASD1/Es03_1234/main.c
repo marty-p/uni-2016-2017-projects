@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// #define ENABLE_INPUT_MODE
+
 #define NUMC 15
 #define NUMR 10
 
@@ -20,13 +22,31 @@ void print_sparse_matrix_as_classic(const MatriceSparsaT * matrice_sparsa);
 void search_element_in_sparse_matrix(const MatriceSparsaT * matrice_sparsa, int numric);
 void trasp_rapida(const MatriceSparsaT * a, MatriceSparsaT * b);
 
+void input_mode();
+void default_mode();
+
+int matrix[NUMR][NUMC] = {{0}};
+// int numric = 71;     // assegnare a num il numero da cercare.
+MatriceSparsaT * matrice_sparsa = NULL;
+MatriceSparsaT * matrice_sparsa_trasposta = NULL;
+
 int main()
 {
-    int matrix[NUMR][NUMC] = {{0}};
-    // int numric = 71;     // assegnare a num il numero da cercare.
-	MatriceSparsaT * matrice_sparsa = NULL;
-	MatriceSparsaT * matrice_sparsa_trasposta = NULL;
+#ifdef ENABLE_INPUT_MODE
+	input_mode();
+#else
+	default_mode();
+#endif
 
+    return 0;
+}
+
+void input_mode()
+{
+}
+
+void default_mode()
+{
     // INIZIO TEST MATRICE CLASSICA
     fill_classic_matrix(matrix, NUMR, NUMC);
     printf("\n");
@@ -56,8 +76,6 @@ int main()
 	print_sparse_matrix(matrice_sparsa_trasposta);
 	print_sparse_matrix_as_classic(matrice_sparsa_trasposta);
     // FINE TEST MATRICE SPARSA
-
-    return 0;
 }
 
 void trasp_rapida(const MatriceSparsaT * a, MatriceSparsaT * b)
