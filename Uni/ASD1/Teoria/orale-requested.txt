@@ -1,0 +1,29 @@
+A me ha chiesto heap e heap sort (funzionamento e complessità)
+
+A me ha chiesto tutto sui grafi tranne grafi pesati e multiliste di adiacenza; ha fatto fare esercizi su carta e mi ha chiesto di fare vedere
+le componenti connesse dal programma, il codice non l'ha controllato (almeno a me)
+
+Anche io grafi
+Liste di adiacenza e sequenziali 
+Connesso / orientato / ecc
+Usato il codice su un grafo dato da lei
+
+Tutti gli ordinamenti
+
+Occhio all'esercitazione 12, controllate i possibili errori
+
+ABR: ha chiesto cosa sono e poi ha scritto 6 nodi in lettere (AC, BCC, BCB...) e mi ha chiesto di scrivere l'ABR.
+Mi ha chiesto come avviene l'inserimento sempre su quel ABR creato, la cancellazione di un nodo e i successori e i predecessori.
+Mi ha chiesto poi l' esercitazione sugli ABR e ho dovuto creare con il programma un ABR dettato da lei e fare le varie operazioni che sono disponibili in quella esercitazione.
+
+Come altro argomento mi ha chiesto cosa si intende per complessità di un algoritmo, cosa significa limite asintotico e un esempio di algoritmo che ha complessità O(logn)
+
+A me selection e insertion
+
+Anche a me. Non mi ha chiesto niente del codice, solo se per la cancellazione usavo il successore o il predecessore.
+
+Ma quando ti ha fatto usare l'esercitazione le chiavi erano di tipo intero? non AC, BCC e BCB, vero?
+un esercizio simile con le lettere lei lo ha fatto a volte , quindi penso glielo abbia fatto fare così
+a penna su carta con lettere
+
+A me grafi, liste di adiacenza, visite ai grafi e esercitazione 9

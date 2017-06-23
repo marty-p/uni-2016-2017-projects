@@ -1,0 +1,98 @@
+Un grafo è un tipo di dato astrato in cui abbiamo una lista non vuota di vertici/nodi
+e una lista di lati.
+
+Un grafo è ciclico quando il primo e l'ultimo vertice si connettono
+
+Un grafo è connesso quando ogni vertice è raggiungibile da un altro
+
+Un grafo è non orientato quando la coppia di vertici di un lato qualsiasi non è ordinata
+
+Un grafo è orientato quando la coppia di vertici di un lato qualsiasi è ordinata e si forma
+una testa e una coda
+
+Due vertici sono adiacenti se c'è un lato che li unisce
+
+Un lato è incidente da vertice A a vertice B
+
+Lo spazio occupato è O(n+l).
+
+### Liste di adiacenza (concatenate)
+Si usa un array di puntatori a nodo
+Per ogni vertice, si specificano i vertici adiacenti
+
+0 -> 1 -> 3
+1 -> 2
+2 -> 3 -> 4
+etc
+
+### Liste di adiacenza (sequenziali)
+Lo spazio occupato è O(n+l).
+6 vertici + 2*lati +1
+
+0 pos inizio 7
+1 .. 9
+2 .. 11
+3 .. 14
+4 .. 17
+5 .. 19 (out of list = 0 elements)
+6 #lista
+7 1 (vertice 0)
+8 3 (vertice 0)
+9 0 (vertice 1)
+10 2 (vertice 1)
+11 1 (vertice 2)
+12 3 (vertice 2)
+13 4 (vertice 2)
+14 0 (vertice 3)
+15 2 (vertice 3)
+16 4 (vertice 3)
+17 2 (vertice 4)
+18 3 (vertice 4)
+??19 ?? (vertice 5)
+
+### matrici di adiacenza
+La complessità con le liste di adiacenza è O(l).
+La complessità con le matrici di adiacenza è O(n2)
+
+## visita profondità (dfs)
+stack o ricorsivo
+0 -> 1 -> 3
+1 -> 2
+2 -> 3 -> 4
+3 -> 4
+4
+5
+
+visita nodo per nodo e poi risale al nodo
+laterale
+
+## ampiezza (bfs) O(l)
+coda
+0 1 3
+1 2
+2 3 4
+4
+5
+
+visita ogni nodo laterale e poi accede
+quelli dentro 1 a 1
+
+## Componenti connesse
+se con una visita a caso ci sono vertici non visitati, allora le componenti non sono connesse
+Grafo_connesso O(n+l)
+
+## problema visita ampiezza
+se è orientato
+può avere il problema del percorso minimo
+se il peso del percorso da a e b è diverso da 1
+
+Algoritmo di Dijkstra O(n2)
+
+
+### equazione di ricorrenza
+- Il tempo di esecuzione è espresso tramite una
+equazione di ricorrenza
+- Un’equazione di ricorrenza è una funzione
+definita in termini di se stessa (Es. fattoriale)
+- Sono necessarie tecniche specifiche per risolvere
+le equazioni di ricorrenza
