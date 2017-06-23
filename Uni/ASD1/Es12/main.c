@@ -10,7 +10,7 @@
 #define MAX 100
 #define PCT_SORT_NEXT 80
 // #define ENABLE_PRINT_ARRAY
-// #define TEST_ALL_N
+#define ENABLE_INPUT_MODE
 
 #define TAB "\t"
 #define LN "\n"
@@ -185,25 +185,25 @@ void processAll()
 	array algs[ALG_N] = {0};
 	int i, j, k, n;
 
-	#ifdef TEST_ALL_N
+	#ifndef ENABLE_INPUT_MODE
 	for (k=0; k<N_LIST; k++)
 	#else
 	k = get_n_input();
 	#endif
 	{
-		#ifdef TEST_ALL_N
+		#ifndef ENABLE_INPUT_MODE
 		for (i=0; i<SCHEMA_N; i++)
 		#else
 		i = get_schema_input();
 		#endif
 		{
-			#ifdef TEST_ALL_N
+			#ifndef ENABLE_INPUT_MODE
 			puts("------------------------------");
 			#endif
 			n = nList[k];
 			base = genera_array(n, schema_list[i]);
 
-			#ifdef TEST_ALL_N
+			#ifndef ENABLE_INPUT_MODE
 			for (j=0; j<ALG_N; j++)
 			#else
 			j = get_alg_input();
@@ -235,7 +235,7 @@ void processAll()
 				algs[j] = NULL;
 			}
 		}
-		#ifdef TEST_ALL_N
+		#ifndef ENABLE_INPUT_MODE
 		puts("------------------------------------------------------------");
 		#endif
 	}
