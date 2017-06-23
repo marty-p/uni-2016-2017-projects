@@ -12,12 +12,21 @@
  * Qualsiasi altro valore non carichera' nessun file.
  * Viene caricato un array di dimensione DIM, gia' ordinato e senza duplicati.
  */
-#define TEST_ALL_N
 //#define ENABLE_PRINT_ARRAY
-#define N_LIST 7
+#define ENABLE_INPUT_MODE
+
 #define COMBS 2
 #define DIM 50
 #define NUMS 10
+
+#define TAB "\t"
+#define LN "\n"
+
+typedef int elem;
+typedef elem * array;
+
+#define N_LIST 7
+int nList[N_LIST] = {10, 50, 100, 1000, 10000, 100000, 500000};
 
 /*
  * Dichiarare qui i prototipi delle funzioni necessarie
@@ -35,18 +44,51 @@ int contI = 0, contR = 0, contB = 0;
 void processAll(int n, int numric);
 int ricercaSemplice(int array[], int dim, int num);
 int ricercaBanale(int array[], int dim, int num);
-int ricercaBanaleBench(int array[], int dim, int num);
+void ricercaBanaleBench(int array[], int dim, int num);
 int ricercaBinariaInterattiva(int A[], int dim, int numric);
-int ricercaBinariaInterattivaBench(int A[], int dim, int numric);
+void ricercaBinariaInterattivaBench(int A[], int dim, int numric);
 int ricercaBinariaRicorsiva(int A[], int primo, int ultimo, int numric);
-int ricercaBinariaRicorsivaBench(int A[], int dim, int numric);
+void ricercaBinariaRicorsivaBench(int A[], int dim, int numric);
+
+const char * get_n_name(int n)
+{
+	static const char * n_name[N_LIST] = {"10", "50", "100", "1000", "10000", "100000", "500000"};
+	if (n >= N_LIST)
+		return "";
+	return n_name[n];
+}
+
+int get_n_input()
+{
+	int i;
+	do
+	{
+		printf("N Input:\n");
+		for (i=0; i<N_LIST; i++)
+			printf("%d: %s\n", i, get_n_name(i));
+		scanf("%d", &i);
+		getchar();
+	}
+	while (i<0 || i>=N_LIST);
+	return i;
+}
+
+int get_ric_input()
+{
+	int i;
+	printf("NumRic:\n");
+	scanf("%d", &i);
+	getchar();
+	return i;
+}
 
 int main()
 {
-	int numric = 10; //numero da cercare
-#ifdef TEST_ALL_N
+#ifdef ENABLE_INPUT_MODE
+	int numric = NUMS; //numero da cercare
+	int dim = DIM; //numero da cercare
+#else
 	int i;
-	int nList[N_LIST] = {10, 50, 100, 1000, 10000, 100000, 500000};
 	int nNums[N_LIST][COMBS] = {
 		{18, 19}, //10
 		{10, 11}, //50
@@ -62,14 +104,16 @@ int main()
 	 * ATTENZIONE: questa funzione e' gia' implementata nei filen load.h e load.c
 	 * Non la dovete reimplementare voi.
 	 */
-#ifndef TEST_ALL_N
-	processAll(DIM, NUMS);
-	processAll(DIM, NUMS+1);
+#ifdef ENABLE_INPUT_MODE
+	dim = nList[get_n_input()];
+	numric = get_ric_input();
+	processAll(dim, numric);
+	processAll(dim, numric+1);
 #else
 	for (i=0; i<N_LIST; i++)
 	{
-		processAll(nList[i], nNums[i][0]);
-		processAll(nList[i], nNums[i][1]);
+		processAll(nList[i], nNums[i][0]); // found
+		processAll(nList[i], nNums[i][1]); // not found
 	}
 #endif
 	/* Inserire qui di seguito le chiamate ai vari algoritmi di ricerca e calcolare per ognuno:
@@ -123,7 +167,7 @@ int ricercaBinariaInterattiva(int A[], int dim, int numric)
 	return -1;
 }
 
-int ricercaBinariaInterattivaBench(int A[], int dim, int numric)
+void ricercaBinariaInterattivaBench(int A[], int dim, int numric)
 {
 	int res;
 	clock_t start, end;
@@ -152,7 +196,7 @@ int ricercaSemplice(int array[], int dim, int num)
 
 int ricercaBanale(int array[], int dim, int num)
 {
-	int pos;
+	int pos = 0;
 	contB=0;
 	while (pos < dim && array[pos] <= num)
 	{
@@ -165,7 +209,7 @@ int ricercaBanale(int array[], int dim, int num)
 	return -1;
 }
 
-int ricercaBanaleBench(int array[], int dim, int num)
+void ricercaBanaleBench(int array[], int dim, int num)
 {
 	int res;
 	clock_t start, end;
@@ -194,7 +238,7 @@ int ricercaBinariaRicorsiva(int A[], int primo, int ultimo, int numric)
 		return ricercaBinariaRicorsiva(A, primo, mezzo-1, numric);
 }
 
-int ricercaBinariaRicorsivaBench(int A[], int dim, int numric)
+void ricercaBinariaRicorsivaBench(int A[], int dim, int numric)
 {
 	int res;
 	clock_t start, end;
