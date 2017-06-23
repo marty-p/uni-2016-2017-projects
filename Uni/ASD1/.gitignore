@@ -7,4 +7,5 @@ obj
 *.pdf
 tex2pdf.*
 
-output.txt
+output*.txt
+test
